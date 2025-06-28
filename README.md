@@ -18,7 +18,7 @@ This system allows:
 
 ## 🧩 Entity Relationship Diagram (ERD)
 
-![ERD Diagram](overtime-tracker-erd.drawio)
+![ERD Diagram](overtime-tracker-erd.drawio.png)
 
 > _The ERD outlines all major tables including employees, shifts, schedules, overtime requests, departments, and weekly hour rules._
 
