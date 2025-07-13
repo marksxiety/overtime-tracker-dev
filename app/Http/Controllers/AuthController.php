@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -14,6 +15,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'employeeid' => 'required|unique:users|string|max:255',
+            'role' => ['required', Rule::in(['employee', 'approver', 'admin'])],
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -22,6 +24,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'role' => $request->role,
             'employeeid' => $request->employeeid,
             'password' => bcrypt($request->password)
         ]);
