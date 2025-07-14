@@ -20,6 +20,6 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        showSpinner: true,
+        showSpinner: false,
     },
 });
