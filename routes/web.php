@@ -11,4 +11,6 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::inertia('/login', 'Auth/Login')->name('login');
+
+    Route::inertia('/request', 'Employee.Request')->name('request');
 });
