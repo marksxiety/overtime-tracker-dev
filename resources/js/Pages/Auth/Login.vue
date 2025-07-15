@@ -1,22 +1,22 @@
 <template>
-    <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow mt-10">
-        <h2 class="text-2xl font-bold mb-6 text-blue-600">Login User</h2>
-        <form @submit.prevent="submitForm">
+    <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow mt-10">
+        <h2 class="text-2xl font-bold mb-6 text-primary">Login User</h2>
+        <form @submit.prevent="submitForm" class="card">
             <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
             <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
             <div class="flex items-end mb-4">
-                <input type="checkbox" id="remember" v-model="form.remember"
-                    class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                <label for="remember" class="text-gray-700">Remember me</label>
+                <label class="label">
+                    <input type="checkbox" checked="checked" class="checkbox checkbox-primary" v-model="form.remember"/>
+                    Remember me
+                </label>
             </div>
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                :disabled="form.processing">
+            <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
                 <span v-if="form.processing">Processing...</span>
                 <span v-else>Login</span>
             </button>
         </form>
         <div class="mt-6 text-center"> Dont have an account?
-            <Link :href="route('register')" class="text-blue-600 hover:underline">
+            <Link :href="route('register')" class="link">
             Register here
             </Link>
         </div>
