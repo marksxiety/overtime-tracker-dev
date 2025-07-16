@@ -12,4 +12,6 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::inertia('/request', 'Employee/Request')->name('request');
     Route::inertia('/', 'Main')->name('main');
+
+     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

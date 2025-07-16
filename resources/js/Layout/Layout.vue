@@ -10,7 +10,7 @@
                     <details>
                         <summary>Profile</summary>
                         <ul class="bg-base-100 rounded-t-none p-2">
-                            <li><a>LogOut</a></li>
+                            <li><Link :href="('logout')"  method="post">LogOut</Link></li>
                         </ul>
                     </details>
                 </li>
