@@ -2,7 +2,7 @@
     <div class="mb-4">
         <label for="role" class="block mb-2">{{ name }}</label>
         <select id="role" v-model="model" class="w-full px-4 py-2 select">
-            <option v-for="option in options" :key="option.value" :value="option.value">
+            <option v-for="option in options" :key="option.value" :value="option.value" :selected="option.selected">
                 {{ option.label }}
             </option>
         </select>
