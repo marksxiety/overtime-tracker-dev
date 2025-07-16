@@ -1,11 +1,20 @@
 <template>
-    <div class="flex justify-between bottom-2 shadow-md h-12 p-4">
+    <div class="flex justify-between items-center bottom-2 shadow-md h-auto p-4">
         <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
-        <div class="flex justify-between gap-4 font-semibold">
+        <div class="flex justify-between items-center gap-4 font-semibold">
             <p class="text-sm hover:underline hover:cursor-pointer">Dashboard</p>
             <p class="text-sm hover:underline hover:cursor-pointer">Requests</p>
             <p class="text-sm hover:underline hover:cursor-pointer">Reports</p>
-            <p class="text-sm hover:underline hover:cursor-pointer">Profile</p>
+            <ul class="menu menu-horizontal px-1">
+                <li>
+                    <details>
+                        <summary>Profile</summary>
+                        <ul class="bg-base-100 rounded-t-none p-2">
+                            <li><a>LogOut</a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
             <label class="swap swap-rotate">
                 <input type="checkbox" class="theme-controller" value="light" />
                 <svg class="swap-off h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
