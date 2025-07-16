@@ -5,7 +5,7 @@
             <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
             <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
             <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid" v-model="form.employeeid" />
-            <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role" />
+            <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role" :options="options"/>
             <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
             <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
             <button type="submit" class="btn btn-primary w-full"
@@ -24,8 +24,16 @@
 
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
 import TextInput from '../Components/TextInput.vue'
 import SelectOption from '../Components/SelectOption.vue'
+
+const options = ref([
+  { label: 'Choose a role', value: '' },
+  { label: 'Employee', value: 'employee' },
+  { label: 'Approver', value: 'approver' },
+  { label: 'Amin', value: 'admin' }
+])
 
 const form = useForm({
     name: '',
@@ -40,7 +48,6 @@ const submitForm = () => {
     form.post(route('register'), {
         onFinish: () => {
             form.reset('password', 'password_confirmation')
-            avatarPreview.value = null
         },
         onError: (errors) => {
             console.error('Registration failed:', errors)
