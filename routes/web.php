@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ShiftContoller;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['guest'])->group(function () {
@@ -15,5 +16,8 @@ Route::middleware(['auth'])->group(function () {
     Route::inertia('/hours', 'Maintenance/RequiredHours')->name('hours');
     Route::inertia('/', 'Main')->name('main');
 
-     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+     // shift code routes
+    Route::post('/shift/register', [ShiftContoller::class, 'insertShiftCode'])->name('shift.register');;
 });
