@@ -11,6 +11,7 @@
                         <ul class="bg-base-100 rounded-t-none p-2">
                             <li>
                                 <Link :href="route('shifts')">Shift Codes</Link>
+                                <Link :href="route('hours')">Required Hours</Link>
                             </li>
                         </ul>
                     </details>
