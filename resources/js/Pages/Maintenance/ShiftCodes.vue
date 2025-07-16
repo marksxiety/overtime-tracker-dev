@@ -4,12 +4,14 @@
         <div class="grid grid-cols-2 gap-6 h-96">
             <div class="col-span-1">
                 <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow h-full">
-                    <form @submit.prevent="" class="card">
-                        <TextInput name="Shift Code:" type="text" placeholder="Enter Shift Code..." />
-                        <TextInput name="Start Time:" type="time" />
-                        <TextInput name="End Time:" type="time" />
-                        <button type="submit" class="btn btn-primary w-full">
-                            <span>Submit</span>
+                    <form @submit.prevent="submitForm()" class="card">
+                        <TextInput name="Shift Code:" type="text" placeholder="Enter Shift Code..."
+                            v-model="form.code" />
+                        <TextInput name="Start Time:" type="time" v-model="form.start_time" />
+                        <TextInput name="End Time:" type="time" v-model="form.end_time" />
+                        <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                            <span v-if="form.processing">Submitting...</span>
+                            <span v-else>Submit</span>
                         </button>
                     </form>
                 </div>
@@ -41,6 +43,7 @@
 <script setup>
 import TextInput from '../Components/TextInput.vue'
 import { ref } from 'vue'
+import { useForm } from '@inertiajs/vue3'
 
 const shiftcodes = ref([
     { shift_code: 'C1', start_time: '07:00', end_time: '19:00' },
@@ -66,5 +69,23 @@ const shiftcodes = ref([
     { shift_code: 'NWS', start_time: 'N/A', end_time: 'N/A' },
     { shift_code: 'SX', start_time: 'N/A', end_time: 'N/A' }]
 )
+
+const form = useForm({
+    code: '',
+    start_time: '',
+    end_time: ''
+})
+
+
+const submitForm = () => {
+    form.post(route('shift.register'), {
+        onSuccess: () => {
+            form.reset()
+        },
+        onError: (errors) => {
+            console.log('shift code registration failed:', errors)
+        }
+    })
+}
 
 </script>
