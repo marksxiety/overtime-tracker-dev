@@ -49,6 +49,6 @@ class AuthController extends Controller
             return redirect()->route('main')->with('message', 'Login Successful! Welcome back, ' . Auth::user()->name);
         }
 
-        return redirect()->back()->withErrors(['email' => 'The provided credentials do not match on our records.']);
+        return redirect()->back()->withErrors(['email' => 'Email or Password is incorrect.', 'password' => 'Email or Password is incorrect.']);
     }
 }
