@@ -11,6 +11,8 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::inertia('/request', 'Employee/Request')->name('request');
+    Route::inertia('/shift', 'Maintenance/ShiftCodes')->name('shifts');
+    Route::inertia('/hours', 'Maintenance/RequiredHours')->name('hours');
     Route::inertia('/', 'Main')->name('main');
 
      Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
