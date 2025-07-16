@@ -4,13 +4,26 @@
         <div class="flex justify-between items-center gap-4 font-semibold">
             <p class="text-sm hover:underline hover:cursor-pointer">Dashboard</p>
             <p class="text-sm hover:underline hover:cursor-pointer">Requests</p>
-            <p class="text-sm hover:underline hover:cursor-pointer">Reports</p>
+            <ul class="menu menu-horizontal px-1">
+                <li>
+                    <details>
+                        <summary>Maintenance</summary>
+                        <ul class="bg-base-100 rounded-t-none p-2">
+                            <li>
+                                <Link :href="route('shifts')">Shift Codes</Link>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
             <ul class="menu menu-horizontal px-1">
                 <li>
                     <details>
                         <summary>Profile</summary>
                         <ul class="bg-base-100 rounded-t-none p-2">
-                            <li><Link :href="('logout')"  method="post">LogOut</Link></li>
+                            <li>
+                                <Link :href="('logout')" method="post">LogOut</Link>
+                            </li>
                         </ul>
                     </details>
                 </li>
