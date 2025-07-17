@@ -28,7 +28,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="shift in shiftcodes" :key="shift.shift_code">
-                                <td>{{ shift.shift_code }}</td>
+                                <td>{{ shift.code }}</td>
                                 <td>{{ shift.start_time }}</td>
                                 <td>{{ shift.end_time }}</td>
                             </tr>
@@ -42,36 +42,11 @@
 
 <script setup>
 import TextInput from '../Components/TextInput.vue'
-import { ref } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { ref, watch } from 'vue'
+import { useForm, router } from '@inertiajs/vue3'
 import { inject } from 'vue'
 
 const toast = inject('toast')
-
-const shiftcodes = ref([
-    { shift_code: 'C1', start_time: '07:00', end_time: '19:00' },
-    { shift_code: 'S1', start_time: '09:00', end_time: '17:00' },
-    { shift_code: 'C2', start_time: '19:00', end_time: '07:00' },
-    { shift_code: 'S2', start_time: '06:00', end_time: '14:00' },
-
-    { shift_code: 'C4', start_time: '09:00', end_time: '19:00' },
-    { shift_code: 'S3', start_time: '14:00', end_time: '22:00' },
-    { shift_code: 'C5', start_time: '07:00', end_time: '17:00' },
-    { shift_code: 'S4', start_time: '22:00', end_time: '06:00' },
-
-    { shift_code: 'C7', start_time: '06:00', end_time: '18:00' },
-    { shift_code: 'S7', start_time: '08:00', end_time: '18:00' },
-    { shift_code: 'C8', start_time: '18:00', end_time: '06:00' },
-    { shift_code: 'S8', start_time: '20:00', end_time: '06:00' },
-
-    { shift_code: 'C9', start_time: '08:00', end_time: '16:00' },
-    { shift_code: 'R1', start_time: '08:00', end_time: '20:00' },
-    { shift_code: 'R2', start_time: '20:00', end_time: '08:00' },
-
-    { shift_code: 'SY', start_time: 'N/A', end_time: 'N/A' },
-    { shift_code: 'NWS', start_time: 'N/A', end_time: 'N/A' },
-    { shift_code: 'SX', start_time: 'N/A', end_time: 'N/A' }]
-)
 
 const form = useForm({
     code: '',
@@ -91,5 +66,19 @@ const submitForm = () => {
         }
     })
 }
+
+const props = defineProps({
+    shiftcodes: Array,
+    error: String
+})
+
+const shiftcodes = ref([...props.shiftcodes ?? []])
+
+watch(
+    () => props.shiftcodes,
+    (newShiftcodes) => {
+        shiftcodes.value = [...newShiftcodes]
+    }
+)
 
 </script>
