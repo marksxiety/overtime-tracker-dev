@@ -44,6 +44,9 @@
 import TextInput from '../Components/TextInput.vue'
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
+import { inject } from 'vue'
+
+const toast = inject('toast')
 
 const shiftcodes = ref([
     { shift_code: 'C1', start_time: '07:00', end_time: '19:00' },
@@ -81,6 +84,7 @@ const submitForm = () => {
     form.post(route('shift.register'), {
         onSuccess: () => {
             form.reset()
+            toast('Shift code Registered Successfully.', 'success')
         },
         onError: (errors) => {
             console.log('shift code registration failed:', errors)

@@ -43,10 +43,19 @@
         </div>
     </div>
     <main class="m-4 pr-20 pl-20 pt-4 pb-4 f-full max-h-screen">
+        <Toast ref="toastRef" />
         <slot></slot>
     </main>
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3'
+import Toast from '../Pages/Components/Toast.vue'
+import { ref, provide } from 'vue'
+
+const toastRef = ref()
+
+provide('toast', (msg, type = 'info') => {
+  toastRef.value?.showToast(msg, type)
+})
 </script>
