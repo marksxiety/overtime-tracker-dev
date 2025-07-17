@@ -8,7 +8,8 @@ use App\Models\Shift;
 
 class ShiftContoller extends Controller
 {
-    public function insertShiftCode(Request $request) {
+    public function insertShiftCode(Request $request)
+    {
 
         $request->validate([
             'code' => 'required|string|max:10',
@@ -23,5 +24,21 @@ class ShiftContoller extends Controller
         ]);
 
         return redirect()->back()->with('message', 'Shift code saved successfully.');
+    }
+
+    public function registeredShiftCodes()
+    {
+        try {
+            $shiftcodes = Shift::all();
+
+            return inertia('Maintenance/ShiftCodes', [
+                'shiftcodes' => $shiftcodes
+            ]);
+        } catch (\Throwable $th) {
+            return inertia('Maintenance/ShiftCodes', [
+                'shiftcodes' => [],
+                'error' => 'Failed to fetch shift codes.'
+            ]);
+        }
     }
 }
