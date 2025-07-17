@@ -12,12 +12,12 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::inertia('/request', 'Employee/Request')->name('request');
-    Route::inertia('/shift', 'Maintenance/ShiftCodes')->name('shifts');
     Route::inertia('/hours', 'Maintenance/RequiredHours')->name('hours');
     Route::inertia('/', 'Main')->name('main');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
      // shift code routes
-    Route::post('/shift/register', [ShiftContoller::class, 'insertShiftCode'])->name('shift.register');;
+    Route::get('/shift', [ShiftContoller::class, 'registeredShiftCodes'])->name('shifts');
+    Route::post('/shift/register', [ShiftContoller::class, 'insertShiftCode'])->name('shift.register'); // insertion route
 });
