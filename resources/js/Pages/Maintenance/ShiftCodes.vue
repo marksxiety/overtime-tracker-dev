@@ -59,7 +59,9 @@
                                     <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs">
                                         EDIT
                                     </button>
-                                    <button class="btn btn-error btn-xs">DELETE</button>
+                                    <button class="btn btn-error btn-xs" @click="handleDeletion(shift.id)"
+                                        :disabled="deleteform.processing">
+                                        <span>DELETE</span></button>
                                 </td>
                             </tr>
                             <tr v-if="shiftcodes.length === 0">
@@ -91,6 +93,8 @@ const form = useForm({
     end_time: ''
 })
 
+const deleteform = useForm()
+
 
 const submitForm = () => {
     if (mode.value == 'insert') {
@@ -119,6 +123,23 @@ const submitForm = () => {
             toast('Invalid action. Please try again.', 'danger')
         }
 
+    }
+}
+
+const handleDeletion = (id) => {
+    if (id) {
+        mode.value = 'delete'
+        deleteform.delete(route('shift.delete', id), {
+            onSuccess: () => {
+                toast('Shift code delete successfully.', 'warning')
+                mode.value = 'insert'
+            },
+            onError: () => {
+                toast('Shift Code deletion failed. Please try again.', 'danger')
+            }
+        })
+    } else {
+        toast('Invalid action. Please try again.', 'danger')
     }
 }
 
