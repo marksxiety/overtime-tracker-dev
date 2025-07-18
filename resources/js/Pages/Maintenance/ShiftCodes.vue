@@ -12,8 +12,8 @@
                         <TextInput name="End Time:" type="time" :message="form.errors?.end_time"
                             v-model="form.end_time" />
                         <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
-                            <span v-if="form.processing">Submitting...</span>
-                            <span v-else>Submit</span>
+                            <span v-if="form.processing" class="loading loading-spinner"></span>
+                            <span>Submit</span>
                         </button>
                     </form>
                 </div>
