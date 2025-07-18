@@ -1,4 +1,15 @@
 <template>
+    <Modal ref="modalRef">
+        <h2 class="text-lg font-bold mb-4">Are you sure you want to delete?</h2>
+        <div class="flex justify-end gap-4">
+            <button class="btn btn-sm btn-primary mt-4" @click="handleDeletion()" :disabled="deleteform.processing">
+                <span v-if="deleteform.processing" class="loading loading-spinner"></span>
+                <span>Confirm</span>
+            </button>
+            <button class="btn btn-sm btn-secondary mt-4" @click="closeModal"
+                :disabled="deleteform.processing">Cancel</button>
+        </div>
+    </Modal>
     <div class="flex flex-col gap-6 h-full">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">
@@ -59,7 +70,7 @@
                                     <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs">
                                         EDIT
                                     </button>
-                                    <button class="btn btn-error btn-xs" @click="handleDeletion(shift.id)"
+                                    <button class="btn btn-error btn-xs" @click="initiateDeletion(shift.id)"
                                         :disabled="deleteform.processing">
                                         <span>DELETE</span></button>
                                 </td>
@@ -82,6 +93,17 @@ import TextInput from '../Components/TextInput.vue'
 import { ref, watch } from 'vue'
 import { useForm, router, Link } from '@inertiajs/vue3'
 import { inject } from 'vue'
+import Modal from '../Components/Modal.vue'
+
+const modalRef = ref(null)
+
+const showModal = () => {
+    modalRef.value?.open()
+}
+
+const closeModal = () => {
+    modalRef.value?.close()
+}
 
 const toast = inject('toast')
 const mode = ref('insert')
@@ -126,13 +148,19 @@ const submitForm = () => {
     }
 }
 
-const handleDeletion = (id) => {
+const initiateDeletion = (shift_id) => {
+    showModal()
+    id.value = shift_id
+}
+
+const handleDeletion = () => {
     if (id) {
         mode.value = 'delete'
-        deleteform.delete(route('shift.delete', id), {
+        deleteform.delete(route('shift.delete', id.value), {
             onSuccess: () => {
                 toast('Shift code delete successfully.', 'warning')
                 mode.value = 'insert'
+                closeModal()
             },
             onError: () => {
                 toast('Shift Code deletion failed. Please try again.', 'danger')
