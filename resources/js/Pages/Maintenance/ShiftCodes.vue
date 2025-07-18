@@ -5,10 +5,10 @@
             <div class="col-span-1">
                 <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow h-full">
                     <form @submit.prevent="submitForm()" class="card">
-                        <TextInput name="Shift Code:" type="text" placeholder="Enter Shift Code..."
+                        <TextInput name="Shift Code:" type="text" :message="form.errors?.code" placeholder="Enter Shift Code..."
                             v-model="form.code" />
-                        <TextInput name="Start Time:" type="time" v-model="form.start_time" />
-                        <TextInput name="End Time:" type="time" v-model="form.end_time" />
+                        <TextInput name="Start Time:" type="time" :message="form.errors?.start_time" v-model="form.start_time" />
+                        <TextInput name="End Time:" type="time" :message="form.errors?.end_time" v-model="form.end_time" />
                         <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
                             <span v-if="form.processing">Submitting...</span>
                             <span v-else>Submit</span>
