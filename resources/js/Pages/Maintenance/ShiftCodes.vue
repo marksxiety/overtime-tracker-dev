@@ -35,7 +35,7 @@
                 <div class="bg-base-300 p-6 rounded-2xl shadow-xl h-full flex flex-col justify-center">
                     <form @submit.prevent="submitForm()" class="flex flex-col gap-4">
                         <TextInput name="Shift Code:" type="text" :message="form.errors?.code"
-                            placeholder="Enter Shift Code..." v-model="form.code" />
+                            placeholder="Enter Shift Code..." v-model="form.code" textCase="uppercase" />
                         <TextInput name="Start Time:" type="time" :message="form.errors?.start_time"
                             v-model="form.start_time" />
                         <TextInput name="End Time:" type="time" :message="form.errors?.end_time"
