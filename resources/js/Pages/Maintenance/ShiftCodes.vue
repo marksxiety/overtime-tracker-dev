@@ -22,19 +22,23 @@
                 <div class="bg-base-300 rounded-box px-4 h-96 overflow-auto">
                     <table class="table">
                         <thead class="sticky top-0 bg-base-300 z-10">
-                            <tr>
+                            <tr class="text-center">
                                 <th>Shift Code</th>
                                 <th>Start Time</th>
                                 <th>End Time</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="shift in shiftcodes" :key="shift.shift_code">
-                                <td><a class="link font-semibold hover: cursor-pointer"
-                                        @click="handleHypyerLink(shift)">{{ shift.code
-                                        }}</a></td>
+                            <tr v-for="shift in shiftcodes" :key="shift.shift_code" class="text-center">
+                                <td class="font-semibold">{{ shift.code }}</td>
                                 <td>{{ shift.start_time }}</td>
                                 <td>{{ shift.end_time }}</td>
+                                <td class="flex flex-row gap-2 justify-center">
+                                    <button @click="handleHypyerLink(shift)"
+                                        class="btn btn-success btn-xs">EDIT</button>
+                                    <button class="btn btn-error btn-xs">DELETE</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
