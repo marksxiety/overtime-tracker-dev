@@ -63,4 +63,14 @@ class ShiftContoller extends Controller
             ]);
         }
     }
+
+    public function deleteShiftCode(Shift $shift) 
+    {
+        try {
+            $shift->delete();
+            return redirect()->back()->with('message', 'Shift code deleted successfully.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('errors', 'Shift code deleted unsuccessful.');
+        }
+    }
 }
