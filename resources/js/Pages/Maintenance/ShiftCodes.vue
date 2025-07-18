@@ -1,6 +1,15 @@
 <template>
     <div class="flex flex-col gap-6 h-full">
-        <h3 class="font-semibold">Shift Code Registration</h3>
+        <div class="breadcrumbs text-sm">
+            <ul>
+                <li>
+                    <Link :href="route('main')">Home</Link>
+                </li>
+                <li>
+                    <Link :href="route('shifts')">Shift Code Registration</Link>
+                </li>
+            </ul>
+        </div>
         <div class="grid grid-cols-2 gap-6 h-96">
             <div class="col-span-1">
                 <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow h-full">
@@ -51,7 +60,7 @@
 <script setup>
 import TextInput from '../Components/TextInput.vue'
 import { ref, watch } from 'vue'
-import { useForm, router } from '@inertiajs/vue3'
+import { useForm, router, Link } from '@inertiajs/vue3'
 import { inject } from 'vue'
 
 const toast = inject('toast')
