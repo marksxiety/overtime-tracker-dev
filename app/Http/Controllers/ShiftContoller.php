@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Shift;
+use Illuminate\Validation\Rule;
 
 class ShiftContoller extends Controller
 {
@@ -24,6 +25,27 @@ class ShiftContoller extends Controller
         ]);
 
         return redirect()->back()->with('message', 'Shift code saved successfully.');
+    }
+    public function updateShiftCode(Request $request, Shift $shift)
+    {
+        $request->validate([
+            'code' => [
+                'required',
+                'string',
+                'max:10',
+                Rule::unique('shift_codes')->ignore($shift->id),
+            ],
+            'start_time' => 'required|date_format:H:i:s',
+            'end_time' => 'required|date_format:H:i:s|after:start_time',
+        ]);
+
+        $shift->update([
+            'code' => $request->code,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ]);
+
+        return redirect()->back()->with('message', 'Shift code updated successfully.');
     }
 
     public function registeredShiftCodes()
