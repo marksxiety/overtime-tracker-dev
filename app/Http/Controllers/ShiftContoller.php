@@ -12,7 +12,7 @@ class ShiftContoller extends Controller
     {
 
         $request->validate([
-            'code' => 'required|string|max:10',
+            'code' => 'unique:shift_codes|required|string|max:10',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
