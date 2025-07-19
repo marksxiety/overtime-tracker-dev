@@ -23,7 +23,8 @@
                         <SelectOption name="Week:" :options="weeks" v-model="form.week" :message="form.errors.week" />
                         <TextInput name="Required Hours:" type="number" v-model="form.required_hours"
                             :message="form.errors.required_hours" placeholder="Enter the required hours per week..." />
-                        <button type="submit" class="btn btn-primary w-full">
+                        <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                            <span v-if="form.processing" class="loading loading-spinner"></span>
                             <span>Submit</span>
                         </button>
                     </form>
@@ -48,7 +49,7 @@
                                 <td>{{ required.week }}</td>
                                 <td>{{ `${required.required_hours} hrs` }}</td>
                                 <td class="flex flex-row gap-2 justify-center">
-                                    <button class="btn btn-success btn-xs">
+                                    <button class="btn btn-success btn-xs" @click="handleHypyerLink(required)">
                                         EDIT
                                     </button>
                                     <button class="btn btn-error btn-xs">
@@ -82,6 +83,9 @@ const props = defineProps({
     error: String
 })
 
+const mode = ref('insert')
+const id = ref(null)
+
 const registerd_required_hours = ref([...props.requiredhours ?? []])
 
 const weeks = Array.from({ length: 52 }, (_, i) => {
@@ -111,14 +115,40 @@ const form = useForm({
 })
 
 const submitForm = () => {
-    form.post(route('hours.register'), {
-        onSuccess: () => {
-            toast(page.props?.flash?.message, 'success')
-        },
-        onError: () => {
-            toast('Registration failed. Please try again', 'error')
+    if (mode.value === 'insert') {
+        form.post(route('hours.register'), {
+            onSuccess: () => {
+                toast(page.props?.flash?.message, 'success')
+                form.reset()
+            },
+            onError: () => {
+                toast('Registration failed. Please try again', 'error')
+            }
+        })
+    } else {
+        if (id) {
+            form.put(route('hours.update', id.value), {
+                onSuccess: () => {
+                    toast(page.props?.flash?.message, 'success')
+                    mode.value = 'insert'
+                    form.reset()
+                },
+                onError: (error) => {
+                    toast('Updating data failed. Please try again', 'error')
+                }
+            })
+        } else {
+            toast('Invalid action. Please try again.', 'error')
         }
-    })
+    }
+}
+
+const handleHypyerLink = (data) => {
+    form.year = data.year
+    form.week = data.week
+    form.required_hours = data.required_hours
+    id.value = data.id
+    mode.value = 'update'
 }
 
 
