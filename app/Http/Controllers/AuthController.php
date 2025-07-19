@@ -11,8 +11,8 @@ use Illuminate\Validation\Rule;
 class AuthController extends Controller
 {
     public function register(Request $request) {
-        // dd($request);
-        $request->validate([
+
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'employeeid' => 'required|unique:users|string|max:255',
             'role' => ['required', Rule::in(['employee', 'approver', 'admin'])],
@@ -20,14 +20,11 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // implement hash value in the password
+        $data['password'] = bcrypt($data['password']);
+
         // Insert data of the user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'employeeid' => $request->employeeid,
-            'password' => bcrypt($request->password)
-        ]);
+        $user = User::create([$data]);
 
         Auth::login($user);
 
