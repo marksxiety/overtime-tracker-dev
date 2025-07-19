@@ -4,10 +4,11 @@
         <div class="grid grid-cols-2 gap-6 h-96">
             <div class="col-span-1">
                 <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow h-full">
-                    <form @submit.prevent="" class="card">
-                        <SelectOption name="Year:" :options="years"/>
-                        <SelectOption name="Week:" :options="weeks"/>
-                        <TextInput name="Required Hours:" type="number" placeholder="Enter the required hours per week..."/>
+                    <form @submit.prevent="submitForm()" class="card">
+                        <SelectOption name="Year:" :options="years" v-model="form.year" :message="form.errors.year" />
+                        <SelectOption name="Week:" :options="weeks" v-model="form.week" :message="form.errors.week" />
+                        <TextInput name="Required Hours:" type="number" v-model="form.required_hours"
+                            :message="form.errors.required_hours" placeholder="Enter the required hours per week..." />
                         <button type="submit" class="btn btn-primary w-full">
                             <span>Submit</span>
                         </button>
@@ -41,46 +42,66 @@
 <script setup>
 import TextInput from '../Components/TextInput.vue'
 import SelectOption from '../Components/SelectOption.vue'
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
+import { useForm } from '@inertiajs/vue3'
+
+const toast = inject('toast')
 
 const weeks = Array.from({ length: 52 }, (_, i) => {
-  const weekNum = String(i + 1).padStart(2, '0')
-  return {
-    label: `Week: ${weekNum}`,
-    value: `${weekNum}`
-  }
+    const weekNum = String(i + 1).padStart(2, '0')
+    return {
+        label: `Week: ${weekNum}`,
+        value: `${parseInt(weekNum)}`
+    }
 })
 
 const years = [
-  { label: "Select Year", value: "", selected: true },
-  { label: "2024", value: "2024" },
-  { label: "2025", value: "2025" },
-  { label: "2026", value: "2026" },
-  { label: "2027", value: "2027" },
-  { label: "2028", value: "2028" },
-  { label: "2029", value: "2029" },
-  { label: "2030", value: "2030" }
+    { label: "Select Year", value: "", selected: true },
+    { label: "2024", value: "2024" },
+    { label: "2025", value: "2025" },
+    { label: "2026", value: "2026" },
+    { label: "2027", value: "2027" },
+    { label: "2028", value: "2028" },
+    { label: "2029", value: "2029" },
+    { label: "2030", value: "2030" }
 ]
 
 const registerd_required_hours = ref([
-  { year: '2024', week: 1, hours: 120 },
-  { year: '2024', week: 2, hours: 120 },
-  { year: '2024', week: 3, hours: 120 },
-  { year: '2024', week: 4, hours: 120 },
-  { year: '2024', week: 5, hours: 120 },
-  { year: '2024', week: 6, hours: 120 },
-  { year: '2024', week: 7, hours: 120 },
-  { year: '2024', week: 8, hours: 120 },
-  { year: '2024', week: 9, hours: 120 },
-  { year: '2024', week: 10, hours: 120 },
-  { year: '2024', week: 11, hours: 120 },
-  { year: '2024', week: 12, hours: 120 },
-  { year: '2024', week: 13, hours: 120 },
-  { year: '2024', week: 14, hours: 120 },
-  { year: '2024', week: 15, hours: 120 },
-  { year: '2024', week: 16, hours: 120 },
-  { year: '2024S', week: 17, hours: 120 },
-  { year: '2024', week: 18, hours: 120 }
+    { year: '2024', week: 1, hours: 120 },
+    { year: '2024', week: 2, hours: 120 },
+    { year: '2024', week: 3, hours: 120 },
+    { year: '2024', week: 4, hours: 120 },
+    { year: '2024', week: 5, hours: 120 },
+    { year: '2024', week: 6, hours: 120 },
+    { year: '2024', week: 7, hours: 120 },
+    { year: '2024', week: 8, hours: 120 },
+    { year: '2024', week: 9, hours: 120 },
+    { year: '2024', week: 10, hours: 120 },
+    { year: '2024', week: 11, hours: 120 },
+    { year: '2024', week: 12, hours: 120 },
+    { year: '2024', week: 13, hours: 120 },
+    { year: '2024', week: 14, hours: 120 },
+    { year: '2024', week: 15, hours: 120 },
+    { year: '2024', week: 16, hours: 120 },
+    { year: '2024S', week: 17, hours: 120 },
+    { year: '2024', week: 18, hours: 120 }
 ])
+
+const form = useForm({
+    year: '',
+    week: '',
+    required_hours: ''
+})
+
+const submitForm = () => {
+    form.post(route('hours.register'), {
+        onSuccess: () => {
+            toast('Registration successful', 'success')
+        },
+        onError: () => {
+            toast('Registration failed. Please try again', 'error')
+        }
+    })
+}
 
 </script>
