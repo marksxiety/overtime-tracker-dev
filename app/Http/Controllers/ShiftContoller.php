@@ -18,7 +18,7 @@ class ShiftContoller extends Controller
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
-        Shift::create([$data]);
+        Shift::create($data);
 
         return redirect()->back()->with('message', 'Shift code saved successfully.');
     }
@@ -35,7 +35,7 @@ class ShiftContoller extends Controller
             'end_time' => 'required|date_format:H:i:s|after:start_time',
         ]);
 
-        $shift->update([$data]);
+        $shift->update($data);
 
         return redirect()->back()->with('message', 'Shift code updated successfully.');
     }
@@ -56,7 +56,7 @@ class ShiftContoller extends Controller
         }
     }
 
-    public function deleteShiftCode(Shift $shift) 
+    public function deleteShiftCode(Shift $shift)
     {
         try {
             $shift->delete();
