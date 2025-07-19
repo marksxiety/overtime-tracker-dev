@@ -29,7 +29,7 @@
                             <tr v-for="required in registerd_required_hours" :key="required.required_code">
                                 <td>{{ required.year }}</td>
                                 <td>{{ required.week }}</td>
-                                <td>{{ required.hours }}</td>
+                                <td>{{ `${required.required_hours} hrs` }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -42,10 +42,17 @@
 <script setup>
 import TextInput from '../Components/TextInput.vue'
 import SelectOption from '../Components/SelectOption.vue'
-import { ref, inject } from 'vue'
+import { ref, inject, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 
 const toast = inject('toast')
+
+const props = defineProps({
+    requiredhours: Array,
+    error: String
+})
+
+const registerd_required_hours = ref([...props.requiredhours ?? []])
 
 const weeks = Array.from({ length: 52 }, (_, i) => {
     const weekNum = String(i + 1).padStart(2, '0')
@@ -66,26 +73,6 @@ const years = [
     { label: "2030", value: "2030" }
 ]
 
-const registerd_required_hours = ref([
-    { year: '2024', week: 1, hours: 120 },
-    { year: '2024', week: 2, hours: 120 },
-    { year: '2024', week: 3, hours: 120 },
-    { year: '2024', week: 4, hours: 120 },
-    { year: '2024', week: 5, hours: 120 },
-    { year: '2024', week: 6, hours: 120 },
-    { year: '2024', week: 7, hours: 120 },
-    { year: '2024', week: 8, hours: 120 },
-    { year: '2024', week: 9, hours: 120 },
-    { year: '2024', week: 10, hours: 120 },
-    { year: '2024', week: 11, hours: 120 },
-    { year: '2024', week: 12, hours: 120 },
-    { year: '2024', week: 13, hours: 120 },
-    { year: '2024', week: 14, hours: 120 },
-    { year: '2024', week: 15, hours: 120 },
-    { year: '2024', week: 16, hours: 120 },
-    { year: '2024S', week: 17, hours: 120 },
-    { year: '2024', week: 18, hours: 120 }
-])
 
 const form = useForm({
     year: '',
@@ -103,5 +90,13 @@ const submitForm = () => {
         }
     })
 }
+
+
+watch(
+    () => props.requiredhours,
+    (newrequiredhours) => {
+        registerd_required_hours.value = [...newrequiredhours]
+    }
+)
 
 </script>
