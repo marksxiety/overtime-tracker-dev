@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\RequiredHours;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RequiredHoursController extends Controller
 {
-    public function registerRequiredHours(Request $request) {
-        
+    public function registerRequiredHours(Request $request)
+    {
+
         $data = $request->validate([
             'year' => 'required|integer|max_digits:4',
             'week' =>  'required|integer|max_digits:2',
@@ -20,7 +22,8 @@ class RequiredHoursController extends Controller
         return redirect()->back()->with(['message' => 'Required Hours for week has been registered']);
     }
 
-    public function registeredRequiredHours() {
+    public function registeredRequiredHours()
+    {
 
         try {
             $requiredhours = RequiredHours::query()->orderBy('year', 'desc')->orderBy('week', 'desc')->get();
@@ -34,6 +37,22 @@ class RequiredHoursController extends Controller
                 'errors' => 'Failed to load registered Required Hours'
             ]);
         }
+    }
 
+    public function updateRequiredHour(Request $request, RequiredHours $requiredHours)
+    {
+        try {
+            $data = $request->validate([
+                'year' => 'required|integer|max_digits:4',
+                'week' =>  'required|integer|max_digits:2',
+                'required_hours' =>  'required|integer|max_digits:4'
+            ]);
+
+            $requiredHours->update($data);
+
+            return redirect()->back()->with('message', 'Required Hour for Year ' . $request->year . ' and Week ' . $request->week . ' has been updated.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('message', 'Updating information failed. Please try again');
+        }
     }
 }
