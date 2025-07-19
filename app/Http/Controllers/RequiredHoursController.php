@@ -19,4 +19,21 @@ class RequiredHoursController extends Controller
         RequiredHours::create($data);
         return redirect()->back()->with(['message' => 'Required Hours for week has been registered']);
     }
+
+    public function registeredRequiredHours() {
+
+        try {
+            $requiredhours = RequiredHours::query()->orderBy('year', 'desc')->orderBy('week', 'desc')->get();
+
+            return inertia('Maintenance/RequiredHours', [
+                'requiredhours' => $requiredhours
+            ]);
+        } catch (\Throwable $th) {
+            return inertia('Maintenance/RequiredHours', [
+                'requiredhours' => [],
+                'errors' => 'Failed to load registered Required Hours'
+            ]);
+        }
+
+    }
 }
