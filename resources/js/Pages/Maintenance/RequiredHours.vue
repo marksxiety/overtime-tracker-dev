@@ -43,9 +43,10 @@
 import TextInput from '../Components/TextInput.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import { ref, inject, watch } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 
 const toast = inject('toast')
+const page = usePage()
 
 const props = defineProps({
     requiredhours: Array,
@@ -83,7 +84,7 @@ const form = useForm({
 const submitForm = () => {
     form.post(route('hours.register'), {
         onSuccess: () => {
-            toast('Registration successful', 'success')
+            toast(page.props?.flash?.message, 'success')
         },
         onError: () => {
             toast('Registration failed. Please try again', 'error')
