@@ -10,9 +10,12 @@
                 <span class="text-2xl font-extrabold">2</span>
             </div>
         </div>
-        <div class="flex mt-4 justify-end">
+        <div class="flex mt-4 justify-end gap-2">
             <Link :href="route('request')" class="btn btn-neutral">
             File New Request
+            </Link>
+            <Link :href="route('request')" class="btn btn-neutral">
+            Manage Schedules
             </Link>
         </div>
     </div>
