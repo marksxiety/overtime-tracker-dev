@@ -13,7 +13,6 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::inertia('/request', 'Employee/Request')->name('request');
-    Route::inertia('/hours', 'Maintenance/RequiredHours')->name('hours');
     Route::inertia('/', 'Main')->name('main');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -25,5 +24,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/shift/{shift}', [ShiftContoller::class, 'deleteShiftCode'])->name('shift.delete'); // delete route
 
     // required hours routes
+    Route::get('/hours', [RequiredHoursController::class, 'registeredRequiredHours'])->name('hours');
     Route::post('/hours/register', [RequiredHoursController::class, 'registerRequiredHours'])->name('hours.register');
 });
