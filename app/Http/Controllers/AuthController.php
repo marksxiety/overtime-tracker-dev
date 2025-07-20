@@ -24,7 +24,7 @@ class AuthController extends Controller
         $data['password'] = bcrypt($data['password']);
 
         // Insert data of the user
-        $user = User::create([$data]);
+        $user = User::create($data);
 
         Auth::login($user);
 
