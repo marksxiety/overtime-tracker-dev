@@ -27,4 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/hours', [RequiredHoursController::class, 'registeredRequiredHours'])->name('hours');
     Route::post('/hours/register', [RequiredHoursController::class, 'registerRequiredHours'])->name('hours.register');
     Route::put('/hours/{requiredHours}', [RequiredHoursController::class, 'updateRequiredHour'])->name('hours.update');
+
+    // schedule routes
+    Route::inertia('/schedule', 'Employee/Schedule')->name('schedule');
 });

@@ -14,7 +14,7 @@
             <Link :href="route('request')" class="btn btn-neutral">
             File New Request
             </Link>
-            <Link :href="route('request')" class="btn btn-neutral">
+            <Link :href="route('schedule')" class="btn btn-neutral">
             Manage Schedules
             </Link>
         </div>
