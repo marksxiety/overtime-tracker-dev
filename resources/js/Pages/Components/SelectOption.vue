@@ -3,7 +3,7 @@
         <label for="role" class="block mb-2">{{ name }}</label>
         <select id="role" v-model="model"
             :class="['w-full px-4 py-2 input', message ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200', 'w-full px-4 py-2 select']">
-            <option v-for="option in options" :key="option.value" :value="option.value" :selected="option.selected">
+            <option v-for="option in options" :key="option.value" :value="option.value">
                 {{ option.label }}
             </option>
         </select>
