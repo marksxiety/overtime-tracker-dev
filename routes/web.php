@@ -23,6 +23,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/shift/{shift}', [ShiftContoller::class, 'updateShiftCode'])->name('shift.update'); // update route
     Route::delete('/shift/{shift}', [ShiftContoller::class, 'deleteShiftCode'])->name('shift.delete'); // delete route
 
+    // shift code requests (axios)
+    Route::get('/shift/list', [ShiftContoller::class, 'shiftCodeList']);
+
     // required hours routes
     Route::get('/hours', [RequiredHoursController::class, 'registeredRequiredHours'])->name('hours');
     Route::post('/hours/register', [RequiredHoursController::class, 'registerRequiredHours'])->name('hours.register');

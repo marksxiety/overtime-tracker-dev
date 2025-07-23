@@ -65,4 +65,13 @@ class ShiftContoller extends Controller
             return redirect()->back()->with('errors', 'Shift code deleted unsuccessful.');
         }
     }
+
+    public function shiftCodeList()
+    {
+        $shiftCodes = Shift::all(['id', 'code', 'start_time', 'end_time']);
+        return response()->json([
+            'status' => 'success',
+            'data' => $shiftCodes
+        ]);
+    }
 }
