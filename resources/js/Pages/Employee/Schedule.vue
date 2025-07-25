@@ -34,19 +34,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-if="schedules.length > 0" v-for="schedules in schedules" :key="schedules.id">
-                        <td>{{ schedules.date }}</td>
-                        <td>{{ schedules.week }}</td>
-                        <td class="w-1/3">
-                            <SelectOption :options="shifts" v-model="schedules.shift_code_id" />
+                    <tr v-if="isLoading">
+                        <td colspan="4" class="text-center italic text-gray-400 py-4">
+                            <span class="loading loading-spinner"></span>  Loading Schedules...
                         </td>
                     </tr>
+
+                    <template v-else-if="schedules.length > 0">
+                        <tr v-for="schedule in schedules" :key="schedule.id">
+                            <td>{{ schedule.date }}</td>
+                            <td>{{ schedule.week }}</td>
+                            <td class="w-1/3">
+                                <SelectOption :options="shifts" v-model="schedule.shift_code_id" />
+                            </td>
+                        </tr>
+                    </template>
+
                     <tr v-else>
                         <td colspan="4" class="text-center italic text-gray-400 py-4">
                             No registered Schedule.
                         </td>
                     </tr>
                 </tbody>
+
             </table>
             <hr>
             <div class="flex justify-end">
@@ -68,6 +78,7 @@ import { fetchShiftList } from '../api/shift.js'
 const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
 
+const isLoading = ref(true)
 const initshifts = ref([])
 const shifts = ref([])
 const schedules = ref([
@@ -101,6 +112,7 @@ onMounted(async () => {
             value: element.id
         })
     })
+    isLoading.value = false
 })
 
 </script>
