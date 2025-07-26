@@ -25,6 +25,7 @@ class ScheduleController extends Controller
             for ($i = 0; $i < 7; $i++) {
                 $current = $date->addDays($i);
                 $days[] = [
+                    'id' => null,
                     'date' => $current->toDateString(),
                     'week' => $week,
                     'day' => $current->format('l'),
@@ -36,9 +37,10 @@ class ScheduleController extends Controller
 
             // populate the shift_code value if it matches the date
             // this will identify if the user has a current schedule on the specific day
-            foreach ($schedules as $schedule) {
+            foreach ($schedules as &$schedule) {
                 for ($j = 0; $j < count($days); $j++) {
                     if ($schedule['date'] === $days[$j]['date']) {
+                        $days[$j]['id'] = $schedule['id'];
                         $days[$j]['shift_code'] = $schedule['shift_id'];
                         break;
                     }
