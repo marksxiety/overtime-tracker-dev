@@ -9,3 +9,9 @@ export function fetchSchedule(user_id, year, week) {
         },
     });
 }
+
+export function submitSchedule(info) {
+    return axios.post("/schedule/submit", {
+        schedule: info,
+    });
+}
