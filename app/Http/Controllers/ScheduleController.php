@@ -16,7 +16,6 @@ class ScheduleController extends Controller
     {
         try {
             $days = [];
-            $user_id = $request->input('user_id');
             $year = $request->input('year', now()->year);
             $week = $request->input('week', now()->isoWeek);
 
@@ -34,7 +33,7 @@ class ScheduleController extends Controller
                 ];
             }
 
-            $schedules = Schedule::where('user_id', $user_id)->whereYear('date', $year)->where('week', $week)->get();
+            $schedules = Schedule::where('user_id',  Auth::id())->whereYear('date', $year)->where('week', $week)->get();
 
             // populate the shift_code value if it matches the date
             // this will identify if the user has a current schedule on the specific day
@@ -51,7 +50,8 @@ class ScheduleController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'proceed',
-                'schedules' => $days
+                'schedules' => $days,
+                'id' =>  Auth::id()
             ]);
         } catch (\Throwable $th) {
             return response()->json([
