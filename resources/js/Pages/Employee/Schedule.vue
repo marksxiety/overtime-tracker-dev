@@ -15,10 +15,10 @@
             <h1 class="text-2xl font-bold">Manage Schedule</h1>
             <div class="grid grid-cols-2 gap-4 w-1/3">
                 <div class="col-span-1 w-full">
-                    <SelectOption name="Year" :options="years" v-model="selectedYear" />
+                    <SelectOption name="Year" :options="years" v-model="selectedYear" @change="loadScheduleData()" />
                 </div>
                 <div class="col-span-1 w-full">
-                    <SelectOption name="Week" :options="weeks" v-model="selectedWeek" />
+                    <SelectOption name="Week" :options="weeks" v-model="selectedWeek" @change="loadScheduleData()" />
                 </div>
             </div>
         </div>
@@ -113,9 +113,9 @@ async function loadScheduleData() {
     isLoading.value = true
     const isSubmitting = ref(true)
     // Fetch schedule for the logged-in user and selected week/year
-    const scheduleResponse = await fetchSchedule(user_id.value, selectedYear.value, selectedWeek.value)
+    const scheduleResponse = await fetchSchedule(selectedYear.value, selectedWeek.value)
 
-    if (scheduleResponse.data.success) {
+    if (scheduleResponse.data?.success) {
         // Fetch all available shift codes
         const shiftsResponse = await fetchShiftList()
         initshifts.value = shiftsResponse.data
