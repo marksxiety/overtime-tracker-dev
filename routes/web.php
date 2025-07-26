@@ -1,7 +1,9 @@
 <?php
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ShiftContoller;
 use App\Http\Controllers\RequiredHoursController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['guest'])->group(function () {
@@ -17,7 +19,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-     // shift code routes
+    // shift code routes
     Route::get('/shift', [ShiftContoller::class, 'registeredShiftCodes'])->name('shifts');
     Route::post('/shift/register', [ShiftContoller::class, 'insertShiftCode'])->name('shift.register'); // insertion route
     Route::put('/shift/{shift}', [ShiftContoller::class, 'updateShiftCode'])->name('shift.update'); // update route
@@ -33,4 +35,5 @@ Route::middleware(['auth'])->group(function () {
 
     // schedule routes
     Route::inertia('/schedule', 'Employee/Schedule')->name('schedule');
+    Route::get('/schedule/list', [ScheduleController::class, 'fetchSchedule']);
 });
