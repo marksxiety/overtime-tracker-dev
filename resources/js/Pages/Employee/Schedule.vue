@@ -62,7 +62,8 @@
             </table>
             <hr>
             <div class="flex justify-end">
-                <button type="submit" class="btn btn-primary mt-4">
+                <button type="submit" class="btn btn-primary mt-4" @click="submitForm()">
+                    <span v-if="isSubmitting.value" class="loading loading-spinner"></span>
                     <span>Submit</span>
                 </button>
             </div>
@@ -71,25 +72,38 @@
 </template>
 <script setup>
 import SelectOption from '../Components/SelectOption.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, inject } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { years, weeks, currentWeek } from '../utils/dropdownOptions.js'
 import { fetchShiftList } from '../api/shift.js'
-import { fetchSchedule } from '../api/schedule.js'
+import { fetchSchedule, submitSchedule } from '../api/schedule.js'
 
 // Get user ID from page props (Inertia auth session)
 const page = usePage()
 const user_id = ref(page?.props?.auth?.user?.id)
+
+const toast = inject('toast')
 
 // Default selected year and week
 const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
 
 const isLoading = ref(true)
+const isSubmitting = ref(true)
 const initshifts = ref([]) // raw shift data from API
 const shifts = ref([])     // formatted shift data for <SelectOption>
 const schedules = ref([])
 const tableText = ref('No registered Schedule.')
+
+
+const submitForm = async () => {
+    const submitResponse = await submitSchedule(schedules.value)
+    if (submitResponse.data?.success) {
+        toast(submitResponse.data?.message, 'success')
+    } else {
+        toast(submitResponse.data?.message, 'error')
+    }
+}
 
 onMounted(() => {
     loadScheduleData()
@@ -97,7 +111,7 @@ onMounted(() => {
 
 async function loadScheduleData() {
     isLoading.value = true
-
+    const isSubmitting = ref(true)
     // Fetch schedule for the logged-in user and selected week/year
     const scheduleResponse = await fetchSchedule(user_id.value, selectedYear.value, selectedWeek.value)
 
