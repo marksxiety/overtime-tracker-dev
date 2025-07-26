@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Schedule;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Auth;
 
 
 class ScheduleController extends Controller
@@ -59,5 +60,49 @@ class ScheduleController extends Controller
                 'message' => "Failed to fetch schedules due to $th"
             ]);
         }
+    }
+
+    public function submitSchedule(Request $request)
+    {
+        $info = $request->input('schedule');
+
+        // loop the info (update only the data that the id's not null)
+        // having a null id it means that the certain row is not yet registered
+        try {
+            foreach ($info as $item) {
+                if ($item['id']) {
+                    Schedule::where('id', $item['id'])->update([
+                        'user_id' => Auth::id(),
+                        'shift_id' => $item['shift_code'],
+                        'date' => $item['date'],
+                        'week' => $item['week'],
+                    ]);
+                } else {
+
+                    // if the shift code is not provided, avoid that index to be created.
+                    if (!$item['shift_code']) {
+                        continue;
+                    }
+
+                    Schedule::create([
+                        'user_id' => Auth::id(),
+                        'shift_id' => $item['shift_code'],
+                        'date' => $item['date'],
+                        'week' => $item['week'],
+                    ]);
+                }
+            }
+
+            $message = 'Submission Successful';
+            $success = true;
+        } catch (\Throwable $th) {
+            $success = false;
+            $message = "Submission Failed";
+        }
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message
+        ]);
     }
 }
