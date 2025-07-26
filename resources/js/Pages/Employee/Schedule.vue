@@ -30,13 +30,14 @@
                     <tr>
                         <th>Date</th>
                         <th>Week</th>
+                        <th>Day</th>
                         <th class="w-1/3">Shift Code</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-if="isLoading">
                         <td colspan="4" class="text-center italic text-gray-400 py-4">
-                            <span class="loading loading-spinner"></span>  Loading Schedules...
+                            <span class="loading loading-spinner"></span> Loading Schedules...
                         </td>
                     </tr>
 
@@ -44,15 +45,16 @@
                         <tr v-for="schedule in schedules" :key="schedule.id">
                             <td>{{ schedule.date }}</td>
                             <td>{{ schedule.week }}</td>
+                            <td>{{ schedule.day }}</td>
                             <td class="w-1/3">
-                                <SelectOption :options="shifts" v-model="schedule.shift_code_id" />
+                                <SelectOption :options="shifts" v-model="schedule.shift_code" />
                             </td>
                         </tr>
                     </template>
 
                     <tr v-else>
                         <td colspan="4" class="text-center italic text-gray-400 py-4">
-                            No registered Schedule.
+                            {{ tableText.value }}
                         </td>
                     </tr>
                 </tbody>
@@ -71,47 +73,43 @@
 <script setup>
 import SelectOption from '../Components/SelectOption.vue'
 import { onMounted, ref } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
 import { years, weeks, currentWeek } from '../utils/dropdownOptions.js'
 import { fetchShiftList } from '../api/shift.js'
+import { fetchSchedule } from '../api/schedule.js'
 
 const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
+const page = usePage()
+const tableText = ref('No registered Schedule.')
+
+// fetch the user's id (session) to fetch specific schedule
+const user_id = ref(page?.props?.auth?.user?.id)
 
 const isLoading = ref(true)
 const initshifts = ref([])
 const shifts = ref([])
-const schedules = ref([
-    {
-        date: '2025-07-24',
-        week: '30',
-        shift_code_id: 2
-    },
-    {
-        date: '2025-07-24',
-        week: '30',
-        shift_code_id: 3
-    },
-    {
-        date: '2025-07-24',
-        week: '30',
-        shift_code_id: 4
-    }
-])
+const schedules = ref([])
 
 onMounted(async () => {
-    const shiftsreponse = await fetchShiftList()
-    initshifts.value = shiftsreponse.data
+    const schedulresponse = await fetchSchedule(user_id.value, selectedYear.value, selectedWeek.value)
 
-    // after fetching the initialize shift codes
-    // format it for the label and value in able to properly populate it in SelectOption value
-    // since that component expects key of 'label' and 'value' only
-    initshifts.value.data.forEach(element => {
-        shifts.value.push({
-            label: `${element.code}: ${element.start_time} - ${element.end_time}`,
-            value: element.id
+    if (schedulresponse.data.success) {
+        const shiftsreponse = await fetchShiftList()
+        initshifts.value = shiftsreponse.data
+        schedules.value = schedulresponse.data.schedules
+        // after fetching the initialize shift codes
+        // format it for the label and value in able to properly populate it in SelectOption value
+        // since that component expects key of 'label' and 'value' only
+        initshifts.value.data.forEach(element => {
+            shifts.value.push({
+                label: `${element.code}: ${element.start_time} - ${element.end_time}`,
+                value: element.id
+            })
         })
-    })
+    } else {
+        tableText.value = 'Failed to load schedules.'
+    }
     isLoading.value = false
 })
 
