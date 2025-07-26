@@ -69,7 +69,6 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import SelectOption from '../Components/SelectOption.vue'
 import { onMounted, ref } from 'vue'
@@ -78,39 +77,49 @@ import { years, weeks, currentWeek } from '../utils/dropdownOptions.js'
 import { fetchShiftList } from '../api/shift.js'
 import { fetchSchedule } from '../api/schedule.js'
 
-const selectedYear = ref(new Date().getFullYear())
-const selectedWeek = ref(currentWeek())
+// Get user ID from page props (Inertia auth session)
 const page = usePage()
-const tableText = ref('No registered Schedule.')
-
-// fetch the user's id (session) to fetch specific schedule
 const user_id = ref(page?.props?.auth?.user?.id)
 
+// Default selected year and week
+const selectedYear = ref(new Date().getFullYear())
+const selectedWeek = ref(currentWeek())
+
 const isLoading = ref(true)
-const initshifts = ref([])
-const shifts = ref([])
+const initshifts = ref([]) // raw shift data from API
+const shifts = ref([])     // formatted shift data for <SelectOption>
 const schedules = ref([])
+const tableText = ref('No registered Schedule.')
 
-onMounted(async () => {
-    const schedulresponse = await fetchSchedule(user_id.value, selectedYear.value, selectedWeek.value)
+onMounted(() => {
+    loadScheduleData()
+})
 
-    if (schedulresponse.data.success) {
-        const shiftsreponse = await fetchShiftList()
-        initshifts.value = shiftsreponse.data
-        schedules.value = schedulresponse.data.schedules
-        // after fetching the initialize shift codes
-        // format it for the label and value in able to properly populate it in SelectOption value
-        // since that component expects key of 'label' and 'value' only
-        initshifts.value.data.forEach(element => {
-            shifts.value.push({
-                label: `${element.code}: ${element.start_time} - ${element.end_time}`,
-                value: element.id
-            })
-        })
+async function loadScheduleData() {
+    isLoading.value = true
+
+    // Fetch schedule for the logged-in user and selected week/year
+    const scheduleResponse = await fetchSchedule(user_id.value, selectedYear.value, selectedWeek.value)
+
+    if (scheduleResponse.data.success) {
+        // Fetch all available shift codes
+        const shiftsResponse = await fetchShiftList()
+        initshifts.value = shiftsResponse.data
+
+        // Format the shift data into { label, value } structure
+        // so it can be used directly in <SelectOption>
+        const shiftData = shiftsResponse?.data?.data ?? []
+        shifts.value = shiftData.map(element => ({
+            label: `${element.code}: ${element.start_time} - ${element.end_time}`,
+            value: element.id
+        }))
+
+        // Store fetched schedules
+        schedules.value = scheduleResponse.data.schedules
     } else {
         tableText.value = 'Failed to load schedules.'
     }
-    isLoading.value = false
-})
 
+    isLoading.value = false
+}
 </script>
