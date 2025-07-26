@@ -36,4 +36,5 @@ Route::middleware(['auth'])->group(function () {
     // schedule routes
     Route::inertia('/schedule', 'Employee/Schedule')->name('schedule');
     Route::get('/schedule/list', [ScheduleController::class, 'fetchSchedule']);
+    Route::post('/schedule/submit', [ScheduleController::class, 'submitSchedule'])->name('schedule.submit');
 });
