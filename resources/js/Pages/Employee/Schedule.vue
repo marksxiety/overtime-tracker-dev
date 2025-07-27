@@ -62,8 +62,8 @@
             </table>
             <hr>
             <div class="flex justify-end">
-                <button type="submit" class="btn btn-primary mt-4" @click="submitForm()">
-                    <span v-if="isSubmitting.value" class="loading loading-spinner"></span>
+                <button type="submit" class="btn btn-primary mt-4" @click="submitForm()" :disabled="isSubmitting">
+                    <span v-if="isSubmitting" class="loading loading-spinner"></span>
                     <span>Submit</span>
                 </button>
             </div>
@@ -89,7 +89,7 @@ const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
 
 const isLoading = ref(true)
-const isSubmitting = ref(true)
+const isSubmitting = ref(false)
 const initshifts = ref([]) // raw shift data from API
 const shifts = ref([])     // formatted shift data for <SelectOption>
 const schedules = ref([])
@@ -97,12 +97,14 @@ const tableText = ref('No registered Schedule.')
 
 
 const submitForm = async () => {
+    isSubmitting.value = true
     const submitResponse = await submitSchedule(schedules.value)
     if (submitResponse.data?.success) {
         toast(submitResponse.data?.message, 'success')
     } else {
         toast(submitResponse.data?.message, 'error')
     }
+    isSubmitting.value = false
 }
 
 onMounted(() => {
