@@ -39,9 +39,12 @@
                         <li>Sat</li>
                     </ul>
 
-                    <ul class="grid grid-cols-7 gap-4 text-center mt-2 text-md">
-                        <li v-for="days in calendardays" :key="day">
-                            {{ days.day }}
+                    <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
+                        <li v-for="(days, index) in calendardays" :key="index"
+                            class="p-8 border cursor-pointer hover:bg-slate-400 transition duration-200">
+                            <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400' : '', '']">
+                                {{ days.day }}
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -114,6 +117,7 @@ function updateCurrentDate(year, month) {
     }
 
     // next month's leading days (to fill the rest of the grid)
+    // use 42 to have 6 rows only (6x7)
     const remaining = 42 - calendardays.value.length
     for (let i = 1; i <= remaining; i++) {
         calendardays.value.push({
