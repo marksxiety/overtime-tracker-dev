@@ -22,9 +22,9 @@
         <div class="h-screen mt-4">
             <div class="flex flex-col gap-4 border rounded-md p-4">
                 <header class="flex items-center justify-between">
-                    <button class="btn btn-sm btn-neutral">&lt;</button>
+                    <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-semibold text-md">{{ currentDate }}</p>
-                    <button class="btn btn-sm btn-neutral">&gt;</button>
+                    <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">&gt;</button>
                 </header>
 
                 <hr>
@@ -62,8 +62,22 @@ const lastDateOfMonth = ref(0)
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
+const handlePreviousMonth = () => {
+    currentMonth.value = currentMonth.value - 1
+    updateCurrentDate(currentYear.value, currentMonth.value)
+}
+
+const handleNextMonth = () => {
+    currentMonth.value = currentMonth.value + 1
+    updateCurrentDate(currentYear.value, currentMonth.value)
+}
+
+function updateCurrentDate(year, month) {
+    currentDate.value = `${months[month]} ${year}`
+    lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
+}
+
 onMounted(() => {
-    currentDate.value = `${months[currentMonth.value]} ${currentYear.value}`
-    lastDateOfMonth.value = new Date(currentYear.value, currentMonth.value + 1, 0).getDate()
+    updateCurrentDate(currentYear.value, currentMonth.value)
 })
 </script>
