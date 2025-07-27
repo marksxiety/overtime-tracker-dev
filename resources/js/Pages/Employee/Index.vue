@@ -40,8 +40,8 @@
                     </ul>
 
                     <ul class="grid grid-cols-7 gap-4 text-center mt-2 text-md">
-                        <li v-for="day in lastDateOfMonth" :key="day">
-                            {{ day }}
+                        <li v-for="days in calendardays" :key="day">
+                            {{ days.day }}
                         </li>
                     </ul>
                 </div>
@@ -59,23 +59,70 @@ const currentDate = ref('')
 const currentYear = ref(date.getFullYear())
 const currentMonth = ref(date.getMonth())
 const lastDateOfMonth = ref(0)
+const firstDayOfMonth = ref(0)
+const lastDateOfLastMonth = ref(0)
+
+const calendardays = ref([])
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 const handlePreviousMonth = () => {
-    currentMonth.value = currentMonth.value - 1
+    if (currentMonth.value === 0) {
+        currentMonth.value = 11
+        currentYear.value -= 1
+    } else {
+        currentMonth.value -= 1
+    }
+
     updateCurrentDate(currentYear.value, currentMonth.value)
 }
 
 const handleNextMonth = () => {
-    currentMonth.value = currentMonth.value + 1
+    if (currentMonth.value === 11) {
+        currentMonth.value = 0
+        currentYear.value += 1
+    } else {
+        currentMonth.value += 1
+    }
+
     updateCurrentDate(currentYear.value, currentMonth.value)
 }
+
 
 function updateCurrentDate(year, month) {
     currentDate.value = `${months[month]} ${year}`
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
+    lastDateOfLastMonth.value = new Date(year, month, 0).getDate()
+    firstDayOfMonth.value = new Date(year, month, 1).getDay()
+
+    calendardays.value = [] // reset
+
+    // previous month's trailing days (gray out)
+    for (let i = firstDayOfMonth.value; i > 0; i--) {
+        calendardays.value.push({
+            day: lastDateOfLastMonth.value - i + 1,
+            type: 'prev'
+        })
+    }
+
+    // current month days
+    for (let i = 1; i <= lastDateOfMonth.value; i++) {
+        calendardays.value.push({
+            day: i,
+            type: 'current'
+        })
+    }
+
+    // next month's leading days (to fill the rest of the grid)
+    const remaining = 42 - calendardays.value.length
+    for (let i = 1; i <= remaining; i++) {
+        calendardays.value.push({
+            day: i,
+            type: 'next'
+        })
+    }
 }
+
 
 onMounted(() => {
     updateCurrentDate(currentYear.value, currentMonth.value)
