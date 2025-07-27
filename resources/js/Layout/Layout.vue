@@ -7,11 +7,13 @@
             <ul class="menu menu-horizontal px-1">
                 <li>
                     <details>
-                        <summary>Maintenance</summary>
-                        <ul class="bg-base-100 rounded-t-none p-2">
+                        <summary @click="toggleDropdownMaintenance()">Maintenance</summary>
+                        <ul v-show="isOpenMaintenance" class="bg-base-100 rounded-t-none p-2">
                             <li>
-                                <Link :href="route('shifts')">Shift Codes</Link>
-                                <Link :href="route('hours')">Required Hours</Link>
+                                <Link :href="route('shifts')" @click="toggleDropdownMaintenance()">Shift Codes</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('hours')" @click="toggleDropdownMaintenance()">Required Hours</Link>
                             </li>
                         </ul>
                     </details>
@@ -20,10 +22,10 @@
             <ul class="menu menu-horizontal px-1">
                 <li>
                     <details>
-                        <summary>Profile</summary>
+                        <summary @click="toggleDropdownProfile()">Profile</summary>
                         <ul class="bg-base-100 rounded-t-none p-2">
                             <li>
-                                <Link :href="('logout')" method="post">LogOut</Link>
+                                <Link :href="('logout')" method="post" @click="toggleDropdownProfile()">LogOut</Link>
                             </li>
                         </ul>
                     </details>
@@ -54,6 +56,11 @@ import Toast from '../Pages/Components/Toast.vue'
 import { ref, provide } from 'vue'
 
 const toastRef = ref()
+const isOpenMaintenance = ref(false)
+const isOpenProfile = ref(false)
+
+const toggleDropdownMaintenance = () => isOpenMaintenance.value = !isOpenMaintenance.value
+const toggleDropdownProfile = () => isOpenProfile.value = !isOpenProfile.value
 
 provide('toast', (msg, type = 'info') => {
   toastRef.value?.showToast(msg, type)
