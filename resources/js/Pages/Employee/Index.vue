@@ -23,7 +23,7 @@
             <div class="flex flex-col gap-4 border rounded-md p-4">
                 <header class="flex items-center justify-between">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
-                    <p class="current-date font-semibold text-md">{{ currentDate }}</p>
+                    <p class="current-date font-bold text-xl">{{ currentDate }}</p>
                     <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">&gt;</button>
                 </header>
 
