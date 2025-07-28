@@ -1,5 +1,5 @@
 <template>
-    <dialog class="modal" ref="dialog">
+    <dialog class="modal h-auto" ref="dialog">
         <div class="modal-box">
             <slot></slot>
         </div>
