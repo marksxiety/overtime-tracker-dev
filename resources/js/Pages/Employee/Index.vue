@@ -1,4 +1,20 @@
 <template>
+    <Modal ref="modalRef">
+        <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
+        <div class="flex flex-col gap-4">
+            <form @submit.prevent="" class="flex flex-col gap-1">
+                <TextInput name="Date:" type="text" />
+                <TextInput name="Schedule:" type="text" />
+                <TextInput name="Start Time:" type="time" />
+                <TextInput name="End Time:" type="time" />
+                <TextInput name="Reason:" type="text" class="min-w" />
+                <div class="flex justify-end gap-4">
+                    <button class="btn btn-neutral mt-4" @click="closeModal">Cancel</button>
+                    <button class="btn btn-primary mt-4" @click="closeModal">Submit</button>
+                </div>
+            </form>
+        </div>
+    </Modal>
     <div class="flex flex-col gap-4">
         <div class="grid grid-cols-2 gap-4">
             <div class="col-span-1 flex flex-row border-2 justify-between rounded p-4 bg-base-200">
@@ -11,16 +27,13 @@
             </div>
         </div>
         <div class="flex mt-4 justify-end gap-2">
-            <Link :href="route('request')" class="btn btn-neutral">
-            File New Request
-            </Link>
             <Link :href="route('schedule')" class="btn btn-neutral">
             Manage Schedules
             </Link>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <!-- Sidebar: Overtime Requests -->
-            <div class="col-span-1 border rounded-md p-4 bg-white shadow">
+            <div class="col-span-1 border rounded-md p-4 shadow">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
                 <!-- Sample List -->
                 <ul class="space-y-2 text-sm">
@@ -33,7 +46,7 @@
             </div>
 
             <!-- Calendar Section -->
-            <div class="col-span-3 p-4 border rounded-md bg-white shadow-md">
+            <div class="col-span-3 p-4 border rounded-md shadow-md">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentDate }}</p>
@@ -54,7 +67,8 @@
                 <!-- Calendar days -->
                 <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
                     <li v-for="(days, index) in calendardays" :key="index"
-                        class="p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200">
+                        class="p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200"
+                        @click="showModal()">
                         <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400' : '', '']">
                             {{ days.day }}
                         </span>
@@ -69,6 +83,8 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import { onMounted, ref } from 'vue'
+import Modal from '../Components/Modal.vue'
+import TextInput from '../Components/TextInput.vue'
 
 const date = new Date()
 const currentDate = ref('')
@@ -77,10 +93,17 @@ const currentMonth = ref(date.getMonth())
 const lastDateOfMonth = ref(0)
 const firstDayOfMonth = ref(0)
 const lastDateOfLastMonth = ref(0)
-
+const modalRef = ref(null)
 const calendardays = ref([])
-
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+const showModal = () => {
+    modalRef.value?.open()
+}
+
+const closeModal = () => {
+    modalRef.value?.close()
+}
 
 const handlePreviousMonth = () => {
     if (currentMonth.value === 0) {
