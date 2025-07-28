@@ -67,9 +67,9 @@
                 <!-- Calendar days -->
                 <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
                     <li v-for="(days, index) in calendardays" :key="index"
-                        class="p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200"
+                        :class="[['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '', 'p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200']"
                         @click="showModal()">
-                        <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400' : '', '']">
+                        <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '', '']">
                             {{ days.day }}
                         </span>
                     </li>
