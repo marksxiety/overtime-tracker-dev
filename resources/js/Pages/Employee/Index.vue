@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col gap-4">
         <div class="grid grid-cols-2 gap-4">
             <div class="col-span-1 flex flex-row border-2 justify-between rounded p-4 bg-base-200">
                 <span class="text-md font-semibold">Total Overtime Hours</span>
@@ -18,38 +18,51 @@
             Manage Schedules
             </Link>
         </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Sidebar: Overtime Requests -->
+            <div class="col-span-1 border rounded-md p-4 bg-white shadow">
+                <h2 class="text-lg font-bold mb-4">My Requests</h2>
+                <!-- Sample List -->
+                <ul class="space-y-2 text-sm">
+                    <li v-for="(request, i) in recentRequests" :key="i" class="border p-2 rounded">
+                        <p class="font-semibold">{{ request.date }}</p>
+                        <p class="text-xs text-gray-500">Status: {{ request.status }}</p>
+                        <p class="text-xs">Duration: {{ request.hours }} hrs</p>
+                    </li>
+                </ul>
+            </div>
 
-        <div class="h-screen mt-4">
-            <div class="flex flex-col gap-4 border rounded-md p-4">
-                <header class="flex items-center justify-between">
+            <!-- Calendar Section -->
+            <div class="col-span-3 p-4 border rounded-md bg-white shadow-md">
+                <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentDate }}</p>
                     <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">&gt;</button>
                 </header>
 
-                <hr>
-                <div class="calendar">
-                    <ul class="grid grid-cols-7 gap-6 text-center font-semibold text-md">
-                        <li>Sun</li>
-                        <li>Mon</li>
-                        <li>Tue</li>
-                        <li>Wed</li>
-                        <li>Thu</li>
-                        <li>Fri</li>
-                        <li>Sat</li>
-                    </ul>
+                <!-- Days of week -->
+                <ul class="grid grid-cols-7 gap-4 text-center font-semibold text-md text-gray-600">
+                    <li>Sun</li>
+                    <li>Mon</li>
+                    <li>Tue</li>
+                    <li>Wed</li>
+                    <li>Thu</li>
+                    <li>Fri</li>
+                    <li>Sat</li>
+                </ul>
 
-                    <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
-                        <li v-for="(days, index) in calendardays" :key="index"
-                            class="p-8 border cursor-pointer hover:bg-slate-400 transition duration-200">
-                            <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400' : '', '']">
-                                {{ days.day }}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
+                <!-- Calendar days -->
+                <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
+                    <li v-for="(days, index) in calendardays" :key="index"
+                        class="p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200">
+                        <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400' : '', '']">
+                            {{ days.day }}
+                        </span>
+                    </li>
+                </ul>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -128,6 +141,11 @@ function updateCurrentDate(year, month) {
 }
 
 
+const recentRequests = ref([
+    { date: '2025-07-25', status: 'Pending', hours: 3 },
+    { date: '2025-07-22', status: 'Approved', hours: 2.5 },
+    { date: '2025-07-20', status: 'Rejected', hours: 1 },
+])
 onMounted(() => {
     updateCurrentDate(currentYear.value, currentMonth.value)
 })
