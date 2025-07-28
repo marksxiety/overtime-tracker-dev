@@ -2,15 +2,15 @@
     <Modal ref="modalRef">
         <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
         <div class="flex flex-col gap-4">
-            <form @submit.prevent="" class="flex flex-col gap-1">
-                <TextInput name="Date:" type="text" />
-                <TextInput name="Schedule:" type="text" />
-                <TextInput name="Start Time:" type="time" />
-                <TextInput name="End Time:" type="time" />
-                <TextInput name="Reason:" type="text" class="min-w" />
+            <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1">
+                <TextInput name="Date:" type="text" v-model="form.date" />
+                <TextInput name="Schedule:" type="text" v-model="form.employee_schedule_id" />
+                <TextInput name="Start Time:" type="time" v-model="form.start_time" />
+                <TextInput name="End Time:" type="time" v-model="form.end_time" />
+                <TextArea name="Reason:" type="text" v-model="form.reason" />
                 <div class="flex justify-end gap-4">
                     <button class="btn btn-neutral mt-4" @click="closeModal">Cancel</button>
-                    <button class="btn btn-primary mt-4" @click="closeModal">Submit</button>
+                    <button class="btn btn-primary mt-4">Submit</button>
                 </div>
             </form>
         </div>
@@ -54,7 +54,7 @@
                 </header>
 
                 <!-- Days of week -->
-                <ul class="grid grid-cols-7 gap-4 text-center font-semibold text-md text-gray-600">
+                <ul class="grid grid-cols-7 gap-4 text-center font-semibold text-md">
                     <li>Sun</li>
                     <li>Mon</li>
                     <li>Tue</li>
@@ -69,7 +69,8 @@
                     <li v-for="(days, index) in calendardays" :key="index"
                         :class="[['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '', 'p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200']"
                         @click="showModal()">
-                        <span :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '', '']">
+                        <span
+                            :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '', '']">
                             {{ days.day }}
                         </span>
                     </li>
@@ -81,10 +82,11 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
-import { onMounted, ref } from 'vue'
+import { Link, useForm } from '@inertiajs/vue3'
+import { onMounted, ref, inject } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
+import TextArea from '../Components/TextArea.vue'
 
 const date = new Date()
 const currentDate = ref('')
@@ -96,6 +98,7 @@ const lastDateOfLastMonth = ref(0)
 const modalRef = ref(null)
 const calendardays = ref([])
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const toast = inject('toast')
 
 const showModal = () => {
     modalRef.value?.open()
@@ -163,6 +166,27 @@ function updateCurrentDate(year, month) {
     }
 }
 
+const form = useForm({
+    date: '',
+    employee_schedule_id: '',
+    start_time: '',
+    end_time: '',
+    reason: ''
+})
+
+
+const submitOvertime = () => {
+    form.post(route('overtime.request'), {
+        onSuccess: () => {
+            toast('Overtime Request Filing successful!', 'success')
+            form.reset()
+            closeModal()
+        },
+        onError: () => {
+            toast('Overtime Request failed. Please try again', 'error')
+        }
+    })
+}
 
 const recentRequests = ref([
     { date: '2025-07-25', status: 'Pending', hours: 3 },
