@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class OvertimeRequest extends Model
+{
+    use HasFactory;
+
+    protected $table = 'overtime_requests';
+
+    protected $fillable = ['employee_schedule_id', 'date', 'start_time', 'end_time', 'reason', 'status', 'remarks'];
+}
