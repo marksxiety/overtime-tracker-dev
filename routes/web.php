@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\ShiftContoller;
 use App\Http\Controllers\RequiredHoursController;
 use App\Http\Controllers\ScheduleController;
@@ -37,4 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::inertia('/schedule', 'Employee/Schedule')->name('schedule');
     Route::get('/schedule/list', [ScheduleController::class, 'fetchSchedule']);
     Route::post('/schedule/submit', [ScheduleController::class, 'submitSchedule'])->name('schedule.submit');
+
+    // overtime request routes
+    Route::post('overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
 });
