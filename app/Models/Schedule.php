@@ -14,10 +14,10 @@ class Schedule extends Model
     protected $fillable = ['user_id', 'shift_id', 'week', 'date'];
 
     public function user() {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function shift() {
-        return $this->belongsTo(Shift::class, 'id');
+        return $this->belongsTo(Shift::class, 'shift_id');
     }
 }
