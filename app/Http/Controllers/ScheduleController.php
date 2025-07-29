@@ -65,44 +65,69 @@ class ScheduleController extends Controller
     public function submitSchedule(Request $request)
     {
         $info = $request->input('schedule');
+        $resultSchedules = [];
 
-        // loop the info (update only the data that the id's not null)
-        // having a null id it means that the certain row is not yet registered
         try {
             foreach ($info as $item) {
-                if ($item['id']) {
+
+                if (!empty($item['id'])) {
                     Schedule::where('id', $item['id'])->update([
                         'user_id' => Auth::id(),
                         'shift_id' => $item['shift_code'],
                         'date' => $item['date'],
                         'week' => $item['week'],
                     ]);
-                } else {
 
-                    // if the shift code is not provided, avoid that index to be created.
-                    if (!$item['shift_code']) {
+                    $updated = Schedule::find($item['id']);
+                    $resultSchedules[] = [
+                        'id' => $updated->id,
+                        'date' => $updated->date,
+                        'week' => $updated->week,
+                        'day' => $item['day'],
+                        'shift_code' => $updated->shift_id,
+                    ];
+                } else {
+                    if (empty($item['shift_code'])) {
+                        $resultSchedules[] = [
+                            'id' => null,
+                            'date' => $item['date'],
+                            'week' => $item['week'],
+                            'day' => $item['day'],
+                            'shift_code' => null
+                        ];
                         continue;
                     }
 
-                    Schedule::create([
+                    $created = Schedule::create([
                         'user_id' => Auth::id(),
                         'shift_id' => $item['shift_code'],
                         'date' => $item['date'],
                         'week' => $item['week'],
                     ]);
+
+                    $resultSchedules[] = [
+                        'id' => $created->id,
+                        'date' => $created->date,
+                        'week' => $created->week,
+                        'day' => $item['day'],
+                        'shift_code' => $created->shift_id,
+                    ];
                 }
             }
 
-            $message = 'Submission Successful';
             $success = true;
+            $message = 'Submission Successful';
         } catch (\Throwable $th) {
             $success = false;
-            $message = "Submission Failed";
+            $message = 'Submission Failed';
+            $resultSchedules = [];
         }
 
         return response()->json([
             'success' => $success,
-            'message' => $message
+            'message' => $message,
+            'schedules' => $resultSchedules
         ]);
     }
+
 }
