@@ -62,7 +62,7 @@
             </table>
             <hr>
             <div class="flex justify-end">
-                <button type="submit" class="btn btn-primary mt-4" @click="submitForm()" :disabled="isSubmitting">
+                <button type="submit" class="btn btn-primary mt-4" @click="submitForm()" :disabled="isSubmitting || isLoading">
                     <span v-if="isSubmitting" class="loading loading-spinner"></span>
                     <span>Submit</span>
                 </button>
@@ -88,7 +88,7 @@ const toast = inject('toast')
 const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
 
-const isLoading = ref(true)
+const isLoading = ref(false)
 const isSubmitting = ref(false)
 const initshifts = ref([]) // raw shift data from API
 const shifts = ref([])     // formatted shift data for <SelectOption>
@@ -100,6 +100,7 @@ const submitForm = async () => {
     isSubmitting.value = true
     const submitResponse = await submitSchedule(schedules.value)
     if (submitResponse.data?.success) {
+        schedules.value = submitResponse.data.schedules
         toast(submitResponse.data?.message, 'success')
     } else {
         toast(submitResponse.data?.message, 'error')
@@ -108,12 +109,11 @@ const submitForm = async () => {
 }
 
 onMounted(() => {
+    isLoading.value = true
     loadScheduleData()
 })
 
 async function loadScheduleData() {
-    isLoading.value = true
-    const isSubmitting = ref(true)
     // Fetch schedule for the logged-in user and selected week/year
     const scheduleResponse = await fetchSchedule(selectedYear.value, selectedWeek.value)
 
