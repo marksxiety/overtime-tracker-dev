@@ -14,3 +14,9 @@ export function submitSchedule(info) {
         schedule: info,
     });
 }
+
+export function fetchUserSchedule(year, month, day) {
+    return axios.get("/schedule/user", {
+        params: { year, month, day },
+    });
+}
