@@ -9,8 +9,8 @@
                 <TextInput name="End Time:" type="time" v-model="form.end_time" />
                 <TextArea name="Reason:" type="text" v-model="form.reason" />
                 <div class="flex justify-end gap-4">
-                    <button class="btn btn-neutral mt-4" @click="closeModal">Cancel</button>
-                    <button class="btn btn-primary mt-4">Submit</button>
+                    <button type="button" class="btn btn-neutral mt-4" @click="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
                 </div>
             </form>
         </div>
@@ -49,7 +49,7 @@
             <div class="col-span-3 p-4 border rounded-md shadow-md">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
-                    <p class="current-date font-bold text-xl">{{ currentDate }}</p>
+                    <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
                     <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">&gt;</button>
                 </header>
 
@@ -68,7 +68,7 @@
                 <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
                     <li v-for="(days, index) in calendardays" :key="index"
                         :class="[['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '', 'p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200']"
-                        @click="showModal()">
+                        @click="showModal(currentYear, currentMonth, days.day)">
                         <span
                             :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '', '']">
                             {{ days.day }}
@@ -87,8 +87,10 @@ import { onMounted, ref, inject } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
+import { fetchUserSchedule } from '../api/schedule.js'
 
 const date = new Date()
+const currentMonthYear = ref('')
 const currentDate = ref('')
 const currentYear = ref(date.getFullYear())
 const currentMonth = ref(date.getMonth())
@@ -100,8 +102,10 @@ const calendardays = ref([])
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const toast = inject('toast')
 
-const showModal = () => {
+const showModal = async (year, month, day) => {
     modalRef.value?.open()
+    let scheduleResponse = await fetchUserSchedule(year, month + 1, day)
+    console.log('scheduleResponse', scheduleResponse)
 }
 
 const closeModal = () => {
@@ -116,7 +120,7 @@ const handlePreviousMonth = () => {
         currentMonth.value -= 1
     }
 
-    updateCurrentDate(currentYear.value, currentMonth.value)
+    updateCurrentMonthYear(currentYear.value, currentMonth.value)
 }
 
 const handleNextMonth = () => {
@@ -127,12 +131,12 @@ const handleNextMonth = () => {
         currentMonth.value += 1
     }
 
-    updateCurrentDate(currentYear.value, currentMonth.value)
+    updateCurrentMonthYear(currentYear.value, currentMonth.value)
 }
 
 
-function updateCurrentDate(year, month) {
-    currentDate.value = `${months[month]} ${year}`
+function updateCurrentMonthYear(year, month) {
+    currentMonthYear.value = `${months[month]} ${year}`
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
     lastDateOfLastMonth.value = new Date(year, month, 0).getDate()
     firstDayOfMonth.value = new Date(year, month, 1).getDay()
@@ -193,7 +197,7 @@ const recentRequests = ref([
     { date: '2025-07-22', status: 'Approved', hours: 2.5 },
     { date: '2025-07-20', status: 'Rejected', hours: 1 },
 ])
-onMounted(() => {
-    updateCurrentDate(currentYear.value, currentMonth.value)
+onMounted(async () => {
+    updateCurrentMonthYear(currentYear.value, currentMonth.value)
 })
 </script>
