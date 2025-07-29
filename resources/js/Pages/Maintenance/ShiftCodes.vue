@@ -67,7 +67,7 @@
                                 <td>{{ shift.start_time }}</td>
                                 <td>{{ shift.end_time }}</td>
                                 <td class="flex flex-row gap-2 justify-center">
-                                    <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs">
+                                    <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs" :disabled="deleteform.processing">
                                         EDIT
                                     </button>
                                     <button class="btn btn-error btn-xs" @click="initiateDeletion(shift.id)"
@@ -158,16 +158,17 @@ const handleDeletion = () => {
         mode.value = 'delete'
         deleteform.delete(route('shift.delete', id.value), {
             onSuccess: () => {
-                toast('Shift code delete successfully.', 'warning')
+                toast('Shift code delete successfully.', 'success')
                 mode.value = 'insert'
                 closeModal()
             },
-            onError: () => {
-                toast('Shift Code deletion failed. Please try again.', 'danger')
+            onError: (errors) => {
+                toast(deleteform.errors?.message || 'Shift Code deletion failed. Please try again.', 'error')
+                closeModal()
             }
         })
     } else {
-        toast('Invalid action. Please try again.', 'danger')
+        toast('Invalid action. Please try again.', 'error')
     }
 }
 
