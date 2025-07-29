@@ -130,4 +130,36 @@ class ScheduleController extends Controller
         ]);
     }
 
+
+    public function getUserSchedule(Request $request)
+    {
+
+        try {
+            $schedule = Schedule::with('shift')->where('user_id', Auth::id())->whereYear('date', $request->year)->whereMonth('date', $request->month)->whereDay('date', $request->day)->get(
+                'id', 'shift_id', 'date', 'week'
+            )->first();
+
+            $registered = [
+                'id' => $schedule->id,
+                'shift_id' => $schedule->shift_id,
+                'shift_code' => $schedule->shift?->code,
+                'date' => $schedule->date,
+                'week' => $schedule->week
+            ];
+
+            $success = true;
+            $message = 'Submission Successful';
+        } catch (\Throwable $th) {
+            $success = false;
+            $message = 'Submission Failed';
+            $schedule = null;
+        }
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'schedule' => $registered,
+            'query' => $schedule
+        ]);
+    }
 }
