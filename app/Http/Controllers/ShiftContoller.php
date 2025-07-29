@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Shift;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\QueryException;
 
 class ShiftContoller extends Controller
 {
@@ -61,8 +62,21 @@ class ShiftContoller extends Controller
         try {
             $shift->delete();
             return redirect()->back()->with('message', 'Shift code deleted successfully.');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                // Foreign key violation: shift is in use
+                return redirect()->back()->withErrors([
+                    'message' => 'Cannot delete this shift — it is currently assigned to a schedule.'
+                ]);
+            }
+
+            return redirect()->back()->withErrors([
+                'message' => 'Database error occurred during deletion.'
+            ]);
         } catch (\Throwable $th) {
-            return redirect()->back()->with('errors', 'Shift code deleted unsuccessful.');
+            return redirect()->back()->withErrors([
+                'message' => 'Shift code deletion unsuccessful.'
+            ]);
         }
     }
 
