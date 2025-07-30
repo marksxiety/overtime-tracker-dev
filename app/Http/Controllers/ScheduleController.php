@@ -136,13 +136,15 @@ class ScheduleController extends Controller
 
         try {
             $schedule = Schedule::with('shift')->where('user_id', Auth::id())->whereYear('date', $request->year)->whereMonth('date', $request->month)->whereDay('date', $request->day)->get(
-                'id', 'shift_id', 'date', 'week'
+                ['id', 'shift_id', 'date', 'week']
             )->first();
 
             $registered = [
                 'id' => $schedule->id,
                 'shift_id' => $schedule->shift_id,
                 'shift_code' => $schedule->shift?->code,
+                'shift_start_time' => $schedule->shift?->start_time,
+                'shift_end_time' => $schedule->shift?->end_time,
                 'date' => $schedule->date,
                 'week' => $schedule->week
             ];
