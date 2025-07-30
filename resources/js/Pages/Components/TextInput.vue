@@ -12,7 +12,6 @@
 
 
 <script setup>
-import { readonly } from 'vue';
 
 defineProps({
     name: {
