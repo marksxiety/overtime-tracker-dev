@@ -133,35 +133,36 @@ class ScheduleController extends Controller
 
     public function getUserSchedule(Request $request)
     {
-
+        $registered = [];
         try {
             $schedule = Schedule::with('shift')->where('user_id', Auth::id())->whereYear('date', $request->year)->whereMonth('date', $request->month)->whereDay('date', $request->day)->get(
                 ['id', 'shift_id', 'date', 'week']
             )->first();
 
-            $registered = [
-                'id' => $schedule->id,
-                'shift_id' => $schedule->shift_id,
-                'shift_code' => $schedule->shift?->code,
-                'shift_start_time' => $schedule->shift?->start_time,
-                'shift_end_time' => $schedule->shift?->end_time,
-                'date' => $schedule->date,
-                'week' => $schedule->week
-            ];
+            if ($schedule) {
+                $registered = [
+                    'id' => $schedule->id,
+                    'shift_id' => $schedule->shift_id,
+                    'shift_code' => $schedule->shift?->code,
+                    'shift_start_time' => $schedule->shift?->start_time,
+                    'shift_end_time' => $schedule->shift?->end_time,
+                    'date' => $schedule->date,
+                    'week' => $schedule->week
+                ];
+            }
 
             $success = true;
-            $message = 'Submission Successful';
+            $message = 'Fetching Successful';
         } catch (\Throwable $th) {
             $success = false;
-            $message = 'Submission Failed';
+            $message = 'Fetching Failed ' . $th;
             $schedule = null;
         }
 
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'schedule' => $registered,
-            'query' => $schedule
+            'schedule' => $registered
         ]);
     }
 }
