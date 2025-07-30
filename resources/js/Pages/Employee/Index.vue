@@ -3,54 +3,68 @@
         <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
         <div class="flex flex-col gap-4">
             <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1 min-h-96">
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                    <legend class="fieldset-legend">Requested Overtime Date</legend>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-1">
-                            <TextInput name="Date:" type="text" v-model="form.date" :readonly="true"
-                                :placeholder="''" />
+                <div class="flex items-center justify-center h-64 gap-4 text-center" v-if="fetchingSchedule">
+                    <span class="loading loading-spinner"></span> Loading Schedule...
+                </div>
+                <div v-else>
+                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                        <legend class="fieldset-legend">Requested Overtime Date</legend>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Date:" type="text" v-model="form.date" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-1">
+                                <TextInput name="Week:" type="text" v-model="form.week" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
                         </div>
-                        <div class="col-span-1">
-                            <TextInput name="Week:" type="text" v-model="form.week" :readonly="true"
-                                :placeholder="''" />
+                    </fieldset>
+
+                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                        <legend class="fieldset-legend">Your Scheduled Shift</legend>
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Shift Code:" type="text" v-model="form.shift_code" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-2">
+                                <TextInput name="Start:" type="text" v-model="form.shift_start_time" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-2">
+                                <TextInput name="End:" type="text" v-model="form.shift_end_time" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                        <legend class="fieldset-legend">Overtime Duration and Reason</legend>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Start Time:" type="time" v-model="form.start_time" />
+                            </div>
+                            <div class="col-span-1">
+                                <TextInput name="End Time:" type="time" v-model="form.end_time" />
+                            </div>
+                        </div>
+                        <TextArea name="Reason:" type="text" v-model="form.reason" />
+                    </fieldset>
+                    <div v-if="withShedule">
+                        <div class="flex justify-end gap-4">
+                            <button type="button" class="btn btn-neutral mt-4" @click="closeModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary mt-4">Submit</button>
                         </div>
                     </div>
-                </fieldset>
-
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                    <legend class="fieldset-legend">Your Scheduled Shift</legend>
-                    <div class="grid grid-cols-5 gap-4">
-                        <div class="col-span-1">
-                            <TextInput name="Shift Code:" type="text" v-model="form.shift_code" :readonly="true"
-                                :placeholder="''" />
-                        </div>
-                        <div class="col-span-2">
-                            <TextInput name="Start:" type="text" v-model="form.shift_start_time" :readonly="true"
-                                :placeholder="''" />
-                        </div>
-                        <div class="col-span-2">
-                            <TextInput name="End:" type="text" v-model="form.shift_end_time" :readonly="true"
-                                :placeholder="''" />
+                    <div v-else class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
+                        ⚠️ No registered Schedule.
+                        <div class="flex justify-center gap-6">
+                            <button type="button" class="btn btn-secondary mt-4 w-full" @click="closeModal()">Close</button>
+                            <Link  :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">Add Schedule</Link>
                         </div>
                     </div>
-                </fieldset>
-
-
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                    <legend class="fieldset-legend">Overtime Duration and Reason</legend>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-1">
-                            <TextInput name="Start Time:" type="time" v-model="form.start_time" />
-                        </div>
-                        <div class="col-span-1">
-                            <TextInput name="End Time:" type="time" v-model="form.end_time" />
-                        </div>
-                    </div>
-                    <TextArea name="Reason:" type="text" v-model="form.reason" />
-                </fieldset>
-                <div class="flex justify-end gap-4">
-                    <button type="button" class="btn btn-neutral mt-4" @click="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
                 </div>
             </form>
         </div>
@@ -141,6 +155,8 @@ const modalRef = ref(null)
 const calendardays = ref([])
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const toast = inject('toast')
+const fetchingSchedule = ref(false)
+const withShedule = ref(true)
 
 const closeModal = () => {
     modalRef.value?.close()
@@ -208,6 +224,7 @@ const form = useForm({
     date: '',
     employee_schedule_id: '',
     week: '',
+    shift_code_id: '',
     shift_code: '',
     shift_start_time: '',
     shift_end_time: '',
@@ -232,16 +249,28 @@ const submitOvertime = () => {
 
 const showModal = async (year, month, day) => {
     modalRef.value?.open()
+    fetchingSchedule.value = true
+    form.reset()
     let scheduleResponse = await fetchUserSchedule(year, month + 1, day)
     if (scheduleResponse.data?.success) {
         let scheduledata = scheduleResponse.data?.schedule
-        form.date = scheduledata.date
-        form.week = scheduledata.week
-        form.shift_code = scheduledata.shift_code
-        form.shift_start_time = scheduledata.shift_start_time
-        form.shift_end_time = scheduledata.shift_end_time
+
+        if (Object.keys(scheduledata).length > 0) {
+            withShedule.value = true
+            form.date = scheduledata.date
+            form.week = scheduledata.week
+            form.shift_code = scheduledata.shift_code
+            form.shift_code_id = scheduledata.id
+            form.shift_start_time = scheduledata.shift_start_time
+            form.shift_end_time = scheduledata.shift_end_time
+        } else {
+            withShedule.value = false
+        }
+
+        fetchingSchedule.value = false
     } else {
         toast('Failed to load schedule. Please try again', 'error')
+        fetchingSchedule.value = false
     }
 }
 
