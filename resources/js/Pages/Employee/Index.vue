@@ -127,15 +127,19 @@
 
                 <!-- Calendar days -->
                 <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
-                    <li v-for="(days, index) in calendardays" :key="index"
-                        :class="[['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '', 'p-3 border cursor-pointer hover:bg-slate-200 rounded-md transition duration-200']"
-                        @click="showModal(currentYear, currentMonth, days.day)">
-                        <span
-                            :class="[['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '', '']">
+                    <li v-for="(days, index) in calendardays" :key="index" :class="[
+                        ['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '',
+                        'p-3 border  flex justify-center items-center'
+                    ]" @click="showModal(currentYear, currentMonth, days.day)">
+                        <span :class="[
+                            ['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '',
+                            'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-full'
+                        ]">
                             {{ days.day }}
                         </span>
                     </li>
                 </ul>
+
             </div>
         </div>
 
