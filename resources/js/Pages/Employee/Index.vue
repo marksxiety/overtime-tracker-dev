@@ -92,9 +92,9 @@
             Manage Schedules
             </Link>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-6 sm:gap-y-6 lg:gap-x-6">
             <!-- Sidebar: Overtime Requests -->
-            <div class="col-span-1 border rounded-md p-4 shadow">
+            <div class="col-span-2 border rounded-md p-4 shadow">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
                 <!-- Sample List -->
                 <ul class="space-y-2 text-sm">
@@ -107,7 +107,7 @@
             </div>
 
             <!-- Calendar Section -->
-            <div class="col-span-3 p-4 border rounded-md shadow-md">
+            <div class="col-span-4 p-4 border rounded-md shadow-md">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
@@ -129,11 +129,12 @@
                 <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
                     <li v-for="(days, index) in calendardays" :key="index" :class="[
                         ['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '',
-                        'p-3 border  flex justify-center items-center'
+                        'p-3 flex justify-center items-center'
                     ]" @click="showModal(currentYear, currentMonth, days.day)">
                         <span :class="[
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '',
-                            'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-full'
+                            'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
+                            (currentDay === days.day) ? 'bg-base-300' : ''
                         ]">
                             {{ days.day }}
                         </span>
@@ -154,11 +155,17 @@ import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 
+const formatter = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    timeZone: 'Asia/Manila' // Replace with desired timezone
+})
 const date = new Date()
 const currentMonthYear = ref('')
 const currentDate = ref('')
 const currentYear = ref(date.getFullYear())
 const currentMonth = ref(date.getMonth())
+const currentDatetime = ref(date.getDate())
+const currentDay = ref(currentDatetime.value)
 const lastDateOfMonth = ref(0)
 const firstDayOfMonth = ref(0)
 const lastDateOfLastMonth = ref(0)
