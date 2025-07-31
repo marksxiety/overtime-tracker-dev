@@ -54,15 +54,22 @@
                     </fieldset>
                     <div v-if="withShedule">
                         <div class="flex justify-end gap-4">
-                            <button type="button" class="btn btn-neutral mt-4" @click="closeModal()">Cancel</button>
-                            <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                            <button type="button" class="btn btn-neutral mt-4" :disabled="form.processing"
+                                @click="closeModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary mt-4" :disabled="form.processing">
+                                <span v-if="form.processing" class="loading loading-spinner"></span>
+                                <span>Submit</span>
+                            </button>
                         </div>
                     </div>
-                    <div v-else class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
+                    <div v-else
+                        class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
                         ⚠️ No registered Schedule.
                         <div class="flex justify-center gap-6">
-                            <button type="button" class="btn btn-secondary mt-4 w-full" @click="closeModal()">Close</button>
-                            <Link  :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">Add Schedule</Link>
+                            <button type="button" class="btn btn-secondary mt-4 w-full"
+                                @click="closeModal()">Close</button>
+                            <Link :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">Add
+                            Schedule</Link>
                         </div>
                     </div>
                 </div>
@@ -222,9 +229,8 @@ function updateCurrentMonthYear(year, month) {
 
 const form = useForm({
     date: '',
-    employee_schedule_id: '',
     week: '',
-    shift_code_id: '',
+    employee_schedule_id: '',
     shift_code: '',
     shift_start_time: '',
     shift_end_time: '',
@@ -260,7 +266,7 @@ const showModal = async (year, month, day) => {
             form.date = scheduledata.date
             form.week = scheduledata.week
             form.shift_code = scheduledata.shift_code
-            form.shift_code_id = scheduledata.id
+            form.employee_schedule_id = scheduledata.id
             form.shift_start_time = scheduledata.shift_start_time
             form.shift_end_time = scheduledata.shift_end_time
         } else {
