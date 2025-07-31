@@ -29,59 +29,62 @@
         </div>
 
         <!-- Grid Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[32rem]">
-            <!-- Form Card -->
-            <div class="col-span-1">
-                <div class="bg-base-300 p-6 rounded-2xl shadow-xl h-full flex flex-col justify-center">
-                    <form @submit.prevent="submitForm()" class="flex flex-col gap-4">
-                        <TextInput name="Shift Code:" type="text" :message="form.errors?.code"
-                            placeholder="Enter Shift Code..." v-model="form.code" textCase="uppercase" />
-                        <TextInput name="Start Time:" type="time" :message="form.errors?.start_time"
-                            v-model="form.start_time" />
-                        <TextInput name="End Time:" type="time" :message="form.errors?.end_time"
-                            v-model="form.end_time" />
-                        <button type="submit" class="btn btn-primary w-full mt-4" :disabled="form.processing">
-                            <span v-if="form.processing" class="loading loading-spinner"></span>
-                            <span>Submit</span>
-                        </button>
-                    </form>
+        <div class="grid place-items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[32rem] w-3/4">
+                <!-- Form Card -->
+                <div class="col-span-1">
+                    <div class="bg-base-300 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
+                        <form @submit.prevent="submitForm()" class="flex flex-col gap-4">
+                            <TextInput name="Shift Code:" type="text" :message="form.errors?.code"
+                                placeholder="Enter Shift Code..." v-model="form.code" textCase="uppercase" />
+                            <TextInput name="Start Time:" type="time" :message="form.errors?.start_time"
+                                v-model="form.start_time" />
+                            <TextInput name="End Time:" type="time" :message="form.errors?.end_time"
+                                v-model="form.end_time" />
+                            <button type="submit" class="btn btn-primary w-full mt-4" :disabled="form.processing">
+                                <span v-if="form.processing" class="loading loading-spinner"></span>
+                                <span>Submit</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Table Section -->
-            <div class="col-span-1">
-                <div class="bg-base-300 rounded-2xl p-4 h-full overflow-auto shadow-xl">
-                    <h2 class="text-lg font-semibold mb-4">Registered Shifts</h2>
-                    <table class="table table-zebra w-full">
-                        <thead class="sticky top-0 bg-base-300 z-10 text-sm">
-                            <tr class="text-center">
-                                <th>Shift Code</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="shift in shiftcodes" :key="shift.shift_code" class="text-center hover">
-                                <td class="font-semibold">{{ shift.code }}</td>
-                                <td>{{ shift.start_time }}</td>
-                                <td>{{ shift.end_time }}</td>
-                                <td class="flex flex-row gap-2 justify-center">
-                                    <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs" :disabled="deleteform.processing">
-                                        EDIT
-                                    </button>
-                                    <button class="btn btn-error btn-xs" @click="initiateDeletion(shift.id)"
-                                        :disabled="deleteform.processing">
-                                        <span>DELETE</span></button>
-                                </td>
-                            </tr>
-                            <tr v-if="shiftcodes.length === 0">
-                                <td colspan="4" class="text-center italic text-gray-400 py-4">
-                                    No shift codes available.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Table Section -->
+                <div class="col-span-1">
+                    <div class="bg-base-300 rounded-2xl p-4 h-full overflow-auto shadow-md">
+                        <h2 class="text-lg font-semibold mb-4">Registered Shifts</h2>
+                        <table class="table table-zebra w-full">
+                            <thead class="sticky top-0 bg-base-300 z-10 text-sm">
+                                <tr class="text-center">
+                                    <th>Shift Code</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="shift in shiftcodes" :key="shift.shift_code" class="text-center hover">
+                                    <td class="font-semibold">{{ shift.code }}</td>
+                                    <td>{{ shift.start_time }}</td>
+                                    <td>{{ shift.end_time }}</td>
+                                    <td class="flex flex-row gap-2 justify-center">
+                                        <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs"
+                                            :disabled="deleteform.processing">
+                                            EDIT
+                                        </button>
+                                        <button class="btn btn-error btn-xs" @click="initiateDeletion(shift.id)"
+                                            :disabled="deleteform.processing">
+                                            <span>DELETE</span></button>
+                                    </td>
+                                </tr>
+                                <tr v-if="shiftcodes.length === 0">
+                                    <td colspan="4" class="text-center italic text-gray-400 py-4">
+                                        No shift codes available.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

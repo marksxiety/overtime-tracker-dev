@@ -15,9 +15,10 @@
             <h1 class="text-2xl font-bold">Manage Required Hours</h1>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[32rem]">
+                <div class="grid place-items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[32rem] w-3/4">
             <div class="col-span-1">
-                <div class="bg-base-300 p-6 rounded-2xl shadow-xl h-full flex flex-col justify-center">
+                <div class="bg-base-300 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
                     <form @submit.prevent="submitForm()" class="card">
                         <SelectOption name="Year:" :options="years" v-model="form.year" :message="form.errors.year" />
                         <SelectOption name="Week:" :options="weeks" v-model="form.week" :message="form.errors.week" />
@@ -31,7 +32,7 @@
                 </div>
             </div>
             <div class="col-span-1">
-                <div class="bg-base-300 rounded-2xl p-4 h-full overflow-auto shadow-xl">
+                <div class="bg-base-300 rounded-2xl p-4 h-full overflow-auto shadow-md">
                     <h2 class="text-lg font-semibold mb-4">Registered Required Hours</h2>
                     <table class="table table-zebra w-full">
                         <thead class="sticky top-0 bg-base-300 z-10">
@@ -63,6 +64,7 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
                 </div>
             </div>
         </div>
