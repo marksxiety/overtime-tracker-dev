@@ -13,13 +13,23 @@ class ShiftContoller extends Controller
     public function insertShiftCode(Request $request)
     {
 
-        $data = $request->validate([
+        $rules = [
             'code' => 'unique:shift_codes|required|string|max:10',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-        ]);
+        ];
 
-        Shift::create($data);
+        if ($request->timerequired) {
+            $rules['start_time'] = 'date_format:H:i';
+            $rules['end_time'] = 'date_format:H:i|after:start_time';
+        }
+
+        $info = [
+            'code' => $request->code,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ];
+
+        $request->validate($rules);
+        Shift::create($info);
 
         return redirect()->back()->with('message', 'Shift code saved successfully.');
     }
