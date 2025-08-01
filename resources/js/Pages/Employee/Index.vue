@@ -44,13 +44,13 @@
                         <legend class="fieldset-legend">Overtime Duration and Reason</legend>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
-                                <TextInput name="Start Time:" type="time" v-model="form.start_time" />
+                                <TextInput name="Start Time:" type="time" v-model="form.start_time" :message="form.errors?.start_time"/>
                             </div>
                             <div class="col-span-1">
-                                <TextInput name="End Time:" type="time" v-model="form.end_time" />
+                                <TextInput name="End Time:" type="time" v-model="form.end_time" :message="form.errors?.end_time"/>
                             </div>
                         </div>
-                        <TextArea name="Reason:" type="text" v-model="form.reason" />
+                        <TextArea name="Reason:" type="text" v-model="form.reason" :message="form.errors?.reason"/>
                     </fieldset>
                     <div v-if="withShedule">
                         <div class="flex justify-end gap-4">
@@ -130,12 +130,12 @@
                     <li v-for="(days, index) in calendardays" :key="index" :class="[
                         ['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '',
                         'p-3 flex justify-center items-center'
-                    ]" @click="showModal(currentYear, currentMonth, days.day)">
+                    ]">
                         <span :class="[
-                            ['next', 'prev'].includes(days.type) ? 'text-gray-400 pointer-events-none' : '',
+                            ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
                             'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
                             (currentDay === days.day) ? 'bg-base-300' : ''
-                        ]">
+                        ]" @click="showModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
                         </span>
                     </li>
@@ -259,9 +259,12 @@ const submitOvertime = () => {
             closeModal()
         },
         onError: () => {
-            toast('Overtime Request failed. Please try again', 'error')
+            toast('Overtime Request failed.', 'error')
+            // closeModal()
         }
     })
+
+    console.log(form.errors)
 }
 
 const showModal = async (year, month, day) => {
