@@ -11,5 +11,5 @@ class OvertimeRequest extends Model
 
     protected $table = 'overtime_requests';
 
-    protected $fillable = ['employee_schedule_id', 'date', 'start_time', 'end_time', 'hours','reason', 'status', 'remarks'];
+    protected $fillable = ['employee_schedule_id', 'start_time', 'end_time', 'hours','reason', 'status', 'remarks'];
 }
