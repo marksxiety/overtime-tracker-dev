@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('overtime_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_schedule_id')->constrained('schedules');
-            $table->date('date');
             $table->time('start_time');
             $table->time('end_time');
+            $table->float('hours')->default(0);
             $table->text('reason')->nullable();
             $table->text('status')->default('PENDING');
             $table->text('remarks')->nullable();
