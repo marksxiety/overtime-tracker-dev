@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('shift_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code', 20);
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->timestamps();
         });
     }
