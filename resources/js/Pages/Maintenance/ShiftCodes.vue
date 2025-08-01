@@ -35,12 +35,24 @@
                 <div class="col-span-1">
                     <div class="bg-base-300 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
                         <form @submit.prevent="submitForm()" class="flex flex-col gap-4">
-                            <TextInput name="Shift Code:" type="text" :message="form.errors?.code"
-                                placeholder="Enter Shift Code..." v-model="form.code" textCase="uppercase" />
+                            <div class="join w-full items-center">
+                                <label class="input join-item border rounded w-full">
+                                    <input type="text" placeholder="Enter Shift Code" class="w-full" v-model="form.code"
+                                        required />
+                                        <label class="join-item flex items-center gap-2 bg-base-200 rounded">
+                                            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" @change="handleRequiredTS()"
+                                                v-model="form.is_rest_day" />
+                                            <span class="text-sm text-nowrap">RD / NWS</span>
+                                        </label>
+                                </label>
+
+                            </div>
+
+
                             <TextInput name="Start Time:" type="time" :message="form.errors?.start_time"
-                                v-model="form.start_time" />
+                                v-model="form.start_time" :disabled="isDisabled"/>
                             <TextInput name="End Time:" type="time" :message="form.errors?.end_time"
-                                v-model="form.end_time" />
+                                v-model="form.end_time" :disabled="isDisabled"/>
                             <button type="submit" class="btn btn-primary w-full mt-4" :disabled="form.processing">
                                 <span v-if="form.processing" class="loading loading-spinner"></span>
                                 <span>Submit</span>
@@ -111,11 +123,14 @@ const closeModal = () => {
 const toast = inject('toast')
 const mode = ref('insert')
 const id = ref(null)
+const noreqtime = ref(false)
+const isDisabled = ref(false)
 
 const form = useForm({
     code: '',
     start_time: '',
-    end_time: ''
+    end_time: '',
+    timerequired: noreqtime.value
 })
 
 const deleteform = useForm()
@@ -187,6 +202,17 @@ const props = defineProps({
     shiftcodes: Array,
     error: String
 })
+
+const handleRequiredTS = () => {
+    // update the value first before identifying the disabling of input fields
+    noreqtime.value = !noreqtime.value
+
+    if (noreqtime.value) {
+        isDisabled.value = true
+    } else {
+        isDisabled.value = false
+    }
+}
 
 const shiftcodes = ref([...props.shiftcodes ?? []])
 
