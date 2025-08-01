@@ -47,15 +47,28 @@ class OvertimeRequestController extends Controller
             return redirect()->back()->withErrors($errors)->withInput();
         }
 
+        // compute the hours and convert it to float
+        $hours = $this->calculateOvertimeHours($submitted_start_time, $submitted_end_time);
+
         $data = [
             'employee_schedule_id' => $request->employee_schedule_id,
-            'date' => $request->date,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
+            'hours' => $hours,
             'reason' => $request->reason
         ];
 
         OvertimeRequest::create($data);
         return redirect()->back()->with(['message' => 'Overtime Request has been filed!']);
+    }
+
+    public function calculateOvertimeHours(Carbon $start, Carbon $end) {
+        if ($end->lt($start)) {
+            $end->addDay();
+        }
+
+        $minutes = $start->diffInMinutes($end);
+        $decimalHours = $minutes / 60;
+        return number_format($decimalHours, 2);
     }
 }
