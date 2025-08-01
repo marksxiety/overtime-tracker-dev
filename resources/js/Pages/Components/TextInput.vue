@@ -2,7 +2,7 @@
     <div class="mb-4">
         <label class="block mb-2" for="name">{{ name }}</label>
         <input :id="name" :type="type" v-model="model"
-            :class="['w-full px-4 py-2 input', message ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200', textCase]"
+            :class="['w-full px-4 py-2 input', message ? 'border-red-500 focus:ring-red-200' : 'focus:ring-blue-200', textCase]"
             :placeholder="placeholder" :disabled="disabled" :readonly="readonly"/>
         <p v-if="message" class="mt-1 text-sm text-red-600 px-2 py-1 text-center">
             {{ message }}
