@@ -42,4 +42,5 @@ Route::middleware(['auth'])->group(function () {
 
     // overtime request routes
     Route::post('overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
+    Route::get('/overtime/list', [ScheduleController::class, 'fetchOvertimeRequetsBySession']);
 });
