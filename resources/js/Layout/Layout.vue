@@ -2,23 +2,10 @@
     <div class="flex justify-between items-center bottom-2 shadow-md h-auto p-4">
         <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
         <div class="flex justify-between items-center gap-4 font-semibold">
-            <p class="text-sm hover:underline hover:cursor-pointer">Dashboard</p>
-            <p class="text-sm hover:underline hover:cursor-pointer">Requests</p>
-            <ul class="menu menu-horizontal px-1">
-                <li>
-                    <details>
-                        <summary @click="toggleDropdownMaintenance()">Maintenance</summary>
-                        <ul v-show="isOpenMaintenance" class="bg-base-100 rounded-t-none p-2">
-                            <li>
-                                <Link :href="route('shifts')" @click="toggleDropdownMaintenance()">Shift Codes</Link>
-                            </li>
-                            <li>
-                                <Link :href="route('hours')" @click="toggleDropdownMaintenance()">Required Hours</Link>
-                            </li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
+            <Link v-if="$page?.props?.auth.user?.role === 'approver'" :href="route('hours')" class=" text-sm hover:underline
+                hover:cursor-pointer">Required Hrs</Link>
+            <Link v-if="$page?.props?.auth.user?.role === 'admin'" :href="route('shifts')"
+                class="text-sm hover:underline hover:cursor-pointer">Shift Codes</Link>
             <ul class="menu menu-horizontal px-1">
                 <li>
                     <details>
@@ -56,13 +43,8 @@ import Toast from '../Pages/Components/Toast.vue'
 import { ref, provide } from 'vue'
 
 const toastRef = ref()
-const isOpenMaintenance = ref(false)
-const isOpenProfile = ref(false)
-
-const toggleDropdownMaintenance = () => isOpenMaintenance.value = !isOpenMaintenance.value
-const toggleDropdownProfile = () => isOpenProfile.value = !isOpenProfile.value
 
 provide('toast', (msg, type = 'info') => {
-  toastRef.value?.showToast(msg, type)
+    toastRef.value?.showToast(msg, type)
 })
 </script>
