@@ -94,19 +94,42 @@
             Manage Schedules
             </Link>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-6 sm:gap-y-6 lg:gap-x-6">
-            <!-- Sidebar: Overtime Requests -->
-            <div class="col-span-2 border rounded-md p-4 shadow">
+
+        <div class="grid grid-cols-1 lg:grid-cols-6 sm:gap-y-6 lg:gap-x-6 overflow-hidden">
+            <div class="col-span-2 border rounded-md p-4 shadow flex flex-col">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
-                <!-- Sample List -->
-                <ul class="space-y-2 text-sm">
-                    <li v-for="(request, i) in recentRequests" :key="i" class="border p-2 rounded">
-                        <p class="font-semibold">{{ request.date }}</p>
-                        <p class="text-xs text-gray-500">Status: {{ request.status }}</p>
-                        <p class="text-xs">Duration: {{ request.hours }} hrs</p>
+
+                <!-- Make ul fill remaining space and scroll -->
+                <ul class="flex-1 overflow-y-auto space-y-2 text-sm">
+                    <li v-if="recentRequests.length === 0">
+                        <p class="italic text-center">No Recent request</p>
+                    </li>
+
+                    <li v-for="request in recentRequests" :key="request.id"
+                        class="card w-full shadow-sm border border-base-200 rounded-box p-4 hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-sm opacity-70">{{ request.date }}</p>
+                                <p class="text-lg font-semibold">
+                                    {{ request.start_time }} → {{ request.end_time }}
+                                </p>
+                                <p class="text-sm opacity-50">{{ request.hours }} hrs</p>
+                            </div>
+
+                            <div>
+                                <div class="badge badge-outline" :class="{
+                                    'badge-primary': request.status.toUpperCase() === 'PENDING',
+                                    'badge-success': request.status.toUpperCase() === 'APPROVED',
+                                    'badge-error': request.status.toUpperCase() === 'DISAPPROVED'
+                                }">
+                                    {{ request.status }}
+                                </div>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
+
 
             <!-- Calendar Section -->
             <div class="col-span-4 p-4 border rounded-md shadow-md">
@@ -142,20 +165,19 @@
                         </span>
                     </li>
                 </ul>
-
             </div>
         </div>
-
     </div>
 </template>
 <script setup>
 // ========== Imports ==========
 import { Link, useForm } from '@inertiajs/vue3'
-import { onMounted, ref, inject } from 'vue'
+import { onMounted, ref, inject, reactive } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
+import { fetchFilledOvertime } from '../api/overtime.js'
 
 
 // ========== Global Constants ==========
@@ -185,6 +207,9 @@ const modalRef = ref(null)
 const fetchingSchedule = ref(false)
 const withShedule = ref(true)
 
+// ========== Overtime Request ==========
+const recentRequests = ref([])
+
 
 // ========== Form ==========
 const form = useForm({
@@ -200,17 +225,18 @@ const form = useForm({
 })
 
 
-// ========== Sample Data ==========
-const recentRequests = ref([
-    { date: '2025-07-25', status: 'Pending', hours: 3 },
-    { date: '2025-07-22', status: 'Approved', hours: 2.5 },
-    { date: '2025-07-20', status: 'Rejected', hours: 1 },
-])
-
 
 // ========== Lifecycle ==========
 onMounted(async () => {
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
+
+    let overtimelist = await fetchFilledOvertime();
+    console.log('overtimelist', overtimelist.data);
+    if (overtimelist.data.success) {
+        recentRequests.value = overtimelist.data.info.overtimelist
+    } else {
+        toast('Failed to load recent requests.', 'error')
+    }
 })
 
 
