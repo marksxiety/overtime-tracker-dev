@@ -39,20 +39,20 @@
                                 <label class="input join-item border rounded w-full">
                                     <input type="text" placeholder="Enter Shift Code" class="w-full" v-model="form.code"
                                         required />
-                                        <label class="join-item flex items-center gap-2 bg-base-200 rounded">
-                                            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" @change="handleRequiredTS()"
-                                                v-model="form.is_rest_day" />
-                                            <span class="text-sm text-nowrap">RD / NWS</span>
-                                        </label>
+                                    <label class="join-item flex items-center gap-2 bg-base-200 rounded">
+                                        <input type="checkbox" class="checkbox checkbox-primary checkbox-sm"
+                                            @change="handleRequiredTS()" v-model="form.is_rest_day" />
+                                        <span class="text-sm text-nowrap">RD / NWS</span>
+                                    </label>
                                 </label>
 
                             </div>
 
 
                             <TextInput name="Start Time:" type="time" :message="form.errors?.start_time"
-                                v-model="form.start_time" :disabled="isDisabled"/>
+                                v-model="form.start_time" :disabled="isDisabled" />
                             <TextInput name="End Time:" type="time" :message="form.errors?.end_time"
-                                v-model="form.end_time" :disabled="isDisabled"/>
+                                v-model="form.end_time" :disabled="isDisabled" />
                             <button type="submit" class="btn btn-primary w-full mt-4" :disabled="form.processing">
                                 <span v-if="form.processing" class="loading loading-spinner"></span>
                                 <span>Submit</span>
@@ -102,14 +102,16 @@
         </div>
     </div>
 </template>
-
 <script setup>
+// ========== Imports ==========
 import TextInput from '../Components/TextInput.vue'
+import Modal from '../Components/Modal.vue'
 import { ref, watch } from 'vue'
 import { useForm, router, Link } from '@inertiajs/vue3'
 import { inject } from 'vue'
-import Modal from '../Components/Modal.vue'
 
+
+// ========== Modal Refs ==========
 const modalRef = ref(null)
 
 const showModal = () => {
@@ -120,12 +122,20 @@ const closeModal = () => {
     modalRef.value?.close()
 }
 
+
+// ========== Injected ==========
 const toast = inject('toast')
+
+
+// ========== State Refs ==========
 const mode = ref('insert')
 const id = ref(null)
 const noreqtime = ref(false)
 const isDisabled = ref(false)
+const shiftcodes = ref([...props.shiftcodes ?? []])
 
+
+// ========== Forms ==========
 const form = useForm({
     code: '',
     start_time: '',
@@ -136,6 +146,23 @@ const form = useForm({
 const deleteform = useForm()
 
 
+// ========== Props ==========
+const props = defineProps({
+    shiftcodes: Array,
+    error: String
+})
+
+
+// ========== Watchers ==========
+watch(
+    () => props.shiftcodes,
+    (newShiftcodes) => {
+        shiftcodes.value = [...newShiftcodes]
+    }
+)
+
+
+// ========== Actions ==========
 const submitForm = () => {
     if (mode.value == 'insert') {
         form.post(route('shift.register'), {
@@ -162,7 +189,6 @@ const submitForm = () => {
         } else {
             toast('Invalid action. Please try again.', 'danger')
         }
-
     }
 }
 
@@ -198,11 +224,6 @@ const handleHypyerLink = (data) => {
     id.value = data.id
 }
 
-const props = defineProps({
-    shiftcodes: Array,
-    error: String
-})
-
 const handleRequiredTS = () => {
     // update the value first before identifying the disabling of input fields
     noreqtime.value = !noreqtime.value
@@ -213,14 +234,4 @@ const handleRequiredTS = () => {
         isDisabled.value = false
     }
 }
-
-const shiftcodes = ref([...props.shiftcodes ?? []])
-
-watch(
-    () => props.shiftcodes,
-    (newShiftcodes) => {
-        shiftcodes.value = [...newShiftcodes]
-    }
-)
-
 </script>
