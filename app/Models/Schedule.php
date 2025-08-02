@@ -13,11 +13,18 @@ class Schedule extends Model
 
     protected $fillable = ['user_id', 'shift_id', 'week', 'date'];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function shift() {
+    public function shift()
+    {
         return $this->belongsTo(Shift::class, 'shift_id');
+    }
+
+    public function overtimeRequests()
+    {
+        return $this->hasMany(OvertimeRequest::class, 'employee_schedule_id');
     }
 }
