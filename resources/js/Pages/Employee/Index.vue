@@ -112,7 +112,7 @@
                 <!-- Make ul fill remaining space and scroll -->
                 <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
                     <li v-if="recentRequests.length === 0">
-                        <p class="italic text-center">No Recent request</p>
+                        <p class="italic text-center">{{ recentrequestlabel }}</p>
                     </li>
 
                     <li v-for="request in recentRequests" :key="request.id"
@@ -195,6 +195,7 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ]
 const toast = inject('toast')
+const recentrequestlabel = ref('Loading requests...')
 
 
 // ========== Calendar Refs ==========
@@ -244,9 +245,12 @@ onMounted(async () => {
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
 
     let overtimelist = await fetchFilledOvertime();
-    console.log('overtimelist', overtimelist.data);
     if (overtimelist.data.success) {
         recentRequests.value = overtimelist.data.info.overtimelist
+
+        if (overtimelist.data.info.overtimelist.length === 0) {
+            recentrequestlabel.value = 'No Recent request'
+        }
 
         let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(overtimelist.data.info.overtimelist)
 
