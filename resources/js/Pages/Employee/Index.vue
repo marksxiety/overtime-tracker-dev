@@ -79,28 +79,38 @@
         </div>
     </Modal>
     <div class="flex flex-col gap-4">
-        <div class="grid grid-cols-2 gap-4">
-            <div class="col-span-1 flex flex-row border-2 justify-between rounded p-4 bg-base-200">
-                <span class="text-md font-semibold">Total Overtime Hours</span>
-                <span class="text-2xl font-extrabold">45</span>
+        <div class="grid grid-cols-3 gap-4">
+            <!-- Total Overtime Hours -->
+            <div class="card border rounded shadow-sm p-4 flex flex-row items-center justify-between">
+                <span class="text-sm font-semibold opacity-80">Total Overtime Hours</span>
+                <span class="text-2xl font-extrabold">{{ totalovertime }} hrs</span>
             </div>
-            <div class="col-span-1 flex flex-row border-2 justify-between rounded p-4 bg-base-200">
-                <span class="text-md font-semibold">Pending Requests</span>
-                <span class="text-2xl font-extrabold">2</span>
+
+            <!-- Pending Requests -->
+            <div class="card border rounded shadow-sm p-4 flex flex-row items-center justify-between">
+                <span class="text-sm font-semibold opacity-80">Pending Requests</span>
+                <span class="text-2xl font-extrabold">{{ pendingovertime }}</span>
+            </div>
+
+            <!-- Rejected Requests -->
+            <div class="card border rounded shadow-sm p-4 flex flex-row items-center justify-between">
+                <span class="text-sm font-semibold opacity-80">Rejected Requests</span>
+                <span class="text-2xl font-extrabold">{{ rejectedovertime }}</span>
             </div>
         </div>
+
         <div class="flex mt-4 justify-end gap-2">
             <Link :href="route('schedule')" class="btn btn-neutral">
             Manage Schedules
             </Link>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-6 sm:gap-y-6 lg:gap-x-6 overflow-hidden">
-            <div class="col-span-2 border rounded-md p-4 shadow flex flex-col">
+        <div class="flex justify-between gap-4">
+            <div class="border rounded-md p-4 shadow flex flex-col w-2/5 max-h-[50vh]">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
 
                 <!-- Make ul fill remaining space and scroll -->
-                <ul class="flex-1 overflow-y-auto space-y-2 text-sm">
+                <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
                     <li v-if="recentRequests.length === 0">
                         <p class="italic text-center">No Recent request</p>
                     </li>
@@ -129,10 +139,7 @@
                     </li>
                 </ul>
             </div>
-
-
-            <!-- Calendar Section -->
-            <div class="col-span-4 p-4 border rounded-md shadow-md">
+            <div class="w-3/5 p-4 border rounded-md shadow-md">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
@@ -178,6 +185,7 @@ import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 import { fetchFilledOvertime } from '../api/overtime.js'
+import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 
 
 // ========== Global Constants ==========
@@ -211,6 +219,11 @@ const withShedule = ref(true)
 const recentRequests = ref([])
 
 
+// ========== Card Stats ==========
+const totalovertime = ref(0)
+const pendingovertime = ref(0)
+const rejectedovertime = ref(0)
+
 // ========== Form ==========
 const form = useForm({
     date: '',
@@ -234,6 +247,13 @@ onMounted(async () => {
     console.log('overtimelist', overtimelist.data);
     if (overtimelist.data.success) {
         recentRequests.value = overtimelist.data.info.overtimelist
+
+        let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(overtimelist.data.info.overtimelist)
+
+        totalovertime.value = totalovertimehours
+        pendingovertime.value = pendingrequests
+        rejectedovertime.value = rejectedrequests
+
     } else {
         toast('Failed to load recent requests.', 'error')
     }
