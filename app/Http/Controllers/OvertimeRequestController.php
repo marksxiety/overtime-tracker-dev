@@ -13,38 +13,56 @@ class OvertimeRequestController extends Controller
     public function insertOvertimeRequest(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'employee_schedule_id' => 'exists:schedules,id|required',
             'date' => 'required|date_format:Y-m-d',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
             'reason' => 'required|string|min:10'
-        ]);
+        ];
 
-        // Parse shift times in 12-hour format
-        $schdule_start_time = Carbon::createFromFormat('h:i A', trim($request->shift_start_time));
-        $schdule_end_time   = Carbon::createFromFormat('h:i A', trim($request->shift_end_time));
+        $withTimeFormatting = false;
+
+        $submittet_time_start_isValid = Carbon::hasFormat($request->start_time, 'H:i');
+        $submittet_end_start_isValid = Carbon::hasFormat($request->end_time, 'H:i');
+
+        if (!$submittet_time_start_isValid && !$submittet_end_start_isValid) {
+            $withTimeFormatting = true;
+            $rules[] = [
+                'start_time' => 'required|date_format:H:i',
+                'end_time' => 'required|date_format:H:i|after:start_time',
+            ];
+        }
+
+
+
 
         // Parse actual times in 24-hour format
         $submitted_start_time = Carbon::createFromFormat('H:i', trim($request->start_time));
         $submitted_end_time   = Carbon::createFromFormat('H:i', trim($request->end_time));
 
-        // Difference in minutes
-        $start_diff = $schdule_start_time->diffInMinutes($submitted_start_time, false); // negative if earlier
-        $end_diff = $schdule_end_time->diffInMinutes($submitted_end_time, false);       // positive if later
 
+
+        $validator = Validator::make($request->all(), $rules);
         $errors = $validator->errors();
 
-        if ($start_diff > -60) {
-            $errors->add('start_time','Start time should be at least 1 hour before the scheduled start time.');
-        }
+        if ($withTimeFormatting) {
+            // Parse shift times in 12-hour format
+            $schdule_start_time = Carbon::createFromFormat('h:i A', trim($request->shift_start_time));
+            $schdule_end_time   = Carbon::createFromFormat('h:i A', trim($request->shift_end_time));
+            // Difference in minutes
+            $start_diff = $schdule_start_time->diffInMinutes($submitted_start_time, false); // negative if earlier
+            $end_diff = $schdule_end_time->diffInMinutes($submitted_end_time, false);       // positive if later
 
-        if ($end_diff < 60) {
-            $errors->add('end_time','End time should be at least 1 hour after the scheduled end time.');
-        }
+            if ($start_diff > -60) {
+                $errors->add('start_time', 'Start time should be at least 1 hour before the scheduled start time.');
+            }
 
-        if ($errors->any()) {
-            return redirect()->back()->withErrors($errors)->withInput();
+            if ($end_diff < 60) {
+                $errors->add('end_time', 'End time should be at least 1 hour after the scheduled end time.');
+            }
+
+            if ($errors->any()) {
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
         }
 
         // compute the hours and convert it to float
@@ -62,7 +80,8 @@ class OvertimeRequestController extends Controller
         return redirect()->back()->with(['message' => 'Overtime Request has been filed!']);
     }
 
-    public function calculateOvertimeHours(Carbon $start, Carbon $end) {
+    public function calculateOvertimeHours(Carbon $start, Carbon $end)
+    {
         if ($end->lt($start)) {
             $end->addDay();
         }
