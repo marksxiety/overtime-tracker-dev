@@ -1,5 +1,5 @@
 <template>
-    <Modal ref="modalRef">
+    <Modal ref="overtimeFilingModal">
         <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
         <div class="flex flex-col gap-4">
             <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1 min-h-96">
@@ -57,7 +57,7 @@
                     <div v-if="withShedule">
                         <div class="flex justify-end gap-4">
                             <button type="button" class="btn btn-neutral mt-4" :disabled="form.processing"
-                                @click="closeModal()">Cancel</button>
+                                @click="closeOvertimeFilingModal()">Cancel</button>
                             <button type="submit" class="btn btn-primary mt-4" :disabled="form.processing">
                                 <span v-if="form.processing" class="loading loading-spinner"></span>
                                 <span>Submit</span>
@@ -69,7 +69,7 @@
                         ⚠️ No registered Schedule.
                         <div class="flex justify-center gap-6">
                             <button type="button" class="btn btn-secondary mt-4 w-full"
-                                @click="closeModal()">Close</button>
+                                @click="closeOvertimeFilingModal()">Close</button>
                             <Link :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">Add
                             Schedule</Link>
                         </div>
@@ -77,6 +77,68 @@
                 </div>
             </form>
         </div>
+    </Modal>
+    <Modal ref="overtimeRequestModal">
+        <div class="flex justify-end">
+            <button class="btn btn-sm btn-circle" @click="closeOvertimeRequestModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
+            <!-- Stepper -->
+            <ul class="steps w-full">
+                <li class="step step-primary">Pending</li>
+                <li class="step step-primary">Approved/Disapproved</li>
+                <li class="step">Filed</li>
+            </ul>
+
+            <!-- Filing Information -->
+            <div class="space-y-4 text-sm">
+                <!-- Meta Group -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-semibold">Date Filed</p>
+                        <p>{{ formFilledOvertime.created_at }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Week</p>
+                        <p>{{ formFilledOvertime.week }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Status</p>
+                        <p class="font-medium">{{ formFilledOvertime.status }}</p>
+                    </div>
+                </div>
+
+                <!-- Schedule Group -->
+                <div>
+                    <p class="font-semibold">Overtime Schedule</p>
+                    <p>{{ formFilledOvertime.date }} | {{ formFilledOvertime.start_time }} → {{
+                        formFilledOvertime.end_time }}</p>
+                    <p>Hour(s): {{ formFilledOvertime.hours }}</p>
+                </div>
+
+                <!-- Reason Group -->
+                <div>
+                    <p class="font-semibold">Reason</p>
+                    <p>{{ formFilledOvertime.reason }}</p>
+                </div>
+
+                <!-- Remarks Group -->
+                <div>
+                    <p class="font-semibold">Remarks</p>
+                    <p>{{ formFilledOvertime.remarks }}</p>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button type="button" class="btn btn-outline w-full">Cancel Request</button>
+        </div>
+
+
     </Modal>
     <div class="flex flex-col gap-4">
         <div class="grid grid-cols-3 gap-4">
@@ -115,19 +177,19 @@
                         <p class="italic text-center">{{ recentrequestlabel }}</p>
                     </li>
 
-                    <li v-for="request in recentRequests" :key="request.id"
-                        class="card w-full shadow-sm border border-base-200 rounded-box p-4 hover:shadow-md transition-all">
+                    <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
+                        class="card w-full shadow-sm border border-base-200 rounded-box p-4 hover:shadow-md hover:border-neutral duration-300 transition-all cursor-pointer">
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col gap-1">
                                 <p class="text-sm opacity-70">{{ request.date }}</p>
                                 <p class="text-lg font-semibold">
                                     {{ request.start_time }} → {{ request.end_time }}
                                 </p>
-                                <p class="text-sm opacity-50">{{ request.hours }} hrs</p>
+                                <p class="text-sm opacity-75">{{ request.hours }} hr(s)</p>
                             </div>
 
                             <div>
-                                <div class="badge badge-outline" :class="{
+                                <div class="badge" :class="{
                                     'badge-primary': request.status.toUpperCase() === 'PENDING',
                                     'badge-success': request.status.toUpperCase() === 'APPROVED',
                                     'badge-error': request.status.toUpperCase() === 'DISAPPROVED'
@@ -167,7 +229,7 @@
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
                             'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
                             (currentDay === days.day) ? 'bg-base-300' : ''
-                        ]" @click="showModal(currentYear, currentMonth, days.day)">
+                        ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
                         </span>
                     </li>
@@ -212,7 +274,8 @@ const calendardays = ref([])
 
 
 // ========== Modal Refs ==========
-const modalRef = ref(null)
+const overtimeFilingModal = ref(null)
+const overtimeRequestModal = ref(null)
 const fetchingSchedule = ref(false)
 const withShedule = ref(true)
 
@@ -238,7 +301,18 @@ const form = useForm({
     reason: ''
 })
 
-
+const formFilledOvertime = useForm({
+    id: '',
+    date: '',
+    created_at: '',
+    week: '',
+    hours: '',
+    start_time: '',
+    end_time: '',
+    status: '',
+    reason: '',
+    remarks: ''
+})
 
 // ========== Lifecycle ==========
 onMounted(async () => {
@@ -265,12 +339,20 @@ onMounted(async () => {
 
 
 // ========== Modal Handlers ==========
-const closeModal = () => {
-    modalRef.value?.close()
+const closeOvertimeFilingModal = () => {
+    overtimeFilingModal.value?.close()
 }
 
-const showModal = async (year, month, day) => {
-    modalRef.value?.open()
+const closeOvertimeRequestModal = () => {
+    overtimeRequestModal.value?.close()
+    setTimeout(() => {
+        formFilledOvertime.reset()
+    }, 1500);
+}
+
+
+const showOvertimeFilingModal = async (year, month, day) => {
+    overtimeFilingModal.value?.open()
     fetchingSchedule.value = true
     form.reset()
 
@@ -296,6 +378,21 @@ const showModal = async (year, month, day) => {
         toast('Failed to load schedule. Please try again', 'error')
         fetchingSchedule.value = false
     }
+}
+
+
+const showOvertimeRequestModal = (data) => {
+    formFilledOvertime.id = data.id
+    formFilledOvertime.date = data.date
+    formFilledOvertime.created_at = data.created_at
+    formFilledOvertime.week = data.week
+    formFilledOvertime.hours = data.hours
+    formFilledOvertime.start_time = data.start_time
+    formFilledOvertime.end_time = data.end_time
+    formFilledOvertime.status = data.status
+    formFilledOvertime.reason = data.reason
+    formFilledOvertime.remarks = data.remarks
+    overtimeRequestModal.value?.open()
 }
 
 
@@ -366,7 +463,7 @@ const submitOvertime = () => {
         onSuccess: () => {
             toast('Overtime Request Filing successful!', 'success')
             form.reset()
-            closeModal()
+            closeOvertimeFilingModal()
         },
         onError: () => {
             toast('Overtime Request failed.', 'error')
