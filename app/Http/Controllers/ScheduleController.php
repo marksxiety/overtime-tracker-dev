@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 class ScheduleController extends Controller
@@ -162,8 +164,55 @@ class ScheduleController extends Controller
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'schedule' => $registered,
-            'sched' => $schedule
+            'schedule' => $registered
+        ]);
+    }
+
+    public function fetchOvertimeRequetsBySession()
+    {
+
+        $overtimelist = [];
+        $overtime = null;
+        try {
+            $overtimes = OvertimeRequest::with(['schedule' => function ($query) {
+                $query->select('id', 'week', 'date', 'user_id');
+            }])
+                ->whereHas('schedule', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+                ->select('id', 'employee_schedule_id', 'start_time', 'end_time', 'hours', 'reason', 'remarks', 'status', 'created_at')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            foreach ($overtimes as $overtime) {
+                $overtimelist[] = [
+                    'week' => $overtime->schedule->week,
+                    'date' => $overtime->schedule->date,
+                    'id' => $overtime->id,
+                    'start_time' => $overtime->start_time,
+                    'end_time' => $overtime->end_time,
+                    'hours' => $overtime->hours,
+                    'reason' => $overtime->reason,
+                    'remarks' => $overtime->remarks,
+                    'status' => $overtime->status,
+                    'created_at' => $overtime->created_at
+                ];
+            }
+
+
+            $success = true;
+            $message = 'Fetched successfully';
+        } catch (\Throwable $th) {
+            $success = false;
+            $message = "Fetching Failed due to $th";
+        }
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'info' => [
+                'overtimelist' => $overtimelist
+            ]
         ]);
     }
 }
