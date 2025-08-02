@@ -102,16 +102,14 @@
         </div>
     </div>
 </template>
+
 <script setup>
-// ========== Imports ==========
 import TextInput from '../Components/TextInput.vue'
-import Modal from '../Components/Modal.vue'
 import { ref, watch } from 'vue'
 import { useForm, router, Link } from '@inertiajs/vue3'
 import { inject } from 'vue'
+import Modal from '../Components/Modal.vue'
 
-
-// ========== Modal Refs ==========
 const modalRef = ref(null)
 
 const showModal = () => {
@@ -122,20 +120,12 @@ const closeModal = () => {
     modalRef.value?.close()
 }
 
-
-// ========== Injected ==========
 const toast = inject('toast')
-
-
-// ========== State Refs ==========
 const mode = ref('insert')
 const id = ref(null)
 const noreqtime = ref(false)
 const isDisabled = ref(false)
-const shiftcodes = ref([...props.shiftcodes ?? []])
 
-
-// ========== Forms ==========
 const form = useForm({
     code: '',
     start_time: '',
@@ -146,23 +136,6 @@ const form = useForm({
 const deleteform = useForm()
 
 
-// ========== Props ==========
-const props = defineProps({
-    shiftcodes: Array,
-    error: String
-})
-
-
-// ========== Watchers ==========
-watch(
-    () => props.shiftcodes,
-    (newShiftcodes) => {
-        shiftcodes.value = [...newShiftcodes]
-    }
-)
-
-
-// ========== Actions ==========
 const submitForm = () => {
     if (mode.value == 'insert') {
         form.post(route('shift.register'), {
@@ -224,6 +197,11 @@ const handleHypyerLink = (data) => {
     id.value = data.id
 }
 
+const props = defineProps({
+    shiftcodes: Array,
+    error: String
+})
+
 const handleRequiredTS = () => {
     // update the value first before identifying the disabling of input fields
     noreqtime.value = !noreqtime.value
@@ -234,4 +212,14 @@ const handleRequiredTS = () => {
         isDisabled.value = false
     }
 }
+
+const shiftcodes = ref([...props.shiftcodes ?? []])
+
+watch(
+    () => props.shiftcodes,
+    (newShiftcodes) => {
+        shiftcodes.value = [...newShiftcodes]
+    }
+)
+
 </script>
