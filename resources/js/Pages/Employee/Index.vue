@@ -44,13 +44,15 @@
                         <legend class="fieldset-legend">Overtime Duration and Reason</legend>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
-                                <TextInput name="Start Time:" type="time" v-model="form.start_time" :message="form.errors?.start_time"/>
+                                <TextInput name="Start Time:" type="time" v-model="form.start_time"
+                                    :message="form.errors?.start_time" />
                             </div>
                             <div class="col-span-1">
-                                <TextInput name="End Time:" type="time" v-model="form.end_time" :message="form.errors?.end_time"/>
+                                <TextInput name="End Time:" type="time" v-model="form.end_time"
+                                    :message="form.errors?.end_time" />
                             </div>
                         </div>
-                        <TextArea name="Reason:" type="text" v-model="form.reason" :message="form.errors?.reason"/>
+                        <TextArea name="Reason:" type="text" v-model="form.reason" :message="form.errors?.reason" />
                     </fieldset>
                     <div v-if="withShedule">
                         <div class="flex justify-end gap-4">
@@ -146,8 +148,8 @@
 
     </div>
 </template>
-
 <script setup>
+// ========== Imports ==========
 import { Link, useForm } from '@inertiajs/vue3'
 import { onMounted, ref, inject } from 'vue'
 import Modal from '../Components/Modal.vue'
@@ -155,11 +157,17 @@ import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 
-const formatter = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    timeZone: 'Asia/Manila' // Replace with desired timezone
-})
+
+// ========== Global Constants ==========
 const date = new Date()
+const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+]
+const toast = inject('toast')
+
+
+// ========== Calendar Refs ==========
 const currentMonthYear = ref('')
 const currentDate = ref('')
 const currentYear = ref(date.getFullYear())
@@ -169,17 +177,79 @@ const currentDay = ref(currentDatetime.value)
 const lastDateOfMonth = ref(0)
 const firstDayOfMonth = ref(0)
 const lastDateOfLastMonth = ref(0)
-const modalRef = ref(null)
 const calendardays = ref([])
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const toast = inject('toast')
+
+
+// ========== Modal Refs ==========
+const modalRef = ref(null)
 const fetchingSchedule = ref(false)
 const withShedule = ref(true)
 
+
+// ========== Form ==========
+const form = useForm({
+    date: '',
+    week: '',
+    employee_schedule_id: '',
+    shift_code: '',
+    shift_start_time: '',
+    shift_end_time: '',
+    start_time: '',
+    end_time: '',
+    reason: ''
+})
+
+
+// ========== Sample Data ==========
+const recentRequests = ref([
+    { date: '2025-07-25', status: 'Pending', hours: 3 },
+    { date: '2025-07-22', status: 'Approved', hours: 2.5 },
+    { date: '2025-07-20', status: 'Rejected', hours: 1 },
+])
+
+
+// ========== Lifecycle ==========
+onMounted(async () => {
+    updateCurrentMonthYear(currentYear.value, currentMonth.value)
+})
+
+
+// ========== Modal Handlers ==========
 const closeModal = () => {
     modalRef.value?.close()
 }
 
+const showModal = async (year, month, day) => {
+    modalRef.value?.open()
+    fetchingSchedule.value = true
+    form.reset()
+
+    let scheduleResponse = await fetchUserSchedule(year, month + 1, day)
+
+    if (scheduleResponse.data?.success) {
+        let scheduledata = scheduleResponse.data?.schedule
+
+        if (Object.keys(scheduledata).length > 0) {
+            withShedule.value = true
+            form.date = scheduledata.date
+            form.week = scheduledata.week
+            form.shift_code = scheduledata.shift_code
+            form.employee_schedule_id = scheduledata.id
+            form.shift_start_time = scheduledata.shift_start_time
+            form.shift_end_time = scheduledata.shift_end_time
+        } else {
+            withShedule.value = false
+        }
+
+        fetchingSchedule.value = false
+    } else {
+        toast('Failed to load schedule. Please try again', 'error')
+        fetchingSchedule.value = false
+    }
+}
+
+
+// ========== Calendar Navigation ==========
 const handlePreviousMonth = () => {
     if (currentMonth.value === 0) {
         currentMonth.value = 11
@@ -203,6 +273,7 @@ const handleNextMonth = () => {
 }
 
 
+// ========== Calendar Core Logic ==========
 function updateCurrentMonthYear(year, month) {
     currentMonthYear.value = `${months[month]} ${year}`
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
@@ -238,19 +309,8 @@ function updateCurrentMonthYear(year, month) {
     }
 }
 
-const form = useForm({
-    date: '',
-    week: '',
-    employee_schedule_id: '',
-    shift_code: '',
-    shift_start_time: '',
-    shift_end_time: '',
-    start_time: '',
-    end_time: '',
-    reason: ''
-})
 
-
+// ========== Submit Handler ==========
 const submitOvertime = () => {
     form.post(route('overtime.request'), {
         onSuccess: () => {
@@ -260,46 +320,7 @@ const submitOvertime = () => {
         },
         onError: () => {
             toast('Overtime Request failed.', 'error')
-            // closeModal()
         }
     })
-
-    console.log(form.errors)
 }
-
-const showModal = async (year, month, day) => {
-    modalRef.value?.open()
-    fetchingSchedule.value = true
-    form.reset()
-    let scheduleResponse = await fetchUserSchedule(year, month + 1, day)
-    if (scheduleResponse.data?.success) {
-        let scheduledata = scheduleResponse.data?.schedule
-
-        if (Object.keys(scheduledata).length > 0) {
-            withShedule.value = true
-            form.date = scheduledata.date
-            form.week = scheduledata.week
-            form.shift_code = scheduledata.shift_code
-            form.employee_schedule_id = scheduledata.id
-            form.shift_start_time = scheduledata.shift_start_time
-            form.shift_end_time = scheduledata.shift_end_time
-        } else {
-            withShedule.value = false
-        }
-
-        fetchingSchedule.value = false
-    } else {
-        toast('Failed to load schedule. Please try again', 'error')
-        fetchingSchedule.value = false
-    }
-}
-
-const recentRequests = ref([
-    { date: '2025-07-25', status: 'Pending', hours: 3 },
-    { date: '2025-07-22', status: 'Approved', hours: 2.5 },
-    { date: '2025-07-20', status: 'Rejected', hours: 1 },
-])
-onMounted(async () => {
-    updateCurrentMonthYear(currentYear.value, currentMonth.value)
-})
 </script>
