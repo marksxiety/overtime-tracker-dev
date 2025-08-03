@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\OvertimeRequest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class OvertimeRequestController extends Controller
 {
@@ -89,5 +90,24 @@ class OvertimeRequestController extends Controller
         $minutes = $start->diffInMinutes($end);
         $decimalHours = $minutes / 60;
         return number_format($decimalHours, 2);
+    }
+
+
+    public function updateOvertimeRequestStatus(Request $request)
+    {
+        try {
+            $validate = Validator::make(['current_status' => $request->current_status], [
+                'current_status' => ['required', Rule::in('PENDING')]
+            ]);
+
+            if ($validate->fails()) {
+                return redirect()->back()->withErrors(['message' => 'Invalid Status']);
+            }
+
+            OvertimeRequest::where('id', $request->id)->update(['status' => $request->update_status]);
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            return redirect()->back()->withErrors("Cancelation failed due to $th");
+        }
     }
 }
