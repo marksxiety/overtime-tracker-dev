@@ -81,64 +81,100 @@
     </Modal>
     <Modal ref="overtimeRequestModal">
         <div class="flex justify-end">
-            <button class="btn btn-sm btn-circle" @click="closeOvertimeRequestModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+            <button class="btn btn-sm btn-circle" @click="closeOvertimeRequestModal()"
+                :disabled="formFilledOvertime.processing">
+                ✖
             </button>
         </div>
         <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
             <form @submit.prevent="submitCancelation()">
                 <!-- Stepper -->
-                <ul class="steps w-full">
-                    <li class="step step-primary">Pending</li>
-                    <li class="step step-primary">Approved/Disapproved</li>
-                    <li class="step">Filed</li>
+                <ul class="steps w-full mb-6">
+                    <li
+                        :class="['step', (formFilledOvertime.current_status === 'CANCELED' || formFilledOvertime.current_status === 'PENDING') ? 'step-primary' : '']">
+                        {{
+                            formFilledOvertime.current_status === 'CANCELED' ? 'Canceled' : 'Pending' }}</li>
+                    <li :class="['step', formFilledOvertime.current_status === 'APPROVED' ? 'step-primary' : '']">
+                        Approved/Disapproved</li>
+                    <li :class="['step', formFilledOvertime.current_status === 'FILED' ? 'step-primary' : '']">Filed
+                    </li>
                 </ul>
 
                 <!-- Filing Information -->
-                <div class="space-y-4 text-sm">
-                    <!-- Meta Group -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="font-semibold">Date Filed</p>
-                            <p>{{ formFilledOvertime.created_at }}</p>
-                        </div>
-                        <div>
-                            <p class="font-semibold">Week</p>
-                            <p>{{ formFilledOvertime.week }}</p>
-                        </div>
-                        <div>
-                            <p class="font-semibold">Status</p>
-                            <p class="font-medium">{{ formFilledOvertime.status }}</p>
-                        </div>
-                    </div>
+                <div class="space-y-6 text-sm">
 
-                    <!-- Schedule Group -->
-                    <div>
-                        <p class="font-semibold">Overtime Schedule</p>
-                        <p>{{ formFilledOvertime.date }} | {{ formFilledOvertime.start_time }} → {{
-                            formFilledOvertime.end_time }}</p>
-                        <p>Hour(s): {{ formFilledOvertime.hours }}</p>
-                    </div>
+                    <!-- Meta Info -->
+                    <fieldset class="border border-base-300 p-4 rounded-md">
+                        <legend class="text-sm font-semibold px-2">Meta Information</legend>
+                        <div class="grid gap-2 mt-4">
+                            <div class="flex flex-row gap-2">
+                                <label class="label">
+                                    <span class="label-text">Date Filed:</span>
+                                </label>
+                                <span class="font-medium">{{ formFilledOvertime.created_at }}</span>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <label class="label">
+                                    <span class="label-text">Week:</span>
+                                </label>
+                                <span class="font-medium">{{ formFilledOvertime.week }}</span>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <label class="label">
+                                    <span class="label-text">Status: </span>
+                                </label>
+                                <span class="font-medium"> {{ formFilledOvertime.current_status }}</span>
+                            </div>
+                        </div>
+                    </fieldset>
 
-                    <!-- Reason Group -->
-                    <div>
-                        <p class="font-semibold">Reason</p>
-                        <p>{{ formFilledOvertime.reason }}</p>
-                    </div>
+                    <!-- Overtime Schedule -->
+                    <fieldset class="border border-base-300 p-4 rounded-md">
+                        <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
+                        <div class="grid gap-2 mt-4">
+                            <div class="flex flex-row gap-2">
+                                <label class="label">
+                                    <span class="label-text">Date</span>
+                                </label>
+                                <span class="font-medium">{{ formFilledOvertime.date }}</span>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <label class="label">
+                                    <span class="label-text">Time</span>
+                                </label>
+                                <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
+                                    formFilledOvertime.end_time }}</span>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <label class="label">
+                                    <span class="label-text">Total Hours</span>
+                                </label>
+                                <span class="font-medium">{{ formFilledOvertime.hours }}</span>
+                            </div>
+                        </div>
+                    </fieldset>
 
-                    <!-- Remarks Group -->
-                    <div>
-                        <p class="font-semibold">Remarks</p>
-                        <p>{{ formFilledOvertime.remarks }}</p>
-                    </div>
+                    <!-- Reason -->
+                    <fieldset class="border border-base-300 p-4 rounded-md">
+                        <legend class="text-sm font-semibold px-2">Reason</legend>
+                        <p class="mt-2">{{ formFilledOvertime.reason }}</p>
+                    </fieldset>
+
+                    <!-- Remarks -->
+                    <fieldset class="border border-base-300 p-4 rounded-md">
+                        <legend class="text-sm font-semibold px-2">Remarks</legend>
+                        <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
+                    </fieldset>
                 </div>
 
                 <!-- Action Button -->
-                <button type="submit" class="btn btn-outline w-full">Cancel Request</button>
+                <button type="submit" class="btn btn-outline w-full mt-6"
+                    :disabled="formFilledOvertime.processing || formFilledOvertime.current_status !== 'PENDING'">
+                    <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
+                    <span> Cancel Request</span>
+                </button>
             </form>
+
         </div>
 
 
