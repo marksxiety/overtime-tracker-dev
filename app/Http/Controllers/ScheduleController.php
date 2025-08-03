@@ -168,11 +168,12 @@ class ScheduleController extends Controller
         ]);
     }
 
-    public function fetchOvertimeRequetsBySession()
+    public function fetchOvertimeRequestsBySession()
     {
 
         $overtimelist = [];
         $overtime = null;
+        $message = '';
         try {
             $overtimes = OvertimeRequest::with(['schedule' => function ($query) {
                 $query->select('id', 'week', 'date', 'user_id');
@@ -201,18 +202,17 @@ class ScheduleController extends Controller
 
 
             $success = true;
-            $message = 'Fetched successfully';
         } catch (\Throwable $th) {
             $success = false;
             $message = "Fetching Failed due to $th";
         }
 
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
+        return inertia('Employee/Index', [
             'info' => [
                 'overtimelist' => $overtimelist
-            ]
+            ],
+            'success' => $success,
+            'message' => $message
         ]);
     }
 }

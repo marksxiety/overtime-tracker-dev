@@ -241,7 +241,7 @@
 <script setup>
 // ========== Imports ==========
 import { Link, useForm } from '@inertiajs/vue3'
-import { onMounted, ref, inject, reactive } from 'vue'
+import { onMounted, ref, inject, reactive, watch } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
@@ -272,6 +272,13 @@ const firstDayOfMonth = ref(0)
 const lastDateOfLastMonth = ref(0)
 const calendardays = ref([])
 
+// ========= Props =============
+const props = defineProps({
+    info: Object,
+    success: Boolean,
+    errors: Object
+})
+
 
 // ========== Modal Refs ==========
 const overtimeFilingModal = ref(null)
@@ -280,7 +287,7 @@ const fetchingSchedule = ref(false)
 const withShedule = ref(true)
 
 // ========== Overtime Request ==========
-const recentRequests = ref([])
+const recentRequests = ref([...props.info?.overtimelist] ?? [])
 
 
 // ========== Card Stats ==========
@@ -314,27 +321,33 @@ const formFilledOvertime = useForm({
     remarks: ''
 })
 
+
+
+watch(() => props.info?.overtimelist, (updatedRequests) => {
+    recentRequests.value = [...updatedRequests]
+})
+
 // ========== Lifecycle ==========
 onMounted(async () => {
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
 
-    let overtimelist = await fetchFilledOvertime();
-    if (overtimelist.data.success) {
-        recentRequests.value = overtimelist.data.info.overtimelist
+    // let overtimelist = await fetchFilledOvertime();
+    // if (overtimelist.data.success) {
+    //     recentRequests.value = overtimelist.data.info.overtimelist
 
-        if (overtimelist.data.info.overtimelist.length === 0) {
-            recentrequestlabel.value = 'No Recent request'
-        }
+    //     if (overtimelist.data.info.overtimelist.length === 0) {
+    //         recentrequestlabel.value = 'No Recent request'
+    //     }
 
-        let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(overtimelist.data.info.overtimelist)
+    //     let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(overtimelist.data.info.overtimelist)
 
-        totalovertime.value = totalovertimehours
-        pendingovertime.value = pendingrequests
-        rejectedovertime.value = rejectedrequests
+    //     totalovertime.value = totalovertimehours
+    //     pendingovertime.value = pendingrequests
+    //     rejectedovertime.value = rejectedrequests
 
-    } else {
-        toast('Failed to load recent requests.', 'error')
-    }
+    // } else {
+    //     toast('Failed to load recent requests.', 'error')
+    // }
 })
 
 
