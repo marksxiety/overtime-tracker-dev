@@ -11,11 +11,11 @@
                         <legend class="fieldset-legend">Requested Overtime Date</legend>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
-                                <TextInput name="Date:" type="text" v-model="form.date" :readonly="true"
+                                <TextInput name="Date:" type="text" v-model="formFiling.date" :readonly="true"
                                     :placeholder="''" />
                             </div>
                             <div class="col-span-1">
-                                <TextInput name="Week:" type="text" v-model="form.week" :readonly="true"
+                                <TextInput name="Week:" type="text" v-model="formFiling.week" :readonly="true"
                                     :placeholder="''" />
                             </div>
                         </div>
@@ -25,15 +25,15 @@
                         <legend class="fieldset-legend">Your Scheduled Shift</legend>
                         <div class="grid grid-cols-5 gap-4">
                             <div class="col-span-1">
-                                <TextInput name="Shift Code:" type="text" v-model="form.shift_code" :readonly="true"
-                                    :placeholder="''" />
+                                <TextInput name="Shift Code:" type="text" v-model="formFiling.shift_code"
+                                    :readonly="true" :placeholder="''" />
                             </div>
                             <div class="col-span-2">
-                                <TextInput name="Start:" type="text" v-model="form.shift_start_time" :readonly="true"
-                                    :placeholder="''" />
+                                <TextInput name="Start:" type="text" v-model="formFiling.shift_start_time"
+                                    :readonly="true" :placeholder="''" />
                             </div>
                             <div class="col-span-2">
-                                <TextInput name="End:" type="text" v-model="form.shift_end_time" :readonly="true"
+                                <TextInput name="End:" type="text" v-model="formFiling.shift_end_time" :readonly="true"
                                     :placeholder="''" />
                             </div>
                         </div>
@@ -44,22 +44,23 @@
                         <legend class="fieldset-legend">Overtime Duration and Reason</legend>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
-                                <TextInput name="Start Time:" type="time" v-model="form.start_time"
-                                    :message="form.errors?.start_time" />
+                                <TextInput name="Start Time:" type="time" v-model="formFiling.start_time"
+                                    :message="formFiling.errors?.start_time" />
                             </div>
                             <div class="col-span-1">
-                                <TextInput name="End Time:" type="time" v-model="form.end_time"
-                                    :message="form.errors?.end_time" />
+                                <TextInput name="End Time:" type="time" v-model="formFiling.end_time"
+                                    :message="formFiling.errors?.end_time" />
                             </div>
                         </div>
-                        <TextArea name="Reason:" type="text" v-model="form.reason" :message="form.errors?.reason" />
+                        <TextArea name="Reason:" type="text" v-model="formFiling.reason"
+                            :message="formFiling.errors?.reason" />
                     </fieldset>
                     <div v-if="withShedule">
                         <div class="flex justify-end gap-4">
-                            <button type="button" class="btn btn-neutral mt-4" :disabled="form.processing"
+                            <button type="button" class="btn btn-neutral mt-4" :disabled="formFiling.processing"
                                 @click="closeOvertimeFilingModal()">Cancel</button>
-                            <button type="submit" class="btn btn-primary mt-4" :disabled="form.processing">
-                                <span v-if="form.processing" class="loading loading-spinner"></span>
+                            <button type="submit" class="btn btn-primary mt-4" :disabled="formFiling.processing">
+                                <span v-if="formFiling.processing" class="loading loading-spinner"></span>
                                 <span>Submit</span>
                             </button>
                         </div>
@@ -68,7 +69,7 @@
                         class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
                         ⚠️ No registered Schedule.
                         <div class="flex justify-center gap-6">
-                            <button type="button" class="btn btn-secondary mt-4 w-full"
+                            <button type="button" class="btn btn-neutral mt-4 w-full"
                                 @click="closeOvertimeFilingModal()">Close</button>
                             <Link :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">Add
                             Schedule</Link>
@@ -173,9 +174,6 @@
 
                 <!-- Make ul fill remaining space and scroll -->
                 <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
-                    <li v-if="recentRequests.length === 0">
-                        <p class="italic text-center">{{ recentrequestlabel }}</p>
-                    </li>
 
                     <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
                         class="card w-full shadow-sm border border-base-200 rounded-box p-4 hover:shadow-md hover:border-neutral duration-300 transition-all cursor-pointer">
@@ -241,12 +239,11 @@
 <script setup>
 // ========== Imports ==========
 import { Link, useForm } from '@inertiajs/vue3'
-import { onMounted, ref, inject, reactive, watch } from 'vue'
+import { onMounted, ref, inject, watch } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
-import { fetchFilledOvertime } from '../api/overtime.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 
 
@@ -257,7 +254,6 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ]
 const toast = inject('toast')
-const recentrequestlabel = ref('Loading requests...')
 
 
 // ========== Calendar Refs ==========
@@ -295,8 +291,8 @@ const totalovertime = ref(0)
 const pendingovertime = ref(0)
 const rejectedovertime = ref(0)
 
-// ========== Form ==========
-const form = useForm({
+// ========== Form(s) ==========
+const formFiling = useForm({
     date: '',
     week: '',
     employee_schedule_id: '',
@@ -323,31 +319,14 @@ const formFilledOvertime = useForm({
 
 
 
-watch(() => props.info?.overtimelist, (updatedRequests) => {
-    recentRequests.value = [...updatedRequests]
-})
-
 // ========== Lifecycle ==========
 onMounted(async () => {
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
+    let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(recentRequests.value)
 
-    // let overtimelist = await fetchFilledOvertime();
-    // if (overtimelist.data.success) {
-    //     recentRequests.value = overtimelist.data.info.overtimelist
-
-    //     if (overtimelist.data.info.overtimelist.length === 0) {
-    //         recentrequestlabel.value = 'No Recent request'
-    //     }
-
-    //     let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(overtimelist.data.info.overtimelist)
-
-    //     totalovertime.value = totalovertimehours
-    //     pendingovertime.value = pendingrequests
-    //     rejectedovertime.value = rejectedrequests
-
-    // } else {
-    //     toast('Failed to load recent requests.', 'error')
-    // }
+    totalovertime.value = totalovertimehours
+    pendingovertime.value = pendingrequests
+    rejectedovertime.value = rejectedrequests
 })
 
 
@@ -367,7 +346,7 @@ const closeOvertimeRequestModal = () => {
 const showOvertimeFilingModal = async (year, month, day) => {
     overtimeFilingModal.value?.open()
     fetchingSchedule.value = true
-    form.reset()
+    formFiling.reset()
 
     let scheduleResponse = await fetchUserSchedule(year, month + 1, day)
 
@@ -376,12 +355,12 @@ const showOvertimeFilingModal = async (year, month, day) => {
 
         if (Object.keys(scheduledata).length > 0) {
             withShedule.value = true
-            form.date = scheduledata.date
-            form.week = scheduledata.week
-            form.shift_code = scheduledata.shift_code
-            form.employee_schedule_id = scheduledata.id
-            form.shift_start_time = scheduledata.shift_start_time
-            form.shift_end_time = scheduledata.shift_end_time
+            formFiling.date = scheduledata.date
+            formFiling.week = scheduledata.week
+            formFiling.shift_code = scheduledata.shift_code
+            formFiling.employee_schedule_id = scheduledata.id
+            formFiling.shift_start_time = scheduledata.shift_start_time
+            formFiling.shift_end_time = scheduledata.shift_end_time
         } else {
             withShedule.value = false
         }
@@ -470,12 +449,12 @@ function updateCurrentMonthYear(year, month) {
 }
 
 
-// ========== Submit Handler ==========
+// ========== useForm Request(s) Handler ==========
 const submitOvertime = () => {
-    form.post(route('overtime.request'), {
+    formFiling.post(route('overtime.request'), {
         onSuccess: () => {
             toast('Overtime Request Filing successful!', 'success')
-            form.reset()
+            formFiling.reset()
             closeOvertimeFilingModal()
         },
         onError: () => {
@@ -483,4 +462,17 @@ const submitOvertime = () => {
         }
     })
 }
+
+
+// ======== Watchers ===========
+
+watch(() => props.info?.overtimelist, (updatedRequests) => {
+    recentRequests.value = [...updatedRequests]
+
+    let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(recentRequests.value)
+
+    totalovertime.value = totalovertimehours
+    pendingovertime.value = pendingrequests
+    rejectedovertime.value = rejectedrequests
+})
 </script>
