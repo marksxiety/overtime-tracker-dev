@@ -182,7 +182,7 @@ class ScheduleController extends Controller
                     $query->where('user_id', Auth::id());
                 })
                 ->select('id', 'employee_schedule_id', 'start_time', 'end_time', 'hours', 'reason', 'remarks', 'status', 'created_at')
-                ->orderBy('created_at', 'desc')
+                ->orderBy('updated_at', 'desc')
                 ->get();
 
             foreach ($overtimes as $overtime) {
