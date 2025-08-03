@@ -39,8 +39,8 @@ Route::middleware('employee')->group(function () {
     Route::post('/schedule/submit', [ScheduleController::class, 'submitSchedule'])->name('schedule.submit');
 
     // overtime request routes
-    Route::post('overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
-    Route::get('/overtime/list', [ScheduleController::class, 'fetchOvertimeRequestsBySession']);
+    Route::post('/overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
+    Route::post('/overtime/cancel', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.cancel');
 });
 
 Route::middleware('admin')->group(function () {
