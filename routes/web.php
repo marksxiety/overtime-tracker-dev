@@ -18,18 +18,16 @@ Route::middleware(['guest'])->group(function () {
 
 Route::get('/', function () {
     $role = Auth::user()->role;
-
     return match ($role) {
         'admin' => Inertia::render('Admin/Index'),
         'approver' => Inertia::render('Approver/Index'),
-        'employee' => Inertia::render('Employee/Index'),
+        'employee' => app(ScheduleController::class)->fetchOvertimeRequestsBySession(),
         default => redirect()->route('unauthorized'),
     };
-})->middleware('auth')->name('Main');
+})->middleware('auth')->name('main');
 
 Route::middleware('employee')->group(function () {
     Route::inertia('/request', 'Employee/Request')->name('request');
-    Route::inertia('/', 'Main')->name('main');
 
     // shift code list for registering schedule requests (axios)
     Route::get('/shift/list', [ShiftContoller::class, 'shiftCodeList']);
@@ -42,7 +40,7 @@ Route::middleware('employee')->group(function () {
 
     // overtime request routes
     Route::post('overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
-    Route::get('/overtime/list', [ScheduleController::class, 'fetchOvertimeRequetsBySession']);
+    Route::get('/overtime/list', [ScheduleController::class, 'fetchOvertimeRequestsBySession']);
 });
 
 Route::middleware('admin')->group(function () {
