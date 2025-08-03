@@ -123,7 +123,9 @@
                                 <label class="label">
                                     <span class="label-text">Status: </span>
                                 </label>
-                                <span class="font-medium"> {{ formFilledOvertime.current_status }}</span>
+                                <span :class="['font-medium',
+                                    ['CANCELED', 'DISAPPROVED'].includes(formFilledOvertime.current_status) ? 'text-error' : 'text-neutral'
+                                ]"> {{ formFilledOvertime.current_status }}</span>
                             </div>
                         </div>
                     </fieldset>
@@ -207,11 +209,11 @@
         </div>
 
         <div class="flex justify-between gap-4">
-            <div class="border rounded-md p-4 shadow flex flex-col w-2/5 max-h-[50vh]">
+            <div class="border rounded-md p-4 shadow flex flex-col w-2/5">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
 
                 <!-- Make ul fill remaining space and scroll -->
-                <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
+                <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm max-h-[50vh]">
 
                     <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
                         class="card w-full shadow-sm border border-base-200 rounded-box p-4 hover:shadow-md hover:border-neutral duration-300 transition-all cursor-pointer">
@@ -237,7 +239,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="w-3/5 p-4 border rounded-md shadow-md">
+            <div class="w-3/5 flex flex-col justify-center p-4 border rounded-md shadow-md">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
