@@ -89,54 +89,56 @@
             </button>
         </div>
         <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
-            <!-- Stepper -->
-            <ul class="steps w-full">
-                <li class="step step-primary">Pending</li>
-                <li class="step step-primary">Approved/Disapproved</li>
-                <li class="step">Filed</li>
-            </ul>
+            <form @submit.prevent="submitCancelation()">
+                <!-- Stepper -->
+                <ul class="steps w-full">
+                    <li class="step step-primary">Pending</li>
+                    <li class="step step-primary">Approved/Disapproved</li>
+                    <li class="step">Filed</li>
+                </ul>
 
-            <!-- Filing Information -->
-            <div class="space-y-4 text-sm">
-                <!-- Meta Group -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="font-semibold">Date Filed</p>
-                        <p>{{ formFilledOvertime.created_at }}</p>
+                <!-- Filing Information -->
+                <div class="space-y-4 text-sm">
+                    <!-- Meta Group -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="font-semibold">Date Filed</p>
+                            <p>{{ formFilledOvertime.created_at }}</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold">Week</p>
+                            <p>{{ formFilledOvertime.week }}</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold">Status</p>
+                            <p class="font-medium">{{ formFilledOvertime.status }}</p>
+                        </div>
                     </div>
+
+                    <!-- Schedule Group -->
                     <div>
-                        <p class="font-semibold">Week</p>
-                        <p>{{ formFilledOvertime.week }}</p>
+                        <p class="font-semibold">Overtime Schedule</p>
+                        <p>{{ formFilledOvertime.date }} | {{ formFilledOvertime.start_time }} → {{
+                            formFilledOvertime.end_time }}</p>
+                        <p>Hour(s): {{ formFilledOvertime.hours }}</p>
                     </div>
+
+                    <!-- Reason Group -->
                     <div>
-                        <p class="font-semibold">Status</p>
-                        <p class="font-medium">{{ formFilledOvertime.status }}</p>
+                        <p class="font-semibold">Reason</p>
+                        <p>{{ formFilledOvertime.reason }}</p>
+                    </div>
+
+                    <!-- Remarks Group -->
+                    <div>
+                        <p class="font-semibold">Remarks</p>
+                        <p>{{ formFilledOvertime.remarks }}</p>
                     </div>
                 </div>
 
-                <!-- Schedule Group -->
-                <div>
-                    <p class="font-semibold">Overtime Schedule</p>
-                    <p>{{ formFilledOvertime.date }} | {{ formFilledOvertime.start_time }} → {{
-                        formFilledOvertime.end_time }}</p>
-                    <p>Hour(s): {{ formFilledOvertime.hours }}</p>
-                </div>
-
-                <!-- Reason Group -->
-                <div>
-                    <p class="font-semibold">Reason</p>
-                    <p>{{ formFilledOvertime.reason }}</p>
-                </div>
-
-                <!-- Remarks Group -->
-                <div>
-                    <p class="font-semibold">Remarks</p>
-                    <p>{{ formFilledOvertime.remarks }}</p>
-                </div>
-            </div>
-
-            <!-- Action Button -->
-            <button type="button" class="btn btn-outline w-full">Cancel Request</button>
+                <!-- Action Button -->
+                <button type="submit" class="btn btn-outline w-full">Cancel Request</button>
+            </form>
         </div>
 
 
@@ -190,7 +192,7 @@
                                 <div class="badge" :class="{
                                     'badge-primary': request.status.toUpperCase() === 'PENDING',
                                     'badge-success': request.status.toUpperCase() === 'APPROVED',
-                                    'badge-error': request.status.toUpperCase() === 'DISAPPROVED'
+                                    'badge-error': request.status.toUpperCase() === 'DISAPPROVED' || request.status.toUpperCase() === 'CANCELED'
                                 }">
                                     {{ request.status }}
                                 </div>
@@ -312,7 +314,8 @@ const formFilledOvertime = useForm({
     hours: '',
     start_time: '',
     end_time: '',
-    status: '',
+    current_status: '',
+    update_status: 'CANCELED',
     reason: '',
     remarks: ''
 })
@@ -337,9 +340,7 @@ const closeOvertimeFilingModal = () => {
 
 const closeOvertimeRequestModal = () => {
     overtimeRequestModal.value?.close()
-    setTimeout(() => {
-        formFilledOvertime.reset()
-    }, 1500);
+    formFilledOvertime.reset()
 }
 
 
@@ -381,7 +382,7 @@ const showOvertimeRequestModal = (data) => {
     formFilledOvertime.hours = data.hours
     formFilledOvertime.start_time = data.start_time
     formFilledOvertime.end_time = data.end_time
-    formFilledOvertime.status = data.status
+    formFilledOvertime.current_status = data.status
     formFilledOvertime.reason = data.reason
     formFilledOvertime.remarks = data.remarks
     overtimeRequestModal.value?.open()
@@ -459,6 +460,19 @@ const submitOvertime = () => {
         },
         onError: () => {
             toast('Overtime Request failed.', 'error')
+        }
+    })
+}
+
+const submitCancelation = () => {
+    formFilledOvertime.post(route('overtime.cancel'), {
+        onSuccess: () => {
+            toast('Cancelation Successful', 'success')
+            formFilledOvertime.reset()
+            closeOvertimeRequestModal()
+        },
+        onError: () => {
+            toast('Cancelation Request failed.', 'error')
         }
     })
 }
