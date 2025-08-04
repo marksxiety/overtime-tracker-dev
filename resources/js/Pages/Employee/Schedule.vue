@@ -22,16 +22,14 @@
                 </div>
             </div>
         </div>
-        <hr>
-
-        <div class="overflow-x-auto">
-            <table class="table table-zebra min-h-96">
-                <thead>
+        <div class="overflow-x-auto bg-base-100 p-4 rounded">
+            <table class="table min-h-96">
+                <thead class="bg-base-200 rounded">
                     <tr>
                         <th>Date</th>
                         <th>Week</th>
                         <th>Day</th>
-                        <th class="w-1/3">Shift Code</th>
+                        <th class="w-1/3 text-center">Shift Code</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,8 +44,11 @@
                             <td>{{ schedule.date }}</td>
                             <td>{{ schedule.week }}</td>
                             <td>{{ schedule.day }}</td>
-                            <td class="w-1/3">
-                                <SelectOption :options="shifts" v-model="schedule.shift_code" />
+                            <td class="w-full flex justify-center items-center">
+                                <span class="loading loading-spinner" v-if="updateSelectedSchedule"></span>
+                                <span v-else class="w-full">
+                                    <SelectOption :options="shifts" v-model="schedule.shift_code" margin="" />
+                                </span>
                             </td>
                         </tr>
                     </template>
@@ -58,13 +59,13 @@
                         </td>
                     </tr>
                 </tbody>
-
             </table>
-            <hr>
+            <div class="divider"></div>
             <div class="flex justify-end">
-                <button type="submit" class="btn btn-primary mt-4" @click="submitForm()" :disabled="isSubmitting || isLoading">
+                <button type="submit" class="btn btn-neutral mt-4" @click="submitForm()"
+                    :disabled="isSubmitting || isLoading">
                     <span v-if="isSubmitting" class="loading loading-spinner"></span>
-                    <span>Submit</span>
+                    <span>Submit Schedule</span>
                 </button>
             </div>
         </div>
@@ -89,6 +90,7 @@ const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
 
 const isLoading = ref(false)
+const updateSelectedSchedule = ref(false)
 const isSubmitting = ref(false)
 const initshifts = ref([]) // raw shift data from API
 const shifts = ref([])     // formatted shift data for <SelectOption>
@@ -114,6 +116,7 @@ onMounted(() => {
 })
 
 async function loadScheduleData() {
+    updateSelectedSchedule.value = true
     // Fetch schedule for the logged-in user and selected week/year
     const scheduleResponse = await fetchSchedule(selectedYear.value, selectedWeek.value)
 
@@ -137,5 +140,6 @@ async function loadScheduleData() {
     }
 
     isLoading.value = false
+    updateSelectedSchedule.value = false
 }
 </script>
