@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-4">
+    <div :class="margin">
         <label v-if="name" for="role" class="block mb-2">{{ name }}</label>
         <select id="role" v-model="model"
             :class="['w-full px-4 py-2 input', message ? 'border-red-500 focus:ring-red-200' : 'focus:ring-blue-200', 'w-full px-4 py-2 select']">
@@ -19,7 +19,11 @@ defineProps({
         type: String
     },
     message: String,
-    options: Array
+    options: Array,
+    margin: {
+        type: String,
+        default: 'mb-4'
+    }
 })
 
 const model = defineModel({
