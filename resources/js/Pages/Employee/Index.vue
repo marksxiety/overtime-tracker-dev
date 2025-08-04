@@ -184,19 +184,19 @@
     <div class="flex flex-col gap-4">
         <div class="grid grid-cols-3 gap-4">
             <!-- Total Overtime Hours -->
-            <div class="card border rounded shadow-sm p-4 flex flex-row items-center justify-between">
+            <div class="card border rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
                 <span class="text-sm font-semibold opacity-80">Total Overtime Hours</span>
                 <span class="text-2xl font-extrabold">{{ totalovertime }} hrs</span>
             </div>
 
             <!-- Pending Requests -->
-            <div class="card border rounded shadow-sm p-4 flex flex-row items-center justify-between">
+            <div class="card border rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
                 <span class="text-sm font-semibold opacity-80">Pending Requests</span>
                 <span class="text-2xl font-extrabold">{{ pendingovertime }}</span>
             </div>
 
             <!-- Rejected Requests -->
-            <div class="card border rounded shadow-sm p-4 flex flex-row items-center justify-between">
+            <div class="card border rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
                 <span class="text-sm font-semibold opacity-80">Rejected Requests</span>
                 <span class="text-2xl font-extrabold">{{ rejectedovertime }}</span>
             </div>
@@ -209,7 +209,7 @@
         </div>
 
         <div class="flex justify-between gap-4">
-            <div class="border rounded-md p-4 shadow flex flex-col w-2/5">
+            <div class="border rounded-md p-4 shadow flex flex-col w-2/5 bg-base-100">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
 
                 <!-- Make ul fill remaining space and scroll -->
@@ -243,7 +243,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="w-3/5 flex flex-col justify-center p-4 border rounded-md shadow-md">
+            <div class="w-3/5 flex flex-col justify-center p-4 border rounded-md shadow-md bg-base-100">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
