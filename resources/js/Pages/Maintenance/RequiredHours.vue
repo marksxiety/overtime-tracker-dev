@@ -1,25 +1,37 @@
 <template>
-    <div class="flex flex-col gap-6 h-full">
+    <div class="flex flex-col gap-6 h-screen px-6 py-4">
+        <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">
-            <ul>
+            <ul class="flex gap-2 items-center">
                 <li>
-                    <Link :href="route('main')">Home</Link>
+                    <Link :href="route('main')" class="hover:text-primary transition-colors">Home</Link>
                 </li>
                 <li>
-                    <Link :href="route('hours')">Authorized Hours Registration</Link>
+                    <Link :href="route('hours')" class="hover:text-primary transition-colors">Authorized Hours
+                    Registration</Link>
                 </li>
             </ul>
         </div>
+
         <!-- Page Heading -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Manage Required Hours</h1>
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-base-content">Manage Authorized Hours</h1>
         </div>
 
+        <!-- Main Grid Content -->
         <div class="grid place-items-center">
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-6 h-[32rem] w-4/5">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-8 h-[32rem] w-full max-w-7xl">
+
+                <!-- Form Panel -->
                 <div class="col-span-2">
-                    <div class="bg-base-100 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
-                        <form @submit.prevent="submitForm()" class="card">
+                    <div
+                        class="bg-base-100 p-8 rounded-2xl shadow-lg h-full flex flex-col justify-center border border-base-200">
+                        <!-- Title -->
+                        <h2 class="text-xl font-bold mb-6 text-center text-primary uppercase tracking-wide">
+                            Weekly Authorization Form
+                        </h2>
+
+                        <form @submit.prevent="submitForm()" class="card space-y-4">
                             <SelectOption name="Year:" :options="years" v-model="form.year"
                                 :message="form.errors.year" />
                             <SelectOption name="Week:" :options="weeks" v-model="form.week"
@@ -34,13 +46,15 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- Table Panel -->
                 <div class="col-span-3">
-                    <div class="bg-base-100 rounded-2xl p-4 h-full overflow-auto shadow-md">
-                        <h2 class="text-md font-semibold mb-4">Registered Required Hours</h2>
-                        <table class="table w-full">
-                            <thead class="sticky top-0 bg-base-300 z-10">
+                    <div class="bg-base-100 rounded-2xl p-6 h-full overflow-auto shadow-lg border border-base-200">
+                        <h2 class="text-lg font-semibold mb-4 text-base-content">Registered Required Hours</h2>
+                        <table class="table w-full text-sm">
+                            <thead class="sticky top-0 bg-base-200 z-10 text-base-content">
                                 <tr class="text-center">
-                                    <th>Year</th>
+                                    <th class="py-3">Year</th>
                                     <th>Week</th>
                                     <th>Required Hours</th>
                                     <th>Action</th>
@@ -48,16 +62,17 @@
                             </thead>
                             <tbody>
                                 <tr v-for="required in registerd_required_hours" :key="required.required_code"
-                                    class="text-center">
-                                    <td>{{ required.year }}</td>
+                                    class="text-center hover:bg-base-300/30 transition-colors">
+                                    <td class="py-2">{{ required.year }}</td>
                                     <td>{{ required.week }}</td>
                                     <td>{{ `${required.required_hours} hrs` }}</td>
-                                    <td class="flex flex-row gap-2 justify-center">
+                                    <td class="flex gap-2 justify-center">
                                         <button class="btn btn-success btn-xs" @click="handleHypyerLink(required)">
                                             EDIT
                                         </button>
                                         <button class="btn btn-error btn-xs">
-                                            <span>DELETE</span></button>
+                                            <span>DELETE</span>
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr v-if="registerd_required_hours.length === 0">
@@ -69,10 +84,12 @@
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 </template>
+
 
 <script setup>
 import TextInput from '../Components/TextInput.vue'
