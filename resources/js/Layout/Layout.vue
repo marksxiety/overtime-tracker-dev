@@ -1,7 +1,7 @@
 <template>
     <div class="bg-base-300">
         <div
-            class="flex justify-between items-center bottom-2 shadow-md px-4 py-2 mb-6 bg-base-100 rounded  h-14">
+            class="flex justify-between items-center bottom-2 shadow-md px-4 py-2 mb-6 bg-base-100 rounded h-14 sticky top-0 z-10">
             <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
             <div class="flex justify-between items-center gap-4 font-semibold">
                 <Link v-if="$page?.props?.auth.user?.role === 'approver'" :href="route('hours')" class=" text-sm hover:underline
@@ -34,8 +34,7 @@
                 </label>
             </div>
         </div>
-
-        <main class="pr-20 pl-20 f-full h-screen bg-base-300">
+        <main class="pr-20 pl-20 f-full max-h-screen bg-base-300">
             <Toast ref="toastRef" />
             <slot></slot>
         </main>
