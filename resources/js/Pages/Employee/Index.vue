@@ -100,7 +100,7 @@
                         FOR APPROVAL</li>
                     <li
                         :class="['step text-sm', formFilledOvertime.current_status === 'FILED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
-                        Filed
+                        FILED
                     </li>
                 </ul>
 

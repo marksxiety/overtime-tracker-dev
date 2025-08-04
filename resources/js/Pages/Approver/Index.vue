@@ -5,36 +5,93 @@
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
                     @click="closeManageRequestModal()">✕</button>
             </div>
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-2 w-full">
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full">
                     <legend class="text-sm font-semibold px-2">Employee Information</legend>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 w-full">
-                        <!-- Name -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-base-content/70">Name:</span>
-                            <span class="break-words w-full">{{ user.name }}</span>
+                    <div class="flex flex-col gap-4 mt-4 w-full">
+                        <div class="grid grid-cols-2 gap-4">
+                            <TextInput name="Name:" type="text" v-model="user.name" :readonly="true"
+                                :placeholder="''" />
+                            <TextInput name="Email:" type="text" v-model="user.email" :readonly="true"
+                                :placeholder="''" />
                         </div>
-
-                        <!-- Email -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-base-content/70">Email:</span>
-                            <span class="break-words w-full">{{ user.email }}</span>
-                        </div>
-
-                        <!-- Employee ID -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-base-content/70">Employee ID:</span>
-                            <span class="break-words w-full">{{ user.employee_id }}</span>
-                        </div>
-
-                        <!-- Role -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-base-content/70">Role:</span>
-                            <span class="capitalize break-words w-full">{{ user.role }}</span>
+                        <div class="grid grid-cols-2 gap-4">
+                            <TextInput name="Employee ID:" type="text" v-model="user.employee_id" :readonly="true"
+                                :placeholder="''" />
+                            <TextInput name="Role:" type="text" v-model="user.role" :readonly="true"
+                                :placeholder="''" />
                         </div>
                     </div>
                 </fieldset>
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full mt-6">
+                    <legend class="text-sm font-semibold px-2">Schedule Information</legend>
+                    <div class="flex flex-col gap-4 mt-4 w-full">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Date:" type="text" v-model="schedule.date" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-1">
+                                <TextInput name="Week:" type="text" v-model="schedule.week" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Date:" type="text" v-model="schedule.shift_code" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-2">
+                                <TextInput name="Week:" type="text" v-model="schedule.shift_start" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-2">
+                                <TextInput name="Week:" type="text" v-model="schedule.shift_end" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full mt-6">
+                    <legend class="text-sm font-semibold px-2">Overtime Request</legend>
+                    <div class="flex flex-col gap-4 mt-4 w-full">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Date:" type="text" v-model="schedule.date" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-1">
+                                <TextInput name="Week:" type="text" v-model="schedule.week" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="col-span-1">
+                                <TextInput name="Date:" type="text" v-model="schedule.shift_code" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-2">
+                                <TextInput name="Week:" type="text" v-model="schedule.shift_start" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                            <div class="col-span-2">
+                                <TextInput name="Week:" type="text" v-model="schedule.shift_end" :readonly="true"
+                                    :placeholder="''" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="flex justify-end gap-4">
+                    <button type="submit" class="btn btn-success mt-4">
+                        <span>APPROVE</span>
+                    </button>
+                    <button type="submit" class="btn btn-error mt-4">
+                        <span>DISAPPROVE</span>
+                    </button>
+                    <button type="submit" class="btn btn-info mt-4">
+                        <span>FILED</span>
+                    </button>
+                </div>
             </div>
         </div>
     </Modal>
@@ -136,6 +193,7 @@ const props = defineProps({
     message: String
 })
 
+console.log(props.info)
 
 const requests = ref([...props?.info?.requests ?? []])
 
@@ -144,6 +202,24 @@ const user = ref({
     employee_id: '',
     role: '',
     email: ''
+})
+
+const schedule = ref({
+    date: '',
+    shift_code: '',
+    shift_start: '',
+    shift_end: '',
+    week: '',
+})
+
+const overtime = ref({
+    start_time: '',
+    end_time: '',
+    hours: '',
+    status: '',
+    created_at: '',
+    reason: '',
+    remarks: '',
 })
 
 watch(() => props?.info?.requests, (updatedRequest) => {
@@ -161,6 +237,25 @@ const openManageRequestModal = (data) => {
         role: data?.user?.role,
         email: data?.user?.email
     }
+
+    schedule.value = {
+        date: data?.schedule?.date,
+        shift_code: data?.schedule?.shift_code,
+        shift_start: data?.schedule?.shift_start,
+        shift_end: data?.schedule?.shift_end,
+        week: data?.schedule?.week,
+    }
+
+    overtime.value = {
+        start_time: data?.overtime?.start_time,
+        end_time: data?.overtime?.end_time,
+        hours: data?.overtime?.hours,
+        status: data?.overtime?.status,
+        created_at: data?.overtime?.created_at,
+        reason: data?.overtime?.reason,
+        remarks: data?.overtime?.remarks,
+    }
+
 }
 
 const closeManageRequestModal = () => {
