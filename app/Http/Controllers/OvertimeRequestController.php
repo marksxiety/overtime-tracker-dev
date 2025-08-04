@@ -8,6 +8,7 @@ use App\Models\OvertimeRequest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class OvertimeRequestController extends Controller
 {
@@ -109,5 +110,54 @@ class OvertimeRequestController extends Controller
         } catch (\Throwable $th) {
             return redirect()->back()->withErrors("Cancelation failed due to $th");
         }
+    }
+
+
+    public function fetchOvertimeRequestsBySession()
+    {
+
+        $overtimelist = [];
+        $overtime = null;
+        $message = '';
+        try {
+            $overtimes = OvertimeRequest::with(['schedule' => function ($query) {
+                $query->select('id', 'week', 'date', 'user_id');
+            }])
+                ->whereHas('schedule', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+                ->select('id', 'employee_schedule_id', 'start_time', 'end_time', 'hours', 'reason', 'remarks', 'status', 'created_at')
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+            foreach ($overtimes as $overtime) {
+                $overtimelist[] = [
+                    'week' => $overtime->schedule->week,
+                    'date' => $overtime->schedule->date,
+                    'id' => $overtime->id,
+                    'start_time' => $overtime->start_time,
+                    'end_time' => $overtime->end_time,
+                    'hours' => $overtime->hours,
+                    'reason' => $overtime->reason,
+                    'remarks' => $overtime->remarks,
+                    'status' => $overtime->status,
+                    'created_at' => $overtime->created_at
+                ];
+            }
+
+
+            $success = true;
+        } catch (\Throwable $th) {
+            $success = false;
+            $message = "Fetching Failed due to $th";
+        }
+
+        return inertia('Employee/Index', [
+            'info' => [
+                'overtimelist' => $overtimelist
+            ],
+            'success' => $success,
+            'message' => $message
+        ]);
     }
 }
