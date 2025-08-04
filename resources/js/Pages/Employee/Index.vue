@@ -81,22 +81,25 @@
     </Modal>
     <Modal ref="overtimeRequestModal">
         <div class="flex justify-end">
-            <button class="btn btn-sm btn-circle" @click="closeOvertimeRequestModal()"
+            <!-- <button class="btn btn-sm bg-none border-none" @click="closeOvertimeRequestModal()"
                 :disabled="formFilledOvertime.processing">
                 ✖
-            </button>
+            </button> -->
+            <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
+                @click="closeOvertimeRequestModal()">✖</span>
         </div>
         <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
             <form @submit.prevent="submitCancelation()">
                 <!-- Stepper -->
-                <ul class="steps w-full mb-6">
+                <ul class="steps w-full mb-6" v-if="formFilledOvertime.current_status.toUpperCase() !== 'CANCELED'">
                     <li
-                        :class="['step', (formFilledOvertime.current_status === 'CANCELED' || formFilledOvertime.current_status === 'PENDING') ? 'step-primary' : '']">
-                        {{
-                            formFilledOvertime.current_status === 'CANCELED' ? 'Canceled' : 'Pending' }}</li>
-                    <li :class="['step', formFilledOvertime.current_status === 'APPROVED' ? 'step-primary' : '']">
-                        Approved/Disapproved</li>
-                    <li :class="['step', formFilledOvertime.current_status === 'FILED' ? 'step-primary' : '']">Filed
+                        :class="['step text-sm', `step-${identifyColorStatus(formFilledOvertime.current_status)}`, `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
+                        {{ formFilledOvertime.current_status }}</li>
+                    <li
+                        :class="['step text-sm break-normal', formFilledOvertime.current_status === 'APPROVED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
+                        FOR APPROVAL</li>
+                    <li :class="['step text-sm', formFilledOvertime.current_status === 'FILED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
+                        Filed
                     </li>
                 </ul>
 
@@ -104,7 +107,7 @@
                 <div class="space-y-6 text-sm">
 
                     <!-- Meta Info -->
-                    <fieldset class="border border-base-300 p-4 rounded-md">
+                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                         <legend class="text-sm font-semibold px-2">Meta Information</legend>
                         <div class="grid gap-2 mt-4">
                             <div class="flex flex-row gap-2">
@@ -123,33 +126,31 @@
                                 <label class="label">
                                     <span class="label-text">Status: </span>
                                 </label>
-                                <span :class="['font-medium',
-                                    ['CANCELED', 'DISAPPROVED'].includes(formFilledOvertime.current_status) ? 'text-error' : 'text-neutral'
-                                ]"> {{ formFilledOvertime.current_status }}</span>
+                                <span :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]"> {{ formFilledOvertime.current_status }}</span>
                             </div>
                         </div>
                     </fieldset>
 
                     <!-- Overtime Schedule -->
-                    <fieldset class="border border-base-300 p-4 rounded-md">
+                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                         <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
                         <div class="grid gap-2 mt-4">
                             <div class="flex flex-row gap-2">
                                 <label class="label">
-                                    <span class="label-text">Date</span>
+                                    <span class="label-text">Date: </span>
                                 </label>
                                 <span class="font-medium">{{ formFilledOvertime.date }}</span>
                             </div>
                             <div class="flex flex-row gap-2">
                                 <label class="label">
-                                    <span class="label-text">Time</span>
+                                    <span class="label-text">Time: </span>
                                 </label>
                                 <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
                                     formFilledOvertime.end_time }}</span>
                             </div>
                             <div class="flex flex-row gap-2">
                                 <label class="label">
-                                    <span class="label-text">Total Hours</span>
+                                    <span class="label-text">Total Hour(s): </span>
                                 </label>
                                 <span class="font-medium">{{ formFilledOvertime.hours }}</span>
                             </div>
@@ -157,13 +158,13 @@
                     </fieldset>
 
                     <!-- Reason -->
-                    <fieldset class="border border-base-300 p-4 rounded-md">
+                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                         <legend class="text-sm font-semibold px-2">Reason</legend>
                         <p class="mt-2">{{ formFilledOvertime.reason }}</p>
                     </fieldset>
 
                     <!-- Remarks -->
-                    <fieldset class="border border-base-300 p-4 rounded-md">
+                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                         <legend class="text-sm font-semibold px-2">Remarks</legend>
                         <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
                     </fieldset>
@@ -231,11 +232,7 @@
                             </div>
 
                             <div>
-                                <div class="badge badge-outline" :class="{
-                                    'badge-warning': request.status.toUpperCase() === 'PENDING',
-                                    'badge-success': request.status.toUpperCase() === 'APPROVED',
-                                    'badge-error': request.status.toUpperCase() === 'DISAPPROVED' || request.status.toUpperCase() === 'CANCELED'
-                                }">
+                                <div :class="['badge', 'badge-outline', `badge-${identifyColorStatus(request.status)}`]">
                                     {{ request.status }}
                                 </div>
                             </div>
@@ -289,6 +286,7 @@ import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
+import { identifyColorStatus } from '../utils/colorIdentifier.js'
 
 
 // ========== Global Constants ==========
