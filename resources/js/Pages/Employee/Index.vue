@@ -215,8 +215,12 @@
                 <!-- Make ul fill remaining space and scroll -->
                 <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm max-h-[50vh]">
 
+                    <li v-if="recentRequests.length === 0">
+                        <p class="font-light italic text-center mt-5">No Recent Request...</p>
+                    </li>
+
                     <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
-                        class="card w-full shadow-sm border border-base-200 rounded-box p-4 hover:shadow-md hover:border-neutral duration-300 transition-all cursor-pointer">
+                        class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-neutral duration-300 transition-all cursor-pointer">
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col gap-1">
                                 <p class="text-sm opacity-70">{{ request.date }}</p>
@@ -227,7 +231,7 @@
                             </div>
 
                             <div>
-                                <div class="badge" :class="{
+                                <div class="badge badge-outline" :class="{
                                     'badge-primary': request.status.toUpperCase() === 'PENDING',
                                     'badge-success': request.status.toUpperCase() === 'APPROVED',
                                     'badge-error': request.status.toUpperCase() === 'DISAPPROVED' || request.status.toUpperCase() === 'CANCELED'
