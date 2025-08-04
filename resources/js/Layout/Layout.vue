@@ -9,7 +9,7 @@
                 <Link v-if="$page?.props?.auth.user?.role === 'admin'" :href="route('shifts')"
                     class="text-sm hover:underline hover:cursor-pointer">Shift Codes</Link>
                 <ul class="menu menu-horizontal px-1" v-if="$page?.props?.auth?.user">
-                    <li>
+                    <li class="relative z-10">
                         <details>
                             <summary @click="toggleDropdownProfile()">Profile</summary>
                             <ul class="bg-base-100 rounded-t-none p-2">
