@@ -18,6 +18,15 @@ class RequiredHoursController extends Controller
             'required_hours' =>  'required|integer|max_digits:4'
         ]);
 
+        $isRegistered = RequiredHours::where('year', $request->year)->where('week', $request->week)->exists();
+
+        if ($isRegistered) {
+            return redirect()->back()->withErrors([
+                'year' => 'This year already has an entry.',
+                'week' => 'This week already has an entry.',
+            ]);
+        }
+
         RequiredHours::create($data);
         return redirect()->back()->with(['message' => 'Required Hours for week has been registered']);
     }
