@@ -1,6 +1,6 @@
 <template>
-    <div class="mb-4">
-        <label class="block mb-2" for="name">{{ name }}</label>
+    <div :class="margin">
+        <label v-if="name" class="block mb-2" for="name">{{ name }}</label>
         <input :id="name" :type="type" v-model="model"
             :class="['w-full px-4 py-2 input', message ? 'border-red-500 focus:ring-red-200' : 'focus:ring-blue-200', textCase]"
             :placeholder="placeholder" :disabled="disabled" :readonly="readonly" />
@@ -37,6 +37,11 @@ defineProps({
     readonly: {
         type: Boolean,
         default: false
+    },
+    margin: {
+        type: String,
+        required: false,
+        default: 'mb-4'
     }
 })
 
