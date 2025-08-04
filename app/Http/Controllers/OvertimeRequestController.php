@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OvertimeRequestController extends Controller
 {
@@ -155,6 +156,103 @@ class OvertimeRequestController extends Controller
         return inertia('Employee/Index', [
             'info' => [
                 'overtimelist' => $overtimelist
+            ],
+            'success' => $success,
+            'message' => $message
+        ]);
+    }
+
+    public function fetchTotalOvertimeRequests(Request $request)
+    {
+
+        $week = $request->input('week', Carbon::now()->weekOfYear);
+        $year = $request->input('year', Carbon::now()->year);
+
+        $overtimelist = [];
+        $overtime_requests = [];
+        $overtime = null;
+        $message = '';
+        try {
+            $overtime_requests = DB::table('overtime_requests')->join('schedules', 'schedules.id', '=', 'overtime_requests.employee_schedule_id')->join('users', 'users.id', '=', 'schedules.user_id')
+                ->leftJoin('shift_codes', 'shift_codes.id', '=', 'schedules.shift_id')
+                ->select(
+                    'overtime_requests.id as request_id',
+                    'users.id as user_id',
+                    'users.name',
+                    'users.employeeid',
+                    'users.role',
+                    'users.email',
+                    'overtime_requests.start_time',
+                    'overtime_requests.end_time',
+                    'schedules.date',
+                    'schedules.week',
+                    'shift_codes.code as shift_code',
+                    'shift_codes.start_time as shift_start',
+                    'shift_codes.end_time as shift_end',
+                    'overtime_requests.start_time',
+                    'overtime_requests.end_time',
+                    'overtime_requests.hours',
+                    'overtime_requests.status',
+                    'overtime_requests.reason',
+                    'overtime_requests.remarks',
+                    'overtime_requests.created_at'
+                )->whereIn('status', ['APPROVED', 'PENDING'])->whereYear('schedules.date', $year)->where('schedules.week', $week)->orderBy('created_at')->get();
+
+            $required_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
+            $total_hours = 0;
+            $total_approved = 0;
+            $total_pending = 0;
+            $total_filed = count($overtime_requests);
+
+            foreach ($overtime_requests as $overtime) {
+
+                if ($overtime->status === 'PENDING') {
+                    $overtimelist[] = [
+                        'id' => $overtime->request_id,
+                        'user' => [
+                            'name' => $overtime->name,
+                            'employee_id' => $overtime->employeeid,
+                            'email' => $overtime->email,
+                            'role' => $overtime->role,
+                        ],
+                        'schedule' => [
+                            'date' => $overtime->date,
+                            'week' => $overtime->week,
+                            'shift_code' => $overtime->shift_code ?? 'N/A',
+                            'shift_start' => $overtime->shift_start ?? '--',
+                            'shift_end' => $overtime->shift_end ?? '--',
+                        ],
+                        'overtime' => [
+                            'start_time' => $overtime->start_time,
+                            'end_time' => $overtime->end_time,
+                            'hours' => $overtime->hours,
+                            'status' => $overtime->status,
+                            'reason' => $overtime->reason,
+                            'remarks' => $overtime->remarks,
+                            'created_at' => $overtime->created_at
+                        ]
+                    ];
+                    $total_pending++;
+                } else {
+                    $total_approved++;
+                    $total_hours += (int)$overtime->hours;
+                }
+            }
+
+            $success = true;
+        } catch (\Throwable $th) {
+            $success = false;
+            $message = "Fetching Failed due to $th";
+        }
+
+        return inertia('Approver/Index', [
+            'info' => [
+                'requests' => $overtimelist,
+                'required' => $required_hours ?? 0,
+                'total_hours' => $total_hours,
+                'total_approved' => $total_approved,
+                'total_pending' => $total_pending,
+                'total_filed' => $total_filed
             ],
             'success' => $success,
             'message' => $message
