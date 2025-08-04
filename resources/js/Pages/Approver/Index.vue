@@ -5,7 +5,7 @@
             <Card title="Total Approved" :value="props?.info?.total_approved ?? 0" />
             <Card title="Pending Approvals" :value="props?.info?.total_pending ?? 0" />
             <Card title="Required Hours Left"
-                :value="(props?.info?.required.hours - props?.info?.total_hours) + ' hrs' ?? 0" />
+                :value="((props?.info?.required.hours ?? 0) - (props?.info?.total_hours ?? 0)) + ' hrs'" />
             <Card title="Total Filed Requests" :value="props?.info?.total_filed ?? 0" />
         </div>
 
