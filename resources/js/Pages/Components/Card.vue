@@ -1,14 +1,14 @@
 <template>
-    <div class="card rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
-        <span class="text-sm font-semibold opacity-80">{{ label }}</span>
-        <span class="text-2xl font-extrabold">{{ value }} hrs</span>
+    <div class="stat bg-base-100 shadow-sm p-4 items-center justify-between">
+        <div class="stat-title">{{ title }}</div>
+        <div class="stat-value">{{ value }}</div>
     </div>
 </template>
 
 <script setup>
 
 defineProps({
-    label: {
+    title: {
         type: String,
         required: true
     },
