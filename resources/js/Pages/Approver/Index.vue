@@ -13,7 +13,7 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="col-span-1 card bg-base-100 shadow">
                 <div class="card-body">
-                    <h2 class="card-title">Week 32 Overview</h2>
+                    <h2 class="card-title">Week {{ selectedWeek }} Overview</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore laudantium nemo id ut, fugiat
                         reiciendis excepturi iusto aspernatur optio harum.</p>
                 </div>
@@ -22,7 +22,7 @@
             <!-- Weekly Hours Progress -->
             <div class="col-span-1 card bg-base-100 shadow">
                 <div class="card-body">
-                    <h2 class="card-title">Weekly Hours Progress</h2>
+                    <h2 class="card-title">Weekly Overtime Usage</h2>
                     <progress class="progress progress-primary w-full" :value="props?.info?.total_hours"
                         :max="props?.info?.required?.hours">
                     </progress>
