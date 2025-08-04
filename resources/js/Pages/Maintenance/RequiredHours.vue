@@ -11,60 +11,63 @@
             </ul>
         </div>
         <!-- Page Heading -->
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Manage Required Hours</h1>
         </div>
 
-                <div class="grid place-items-center">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[32rem] w-3/4">
-            <div class="col-span-1">
-                <div class="bg-base-300 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
-                    <form @submit.prevent="submitForm()" class="card">
-                        <SelectOption name="Year:" :options="years" v-model="form.year" :message="form.errors.year" />
-                        <SelectOption name="Week:" :options="weeks" v-model="form.week" :message="form.errors.week" />
-                        <TextInput name="Required Hours:" type="number" v-model="form.required_hours"
-                            :message="form.errors.required_hours" placeholder="Enter the required hours per week..." />
-                        <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
-                            <span v-if="form.processing" class="loading loading-spinner"></span>
-                            <span>Submit</span>
-                        </button>
-                    </form>
+        <div class="grid place-items-center">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-6 h-[32rem] w-4/5">
+                <div class="col-span-2">
+                    <div class="bg-base-100 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
+                        <form @submit.prevent="submitForm()" class="card">
+                            <SelectOption name="Year:" :options="years" v-model="form.year"
+                                :message="form.errors.year" />
+                            <SelectOption name="Week:" :options="weeks" v-model="form.week"
+                                :message="form.errors.week" />
+                            <TextInput name="Required Hours:" type="number" v-model="form.required_hours"
+                                :message="form.errors.required_hours"
+                                placeholder="Enter the required hours per week..." />
+                            <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                                <span v-if="form.processing" class="loading loading-spinner"></span>
+                                <span>Submit</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div class="col-span-1">
-                <div class="bg-base-300 rounded-2xl p-4 h-full overflow-auto shadow-md">
-                    <h2 class="text-lg font-semibold mb-4">Registered Required Hours</h2>
-                    <table class="table table-zebra w-full">
-                        <thead class="sticky top-0 bg-base-300 z-10">
-                            <tr class="text-center">
-                                <th>Year</th>
-                                <th>Week</th>
-                                <th>Required Hours</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="required in registerd_required_hours" :key="required.required_code"
-                                class="text-center">
-                                <td>{{ required.year }}</td>
-                                <td>{{ required.week }}</td>
-                                <td>{{ `${required.required_hours} hrs` }}</td>
-                                <td class="flex flex-row gap-2 justify-center">
-                                    <button class="btn btn-success btn-xs" @click="handleHypyerLink(required)">
-                                        EDIT
-                                    </button>
-                                    <button class="btn btn-error btn-xs">
-                                        <span>DELETE</span></button>
-                                </td>
-                            </tr>
-                            <tr v-if="registerd_required_hours.length === 0">
-                                <td colspan="4" class="text-center italic text-gray-400 py-4">
-                                    No required hours available.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="col-span-3">
+                    <div class="bg-base-100 rounded-2xl p-4 h-full overflow-auto shadow-md">
+                        <h2 class="text-md font-semibold mb-4">Registered Required Hours</h2>
+                        <table class="table w-full">
+                            <thead class="sticky top-0 bg-base-300 z-10">
+                                <tr class="text-center">
+                                    <th>Year</th>
+                                    <th>Week</th>
+                                    <th>Required Hours</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="required in registerd_required_hours" :key="required.required_code"
+                                    class="text-center">
+                                    <td>{{ required.year }}</td>
+                                    <td>{{ required.week }}</td>
+                                    <td>{{ `${required.required_hours} hrs` }}</td>
+                                    <td class="flex flex-row gap-2 justify-center">
+                                        <button class="btn btn-success btn-xs" @click="handleHypyerLink(required)">
+                                            EDIT
+                                        </button>
+                                        <button class="btn btn-error btn-xs">
+                                            <span>DELETE</span></button>
+                                    </td>
+                                </tr>
+                                <tr v-if="registerd_required_hours.length === 0">
+                                    <td colspan="4" class="text-center italic text-gray-400 py-4">
+                                        No required hours available.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
