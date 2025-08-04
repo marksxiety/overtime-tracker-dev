@@ -1,12 +1,13 @@
 <template>
-    <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow mt-10">
+    <div class="max-w-md mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
         <h2 class="text-2xl font-bold mb-6 text-primary">Login User</h2>
         <form @submit.prevent="submitForm" class="card">
             <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
             <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
             <div class="flex items-end mb-4">
                 <label class="label">
-                    <input type="checkbox" checked="checked" class="checkbox checkbox-primary" v-model="form.remember"/>
+                    <input type="checkbox" checked="checked" class="checkbox checkbox-primary"
+                        v-model="form.remember" />
                     Remember me
                 </label>
             </div>

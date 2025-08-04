@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-md mx-auto bg-base-300 p-8 rounded-xl shadow mt-10">
+    <div class="max-w-md mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
         <h2 class="text-2xl font-bold mb-6 text-primary">Register User</h2>
         <form @submit.prevent="submitForm">
             <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
