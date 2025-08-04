@@ -5,7 +5,7 @@
             <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
             <div class="flex justify-between items-center gap-4 font-semibold">
                 <Link v-if="$page?.props?.auth.user?.role === 'approver'" :href="route('hours')" class=" text-sm hover:underline
-                hover:cursor-pointer">Required Hrs</Link>
+                hover:cursor-pointer">Manage ROA</Link>
                 <Link v-if="$page?.props?.auth.user?.role === 'admin'" :href="route('shifts')"
                     class="text-sm hover:underline hover:cursor-pointer">Shift Codes</Link>
                 <ul class="menu menu-horizontal px-1" v-if="$page?.props?.auth?.user">

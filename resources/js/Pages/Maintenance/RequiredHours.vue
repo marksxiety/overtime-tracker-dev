@@ -6,7 +6,7 @@
                     <Link :href="route('main')">Home</Link>
                 </li>
                 <li>
-                    <Link :href="route('hours')">Required Hours Registration</Link>
+                    <Link :href="route('hours')">Authorized Hours Registration</Link>
                 </li>
             </ul>
         </div>
