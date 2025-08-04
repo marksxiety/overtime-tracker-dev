@@ -5,7 +5,7 @@ use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\ShiftContoller;
 use App\Http\Controllers\RequiredHoursController;
 use App\Http\Controllers\ScheduleController;
-use App\Models\OvertimeRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,12 +17,12 @@ Route::middleware(['guest'])->group(function () {
     Route::inertia('/login', 'Auth/Login')->name('login');
 });
 
-Route::get('/', function () {
+Route::get('/', function (Request $request) {
     $role = Auth::user()->role;
     return match ($role) {
         'admin' => Inertia::render('Admin/Index'),
-        'approver' => Inertia::render('Approver/Index'),
-        'employee' => app(OvertimeRequest::class)->fetchOvertimeRequestsBySession(),
+        'approver' => app(OvertimeRequestController::class)->fetchTotalOvertimeRequests($request),
+        'employee' => app(OvertimeRequestController::class)->fetchOvertimeRequestsBySession(),
         default => redirect()->route('unauthorized'),
     };
 })->middleware('auth')->name('main');
