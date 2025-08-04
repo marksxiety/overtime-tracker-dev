@@ -98,7 +98,8 @@
                     <li
                         :class="['step text-sm break-normal', formFilledOvertime.current_status === 'APPROVED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
                         FOR APPROVAL</li>
-                    <li :class="['step text-sm', formFilledOvertime.current_status === 'FILED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
+                    <li
+                        :class="['step text-sm', formFilledOvertime.current_status === 'FILED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
                         Filed
                     </li>
                 </ul>
@@ -126,7 +127,9 @@
                                 <label class="label">
                                     <span class="label-text">Status: </span>
                                 </label>
-                                <span :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]"> {{ formFilledOvertime.current_status }}</span>
+                                <span
+                                    :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
+                                    {{ formFilledOvertime.current_status }}</span>
                             </div>
                         </div>
                     </fieldset>
@@ -183,25 +186,12 @@
 
     </Modal>
     <div class="flex flex-col gap-4">
-        <div class="grid grid-cols-3 gap-4">
-            <!-- Total Overtime Hours -->
-            <div class="card rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
-                <span class="text-sm font-semibold opacity-80">Total Overtime Hours</span>
-                <span class="text-2xl font-extrabold">{{ totalovertime }} hrs</span>
-            </div>
-
-            <!-- Pending Requests -->
-            <div class="card rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
-                <span class="text-sm font-semibold opacity-80">Pending Requests</span>
-                <span class="text-2xl font-extrabold">{{ pendingovertime }}</span>
-            </div>
-
-            <!-- Rejected Requests -->
-            <div class="card rounded bg-base-100 shadow-sm p-4 flex flex-row items-center justify-between">
-                <span class="text-sm font-semibold opacity-80">Rejected Requests</span>
-                <span class="text-2xl font-extrabold">{{ rejectedovertime }}</span>
-            </div>
+        <div class="stats shadow grid grid-cols-3">
+            <Card title="Total Overtime Hours" :value="totalovertime + ' hrs'" />
+            <Card title="Pending Requests" :value="pendingovertime" />
+            <Card title="Rejected Requests" :value="rejectedovertime" />
         </div>
+
 
         <div class="flex mt-4 justify-end gap-2">
             <Link :href="route('schedule')" class="btn btn-neutral">
@@ -232,7 +222,8 @@
                             </div>
 
                             <div>
-                                <div :class="['badge', 'badge-outline', `badge-${identifyColorStatus(request.status)}`]">
+                                <div
+                                    :class="['badge', 'badge-outline', `badge-${identifyColorStatus(request.status)}`]">
                                     {{ request.status }}
                                 </div>
                             </div>
@@ -284,6 +275,7 @@ import { onMounted, ref, inject, watch } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
+import Card from '../Components/Card.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
