@@ -1,4 +1,43 @@
 <template>
+    <Modal ref="manageRequestModal" width="w-11/12">
+        <div class="py-4 mt-2">
+            <div class="flex justify-end">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                    @click="closeManageRequestModal()">✕</button>
+            </div>
+            <div class="flex flex-col gap-4 w-full">
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full">
+                    <legend class="text-sm font-semibold px-2">Employee Information</legend>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 w-full">
+                        <!-- Name -->
+                        <div class="flex flex-col">
+                            <span class="text-md font-semibold text-base-content/70">Name:</span>
+                            <span class="break-words w-full">{{ user.name }}</span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex flex-col">
+                            <span class="text-md font-semibold text-base-content/70">Email:</span>
+                            <span class="break-words w-full">{{ user.email }}</span>
+                        </div>
+
+                        <!-- Employee ID -->
+                        <div class="flex flex-col">
+                            <span class="text-md font-semibold text-base-content/70">Employee ID:</span>
+                            <span class="break-words w-full">{{ user.employee_id }}</span>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="flex flex-col">
+                            <span class="text-md font-semibold text-base-content/70">Role:</span>
+                            <span class="capitalize break-words w-full">{{ user.role }}</span>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </Modal>
     <div class="flex flex-col gap-6 p-4 h-screen">
         <!-- Stat Cards -->
         <div class="stats stats-horizontal shadow flex-wrap">
@@ -68,7 +107,8 @@
                                 <td>{{ request.schedule.week }}</td>
                                 <td>{{ request.overtime.hours }}</td>
                                 <td class="flex gap-2 justify-center">
-                                    <button class="btn btn-xs text-sm btn-primary">Manage</button>
+                                    <button class="btn btn-xs text-sm btn-primary"
+                                        @click="openManageRequestModal(request)">Manage</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -85,6 +125,7 @@ import Card from '../Components/Card.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
 import { weeks, currentWeek } from '../utils/dropdownOptions.js'
+import Modal from '../Components/Modal.vue'
 
 const selectedWeek = ref(currentWeek())
 const selectedYear = ref('')
@@ -95,12 +136,35 @@ const props = defineProps({
     message: String
 })
 
-console.log(props.info)
 
 const requests = ref([...props?.info?.requests ?? []])
+
+const user = ref({
+    name: '',
+    employee_id: '',
+    role: '',
+    email: ''
+})
 
 watch(() => props?.info?.requests, (updatedRequest) => {
     requests.value = [...updatedRequest]
 })
+
+
+const manageRequestModal = ref(null)
+
+const openManageRequestModal = (data) => {
+    manageRequestModal.value?.open()
+    user.value = {
+        name: data?.user?.name,
+        employee_id: data?.user?.employee_id,
+        role: data?.user?.role,
+        email: data?.user?.email
+    }
+}
+
+const closeManageRequestModal = () => {
+    manageRequestModal.value?.close()
+}
 
 </script>
