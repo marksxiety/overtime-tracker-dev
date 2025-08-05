@@ -287,6 +287,10 @@ class OvertimeRequestController extends Controller
                     'total_pending' => $total_pending,
                     'total_filed' => $total_filed,
                     'total_requests' => $total_requests
+                ],
+                'payload' => [
+                    'year' => $year,
+                    'week' => $week
                 ]
             ],
             'success' => $success,
