@@ -9,7 +9,7 @@ export function identifyColorStatus(status) {
         case 'approved':
             return 'success'
         case 'filed':
-            return 'info'
+            return 'primary'
         default:
             return 'default'
     }
