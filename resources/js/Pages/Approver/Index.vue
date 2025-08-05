@@ -6,18 +6,7 @@
                     @click="closeManageRequestModal()">✕</button>
             </div>
             <div class="flex flex-col gap-2 w-full">
-                <ul class="steps w-full mb-6 bg-base-100" v-if="overtime.status.toUpperCase() !== 'CANCELED'">
-                    <li
-                        :class="['step text-sm', `step-${identifyColorStatus(overtime.status)}`, `text-${identifyColorStatus(overtime.status)}`]">
-                        {{ overtime.status }}</li>
-                    <li
-                        :class="['step text-sm break-normal', overtime.status === 'APPROVED' ? `step-${identifyColorStatus(overtime.status)} text-${identifyColorStatus(overtime.status)}` : '']">
-                        FOR APPROVAL</li>
-                    <li
-                        :class="['step text-sm', overtime.status === 'FILED' ? `step-${identifyColorStatus(overtime.status)} text-${identifyColorStatus(overtime.status)}` : '']">
-                        FILED
-                    </li>
-                </ul>
+                <Stepper :status="overtime.status"/>
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Employee Information</legend>
                     <div class="grid gap-2 mt-4">
@@ -119,18 +108,22 @@
                 </fieldset>
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Remarks</legend>
-                    <TextArea type="text" v-model="overtimeRequestForm.remarks" :message="overtimeRequestForm.errors?.remarks"
-                        placeholder="Enter any remarks regarding to request..." />
+                    <TextArea type="text" v-model="overtimeRequestForm.remarks"
+                        :message="overtimeRequestForm.errors?.remarks"
+                        :readonly="['FILED', 'DECLINED', 'CANCELED'].includes(overtime.status)" :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding to request...'"/>
                 </fieldset>
                 <div class="divider"></div>
                 <div class="flex justify-end gap-4">
                     <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
-                        <button class="btn btn-secondary" @click="updateOvertiemRequestStatus('DISAPPROVED')">DISAPPROVE</button>
-                        <button class="btn btn-primary" @click="updateOvertiemRequestStatus('APPROVED')">APPROVE</button>
+                        <button class="btn btn-secondary"
+                            @click="updateOvertiemRequestStatus('DISAPPROVED')">DISAPPROVE</button>
+                        <button class="btn btn-primary"
+                            @click="updateOvertiemRequestStatus('APPROVED')">APPROVE</button>
                     </div>
-                    <div v-if="overtime.status === 'APPROVED'" class="join join-vertical lg:join-horizontal">
-                        <button class="btn btn-secondary join-item">DECLINE</button>
-                        <button class="btn btn-primary join-item">FILED</button>
+                    <div v-if="overtime.status === 'APPROVED'" class="flex flex-end gap-2">
+                        <button class="btn btn-secondary"
+                            @click="updateOvertiemRequestStatus('DECLINED')">DECLINE</button>
+                        <button class="btn btn-primary" @click="updateOvertiemRequestStatus('FILED')">FILE</button>
                     </div>
                 </div>
             </div>
@@ -223,6 +216,7 @@ import Card from '../Components/Card.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
+import Stepper from '../Components/Stepper.vue'
 import { weeks, currentWeek } from '../utils/dropdownOptions.js'
 import Modal from '../Components/Modal.vue'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
@@ -311,9 +305,9 @@ const openManageRequestModal = (data) => {
     }
 
     // populate the data for form (to use in updating the request's status)
-    overtimeRequestForm.id = data?.id 
+    overtimeRequestForm.id = data?.id
     overtimeRequestForm.current_status = data?.overtime?.status,
-    overtimeRequestForm.remarks = data?.overtime?.remarks
+        overtimeRequestForm.remarks = data?.overtime?.remarks
 }
 
 const closeManageRequestModal = () => {
