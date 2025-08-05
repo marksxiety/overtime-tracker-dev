@@ -280,12 +280,14 @@ class OvertimeRequestController extends Controller
         return inertia('Approver/Index', [
             'info' => [
                 'requests' => $overtimelist,
-                'required_hours' => $required_hours ?? 0,
-                'total_hours' => $total_hours,
-                'total_approved' => $total_approved,
-                'total_pending' => $total_pending,
-                'total_filed' => $total_filed,
-                'total_requests' => $total_requests
+                'totals' => [
+                    'required_hours' => $required_hours ?? 0,
+                    'total_hours' => $total_hours,
+                    'total_approved' => $total_approved,
+                    'total_pending' => $total_pending,
+                    'total_filed' => $total_filed,
+                    'total_requests' => $total_requests
+                ]
             ],
             'success' => $success,
             'message' => $message
