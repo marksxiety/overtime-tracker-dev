@@ -1,10 +1,6 @@
 <template>
     <Modal ref="manageRequestModal" width="w-5xl">
         <div class="py-4 mt-2">
-            <div class="flex justify-end">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                    @click="closeManageRequestModal()">✕</button>
-            </div>
             <div class="flex flex-col gap-2 w-full">
                 <Stepper :status="overtime.status" />
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
@@ -41,7 +37,7 @@
 
 
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                    <legend class="text-sm font-semibold px-2">Schedule Information</legend>
+                    <legend class="text-sm font-semibold px-2">Registered Schedule</legend>
                     <div class="grid gap-2 mt-4">
                         <div class="flex flex-row gap-2">
                             <label class="label">
@@ -114,17 +110,22 @@
                         :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding to request...'" />
                 </fieldset>
                 <div class="divider"></div>
-                <div class="flex justify-end gap-4">
-                    <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
-                        <button class="btn btn-secondary"
-                            @click="updateOvertiemRequestStatus('DISAPPROVED')">DISAPPROVE</button>
-                        <button class="btn btn-primary"
-                            @click="updateOvertiemRequestStatus('APPROVED')">APPROVE</button>
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <button class="btn btn-neutral" @click="closeManageRequestModal()">CLOSE</button>
                     </div>
-                    <div v-if="overtime.status === 'APPROVED'" class="flex flex-end gap-2">
-                        <button class="btn btn-secondary"
-                            @click="updateOvertiemRequestStatus('DECLINED')">DECLINE</button>
-                        <button class="btn btn-primary" @click="updateOvertiemRequestStatus('FILED')">FILE</button>
+                    <div>
+                        <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
+                            <button class="btn btn-secondary"
+                                @click="updateOvertiemRequestStatus('DISAPPROVED')">DISAPPROVE</button>
+                            <button class="btn btn-primary"
+                                @click="updateOvertiemRequestStatus('APPROVED')">APPROVE</button>
+                        </div>
+                        <div v-if="overtime.status === 'APPROVED'" class="flex flex-end gap-2">
+                            <button class="btn btn-secondary"
+                                @click="updateOvertiemRequestStatus('DECLINED')">DECLINE</button>
+                            <button class="btn btn-primary" @click="updateOvertiemRequestStatus('FILED')">FILE</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -193,6 +194,11 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr v-if="requests.length === 0">
+                                <td colspan="5" class="text-center h-48 italic text-gray-400 py-4">
+                                    No pending request(s)
+                                </td>
+                            </tr>
                             <tr v-for="request in requests" :key="request.id">
                                 <td>{{ request.user.name }}</td>
                                 <td>{{ request.schedule.date }}</td>
@@ -238,12 +244,12 @@ const props = defineProps({
 const requests = ref([...props?.info?.requests ?? []])
 
 const card = ref({
-    total_requests: props?.info?.total_requests ?? 0,
-    total_approved: props?.info?.total_approved ?? 0,
-    total_pending: props?.info?.total_pending ?? 0,
-    required_hours: props?.info?.required_hours ?? 0,
-    total_filed: props?.info?.total_filed ?? 0,
-    total_hours: props?.info?.total_hours ?? 0,
+    total_requests: props?.info?.totals?.total_requests ?? 0,
+    total_approved: props?.info?.totals?.total_approved ?? 0,
+    total_pending: props?.info?.totals?.total_pending ?? 0,
+    required_hours: props?.info?.totals?.required_hours ?? 0,
+    total_filed: props?.info?.totals?.total_filed ?? 0,
+    total_hours: props?.info?.totals?.total_hours ?? 0,
 })
 
 const user = ref({
@@ -282,6 +288,9 @@ watch(() => props?.info?.requests, (updatedRequest) => {
     requests.value = [...updatedRequest]
 })
 
+watch(() => props?.info?.totals, (updatedTotals) => {
+    Object.assign(card.value, updatedTotals)
+})
 
 const manageRequestModal = ref(null)
 
