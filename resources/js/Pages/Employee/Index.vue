@@ -91,19 +91,7 @@
         <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
             <form @submit.prevent="submitCancelation()">
                 <!-- Stepper -->
-                <ul class="steps w-full mb-6" v-if="formFilledOvertime.current_status.toUpperCase() !== 'CANCELED'">
-                    <li
-                        :class="['step text-sm', `step-${identifyColorStatus(formFilledOvertime.current_status)}`, `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
-                        {{ formFilledOvertime.current_status }}</li>
-                    <li
-                        :class="['step text-sm break-normal', formFilledOvertime.current_status === 'APPROVED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
-                        FOR APPROVAL</li>
-                    <li
-                        :class="['step text-sm', formFilledOvertime.current_status === 'FILED' ? `step-${identifyColorStatus(formFilledOvertime.current_status)} text-${identifyColorStatus(formFilledOvertime.current_status)}` : '']">
-                        FILED
-                    </li>
-                </ul>
-
+                <Stepper :status="formFilledOvertime.current_status"/>
                 <!-- Filing Information -->
                 <div class="space-y-6 text-sm">
 
@@ -279,6 +267,7 @@ import Card from '../Components/Card.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
+import Stepper from '../Components/Stepper.vue'
 
 
 // ========== Global Constants ==========
