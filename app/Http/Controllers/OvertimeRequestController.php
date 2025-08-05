@@ -207,6 +207,16 @@ class OvertimeRequestController extends Controller
             foreach ($overtime_requests as $overtime) {
 
                 if ($overtime->status === 'PENDING') {
+
+                    // create instance on timestamps
+                    $overtime_start = Carbon::createFromFormat('H:i:s', $overtime->start_time);
+                    $overtime_end = Carbon::createFromFormat('H:i:s', $overtime->end_time);
+
+                    $schedule_start = $overtime->shift_start === null ? '--' :  Carbon::createFromFormat('H:i:s', $overtime->shift_start);
+                    $schedule_end = $overtime->shift_start === null ? '--' :  Carbon::createFromFormat('H:i:s', $overtime->shift_end);
+
+                    $overtime_created = Carbon::createFromFormat('Y-m-d H:i:s', $overtime->created_at);
+
                     $overtimelist[] = [
                         'id' => $overtime->request_id,
                         'user' => [
@@ -219,17 +229,17 @@ class OvertimeRequestController extends Controller
                             'date' => $overtime->date,
                             'week' => $overtime->week,
                             'shift_code' => $overtime->shift_code ?? 'N/A',
-                            'shift_start' => $overtime->shift_start ?? '--',
-                            'shift_end' => $overtime->shift_end ?? '--',
+                            'shift_start' => $schedule_start === '--' ? '--' : $schedule_start->format('h:i A'),
+                            'shift_end' => $schedule_end === '--' ? '--' : $schedule_end->format('h:i A'),
                         ],
                         'overtime' => [
-                            'start_time' => $overtime->start_time,
-                            'end_time' => $overtime->end_time,
+                            'start_time' => $overtime_start->format('h:i A'),
+                            'end_time' =>  $overtime_end->format('h:i A'),
                             'hours' => $overtime->hours,
                             'status' => $overtime->status,
                             'reason' => $overtime->reason,
                             'remarks' => $overtime->remarks,
-                            'created_at' => $overtime->created_at
+                            'created_at' => $overtime_created->format('l, jS \of F Y, h:i:s A')
                         ]
                     ];
                     $total_pending++;
