@@ -98,15 +98,30 @@ class OvertimeRequestController extends Controller
     public function updateOvertimeRequestStatus(Request $request)
     {
         try {
-            $validate = Validator::make(['current_status' => $request->current_status], [
-                'current_status' => ['required', Rule::in('PENDING')]
-            ]);
+            $rules = [];
 
-            if ($validate->fails()) {
-                return redirect()->back()->withErrors(['message' => 'Invalid Status']);
+            // force the user to input remarks if the status is disapproved or declined
+            // this will provde the user proper reason why their overtime request has been declined or disapproved
+            if (in_array($request->update_status, ['DISAPPROVED', 'DECLINED'])) {
+                $rules['remarks'] = 'required|string|min:10';
+            } else {
+                $rules['current_status'] = ['required', Rule::in(['PENDING', 'APPROVED'])];
             }
 
-            OvertimeRequest::where('id', $request->id)->update(['status' => $request->update_status]);
+            $messages = [
+                'current_status.in' => 'The selected status is invalid. Only PENDING or APPROVED are allowed.',
+                'current_status.required' => 'The current status field is required.'
+            ];
+
+            $validate = Validator::make($request->all(), $rules, $messages);
+
+            if ($validate->fails()) {
+                return redirect()->back()
+                    ->withErrors($validate)
+                    ->withInput();
+            }
+
+            OvertimeRequest::where('id', $request->id)->update(['status' => $request->update_status, 'remarks' => $request->remarks]);
             return redirect()->back();
         } catch (\Throwable $th) {
             return redirect()->back()->withErrors("Cancelation failed due to $th");
