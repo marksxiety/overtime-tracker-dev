@@ -1,6 +1,6 @@
 <template>
-    <dialog class="modal h-auto" ref="dialog">
-        <div class="modal-box w-2/5 max-w-5xl">
+    <dialog class="modal" ref="dialog">
+        <div class="modal-box  h-auto max-h-[85vh] overflow-auto w-2/5 max-w-5xl">
             <slot></slot>
         </div>
     </dialog>
