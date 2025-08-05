@@ -112,19 +112,38 @@
                 <div class="divider"></div>
                 <div class="flex justify-between gap-4">
                     <div>
-                        <button class="btn btn-neutral" @click="closeManageRequestModal()">CLOSE</button>
+                        <button class="btn btn-neutral" :disabled="overtimeRequestForm.processing"
+                            @click="closeManageRequestModal()">CLOSE</button>
                     </div>
                     <div>
                         <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
-                            <button class="btn btn-secondary"
-                                @click="updateOvertiemRequestStatus('DISAPPROVED')">DISAPPROVE</button>
-                            <button class="btn btn-primary"
-                                @click="updateOvertiemRequestStatus('APPROVED')">APPROVE</button>
+                            <button class="btn btn-secondary" :disabled="overtimeRequestForm.processing"
+                                @click="updateOvertiemRequestStatus('DISAPPROVED')">
+                                <span
+                                    v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'DISAPPROVED'"
+                                    class="loading loading-spinner"></span>
+                                <span>DISAPPROVE</span>
+                            </button>
+                            <button class="btn btn-primary" :disabled="overtimeRequestForm.processing"
+                                @click="updateOvertiemRequestStatus('APPROVED')"> <span
+                                    v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'APPROVED'"
+                                    class="
+                                    loading loading-spinner"></span>
+                                <span>APPROVE</span></button>
                         </div>
                         <div v-if="overtime.status === 'APPROVED'" class="flex flex-end gap-2">
-                            <button class="btn btn-secondary"
-                                @click="updateOvertiemRequestStatus('DECLINED')">DECLINE</button>
-                            <button class="btn btn-primary" @click="updateOvertiemRequestStatus('FILED')">FILE</button>
+                            <button class="btn btn-secondary" :disabled="overtimeRequestForm.processing"
+                                @click="updateOvertiemRequestStatus('DECLINED')"><span
+                                    v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'DECLINED'"
+                                    class="
+                                    loading loading-spinner"></span>
+                                <span>DECLINE</span></button>
+                            <button class="btn btn-primary" :disabled="overtimeRequestForm.processing"
+                                @click="updateOvertiemRequestStatus('FILED')"><span
+                                    v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'FILED'"
+                                    class="
+                                    loading loading-spinner"></span>
+                                <span>FILE</span></button>
                         </div>
                     </div>
                 </div>
