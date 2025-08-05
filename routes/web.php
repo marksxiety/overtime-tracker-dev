@@ -41,10 +41,11 @@ Route::middleware('employee')->group(function () {
 
     // overtime request routes
     Route::post('/overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
-    Route::post('/overtime/cancel', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.cancel');
+    Route::post('/overtime/update', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update');
 });
 
 Route::middleware('admin')->group(function () {
+    
     // shift code requests (axios)
     Route::get('/shift', [ShiftContoller::class, 'registeredShiftCodes'])->name('shifts');
     Route::post('/shift/register', [ShiftContoller::class, 'insertShiftCode'])->name('shift.register'); // insertion route
@@ -57,6 +58,8 @@ Route::middleware('approver')->group(function () {
     Route::get('/hours', [RequiredHoursController::class, 'registeredRequiredHours'])->name('hours');
     Route::post('/hours/register', [RequiredHoursController::class, 'registerRequiredHours'])->name('hours.register');
     Route::put('/hours/{requiredHours}', [RequiredHoursController::class, 'updateRequiredHour'])->name('hours.update');
+
+    Route::post('/overtime/update', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update');
 });
 
 Route::get('/unauthorized', fn() => Inertia::render('Unauthorized'))->name('unauthorized');
