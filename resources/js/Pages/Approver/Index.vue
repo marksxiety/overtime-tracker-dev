@@ -1,96 +1,137 @@
 <template>
-    <Modal ref="manageRequestModal" width="w-11/12">
+    <Modal ref="manageRequestModal" width="w-5xl">
         <div class="py-4 mt-2">
             <div class="flex justify-end">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
                     @click="closeManageRequestModal()">✕</button>
             </div>
             <div class="flex flex-col gap-2 w-full">
-                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full">
+                <ul class="steps w-full mb-6 bg-base-100" v-if="overtime.status.toUpperCase() !== 'CANCELED'">
+                    <li
+                        :class="['step text-sm', `step-${identifyColorStatus(overtime.status)}`, `text-${identifyColorStatus(overtime.status)}`]">
+                        {{ overtime.status }}</li>
+                    <li
+                        :class="['step text-sm break-normal', overtime.status === 'APPROVED' ? `step-${identifyColorStatus(overtime.status)} text-${identifyColorStatus(overtime.status)}` : '']">
+                        FOR APPROVAL</li>
+                    <li
+                        :class="['step text-sm', overtime.status === 'FILED' ? `step-${identifyColorStatus(overtime.status)} text-${identifyColorStatus(overtime.status)}` : '']">
+                        FILED
+                    </li>
+                </ul>
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Employee Information</legend>
-                    <div class="flex flex-col gap-4 mt-4 w-full">
-                        <div class="grid grid-cols-2 gap-4">
-                            <TextInput name="Name:" type="text" v-model="user.name" :readonly="true"
-                                :placeholder="''" />
-                            <TextInput name="Email:" type="text" v-model="user.email" :readonly="true"
-                                :placeholder="''" />
+                    <div class="grid gap-2 mt-4">
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Name:</span>
+                            </label>
+                            <span class="font-medium">{{ user.name }}</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <TextInput name="Employee ID:" type="text" v-model="user.employee_id" :readonly="true"
-                                :placeholder="''" />
-                            <TextInput name="Role:" type="text" v-model="user.role" :readonly="true"
-                                :placeholder="''" />
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Email:</span>
+                            </label>
+                            <span class="font-medium">{{ user.email }}</span>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Employee ID: </span>
+                            </label>
+                            <span class="font-medium'">
+                                {{ user.employee_id }}</span>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Role: </span>
+                            </label>
+                            <span class="font-medium capitalize">
+                                {{ user.role }}</span>
                         </div>
                     </div>
                 </fieldset>
-                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full mt-6">
+
+
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Schedule Information</legend>
-                    <div class="flex flex-col gap-4 mt-4 w-full">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Date:" type="text" v-model="schedule.date" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-1">
-                                <TextInput name="Week:" type="text" v-model="schedule.week" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
+                    <div class="grid gap-2 mt-4">
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Date: </span>
+                            </label>
+                            <span class="font-medium">{{ schedule.date }}</span>
                         </div>
-                        <div class="grid grid-cols-5 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Date:" type="text" v-model="schedule.shift_code" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-2">
-                                <TextInput name="Week:" type="text" v-model="schedule.shift_start" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-2">
-                                <TextInput name="Week:" type="text" v-model="schedule.shift_end" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Week: </span>
+                            </label>
+                            <span class="font-medium">{{ schedule.week }}</span>
                         </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Shift Code: </span>
+                            </label>
+                            <span class="font-medium">{{ schedule.shift_code }}</span>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Schedule: </span>
+                            </label>
+                            <span class="font-medium">{{ schedule.shift_start }} → {{
+                                schedule.shift_end }}</span>
+                        </div>
+
                     </div>
                 </fieldset>
-                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md w-full mt-6">
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Overtime Request</legend>
-                    <div class="flex flex-col gap-4 mt-4 w-full">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Date:" type="text" v-model="schedule.date" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-1">
-                                <TextInput name="Week:" type="text" v-model="schedule.week" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
+                    <div class="grid gap-2 mt-4">
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Filing Date: </span>
+                            </label>
+                            <span class="font-medium">{{ overtime.created_at }}</span>
                         </div>
-                        <div class="grid grid-cols-5 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Date:" type="text" v-model="schedule.shift_code" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-2">
-                                <TextInput name="Week:" type="text" v-model="schedule.shift_start" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-2">
-                                <TextInput name="Week:" type="text" v-model="schedule.shift_end" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Time: </span>
+                            </label>
+                            <span class="font-medium">{{ overtime.start_time }} → {{
+                                overtime.end_time }}</span>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Hour(s): </span>
+                            </label>
+                            <span class="font-medium">{{ overtime.hours }}</span>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <label class="label">
+                                <span class="label-text">Status: </span>
+                            </label>
+                            <span :class="['font-medium', `text-${identifyColorStatus(overtime.status)}`]">{{
+                                overtime.status }}</span>
                         </div>
                     </div>
                 </fieldset>
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                    <legend class="text-sm font-semibold px-2">Reason</legend>
+                    <p class="mt-2">{{ overtime.reason }}</p>
+                </fieldset>
+                <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                    <legend class="text-sm font-semibold px-2">Remarks</legend>
+                    <TextArea type="text" v-model="overtime.remarks"
+                        placeholder="Enter any remarks regarding to request..." />
+                </fieldset>
+                <div class="divider"></div>
                 <div class="flex justify-end gap-4">
-                    <button type="submit" class="btn btn-success mt-4">
-                        <span>APPROVE</span>
-                    </button>
-                    <button type="submit" class="btn btn-error mt-4">
-                        <span>DISAPPROVE</span>
-                    </button>
-                    <button type="submit" class="btn btn-info mt-4">
-                        <span>FILED</span>
-                    </button>
+                    <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
+                        <button class="btn btn-secondary">DISAPPROVE</button>
+                        <button class="btn btn-primary">APPROVE</button>
+                    </div>
+                    <div v-if="overtime.status === 'APPROVED'" class="join join-vertical lg:join-horizontal">
+                        <button class="btn btn-secondary join-item">DECLINE</button>
+                        <button class="btn btn-primary join-item">FILED</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -181,8 +222,10 @@ import { onMounted, ref, inject, watch } from 'vue'
 import Card from '../Components/Card.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
+import TextArea from '../Components/TextArea.vue'
 import { weeks, currentWeek } from '../utils/dropdownOptions.js'
 import Modal from '../Components/Modal.vue'
+import { identifyColorStatus } from '../utils/colorIdentifier.js'
 
 const selectedWeek = ref(currentWeek())
 const selectedYear = ref('')
