@@ -211,57 +211,64 @@ class OvertimeRequestController extends Controller
                     'overtime_requests.reason',
                     'overtime_requests.remarks',
                     'overtime_requests.created_at'
-                )->whereIn('status', ['APPROVED', 'PENDING'])->whereYear('schedules.date', $year)->where('schedules.week', $week)->orderBy('created_at')->get();
+                )->where('status', 'PENDING')->whereYear('schedules.date', $year)->where('schedules.week', $week)->orderBy('created_at')->get();
 
-            $required_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
-            $total_hours = 0;
-            $total_approved = 0;
-            $total_pending = 0;
-            $total_filed = count($overtime_requests);
+            $required_registered_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
+            $totals = DB::table('overtime_requests')
+                ->join('schedules', 'schedules.id', '=', 'overtime_requests.employee_schedule_id')
+                ->whereYear('schedules.date', $year)
+                ->where('schedules.week', $week)
+                ->selectRaw("
+                    COUNT(*) as total_requests,
+                    SUM(CASE WHEN status = 'APPROVED' THEN 1 ELSE 0 END) as total_approved,
+                    SUM(CASE WHEN status = 'FILED' THEN 1 ELSE 0 END) as total_filed,
+                    SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as total_pending,
+                    SUM(CASE WHEN status = 'APPROVED' THEN hours ELSE 0 END) as total_hours")
+                ->first();
+
+            // consolidate the counted card countings
+            $total_filed = (int)$totals->total_filed;
+            $total_requests = $totals->total_requests;
+            $total_approved = (int)$totals->total_approved;
+            $total_pending = (int)$totals->total_pending;
+            $total_hours = $totals->total_hours;
+            $required_hours = $required_registered_hours->hours;
 
             foreach ($overtime_requests as $overtime) {
+                // create instance on timestamps
+                $overtime_start = Carbon::createFromFormat('H:i:s', $overtime->start_time);
+                $overtime_end = Carbon::createFromFormat('H:i:s', $overtime->end_time);
 
-                if ($overtime->status === 'PENDING') {
+                $schedule_start = $overtime->shift_start === null ? '--' :  Carbon::createFromFormat('H:i:s', $overtime->shift_start);
+                $schedule_end = $overtime->shift_start === null ? '--' :  Carbon::createFromFormat('H:i:s', $overtime->shift_end);
 
-                    // create instance on timestamps
-                    $overtime_start = Carbon::createFromFormat('H:i:s', $overtime->start_time);
-                    $overtime_end = Carbon::createFromFormat('H:i:s', $overtime->end_time);
+                $overtime_created = Carbon::createFromFormat('Y-m-d H:i:s', $overtime->created_at);
 
-                    $schedule_start = $overtime->shift_start === null ? '--' :  Carbon::createFromFormat('H:i:s', $overtime->shift_start);
-                    $schedule_end = $overtime->shift_start === null ? '--' :  Carbon::createFromFormat('H:i:s', $overtime->shift_end);
-
-                    $overtime_created = Carbon::createFromFormat('Y-m-d H:i:s', $overtime->created_at);
-
-                    $overtimelist[] = [
-                        'id' => $overtime->request_id,
-                        'user' => [
-                            'name' => $overtime->name,
-                            'employee_id' => $overtime->employeeid,
-                            'email' => $overtime->email,
-                            'role' => $overtime->role,
-                        ],
-                        'schedule' => [
-                            'date' => $overtime->date,
-                            'week' => $overtime->week,
-                            'shift_code' => $overtime->shift_code ?? 'N/A',
-                            'shift_start' => $schedule_start === '--' ? '--' : $schedule_start->format('h:i A'),
-                            'shift_end' => $schedule_end === '--' ? '--' : $schedule_end->format('h:i A'),
-                        ],
-                        'overtime' => [
-                            'start_time' => $overtime_start->format('h:i A'),
-                            'end_time' =>  $overtime_end->format('h:i A'),
-                            'hours' => $overtime->hours,
-                            'status' => $overtime->status,
-                            'reason' => $overtime->reason,
-                            'remarks' => $overtime->remarks,
-                            'created_at' => $overtime_created->format('l, jS \of F Y, h:i:s A')
-                        ]
-                    ];
-                    $total_pending++;
-                } else {
-                    $total_approved++;
-                    $total_hours += (int)$overtime->hours;
-                }
+                $overtimelist[] = [
+                    'id' => $overtime->request_id,
+                    'user' => [
+                        'name' => $overtime->name,
+                        'employee_id' => $overtime->employeeid,
+                        'email' => $overtime->email,
+                        'role' => $overtime->role,
+                    ],
+                    'schedule' => [
+                        'date' => $overtime->date,
+                        'week' => $overtime->week,
+                        'shift_code' => $overtime->shift_code ?? 'N/A',
+                        'shift_start' => $schedule_start === '--' ? '--' : $schedule_start->format('h:i A'),
+                        'shift_end' => $schedule_end === '--' ? '--' : $schedule_end->format('h:i A'),
+                    ],
+                    'overtime' => [
+                        'start_time' => $overtime_start->format('h:i A'),
+                        'end_time' =>  $overtime_end->format('h:i A'),
+                        'hours' => $overtime->hours,
+                        'status' => $overtime->status,
+                        'reason' => $overtime->reason,
+                        'remarks' => $overtime->remarks,
+                        'created_at' => $overtime_created->format('l, jS \of F Y, h:i:s A')
+                    ]
+                ];
             }
 
             $success = true;
@@ -273,11 +280,12 @@ class OvertimeRequestController extends Controller
         return inertia('Approver/Index', [
             'info' => [
                 'requests' => $overtimelist,
-                'required' => $required_hours ?? 0,
+                'required_hours' => $required_hours ?? 0,
                 'total_hours' => $total_hours,
                 'total_approved' => $total_approved,
                 'total_pending' => $total_pending,
-                'total_filed' => $total_filed
+                'total_filed' => $total_filed,
+                'total_requests' => $total_requests
             ],
             'success' => $success,
             'message' => $message
