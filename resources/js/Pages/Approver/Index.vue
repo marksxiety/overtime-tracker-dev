@@ -145,9 +145,15 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="col-span-1 card bg-base-100 shadow">
                 <div class="card-body">
-                    <h2 class="card-title">Week {{ selectedWeek }} Overview</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore laudantium nemo id ut, fugiat
-                        reiciendis excepturi iusto aspernatur optio harum.</p>
+                    <h2 class="card-title">Week {{ selectedWeek }} Overtime Overview</h2>
+                    <p>
+                        In Week {{ selectedWeek }}, a total of {{ card.total_requests }} overtime requests were
+                        submitted,
+                        with {{ card.total_approved }} approved and {{ card.total_pending }} still pending review.
+                        Employees filed for {{ card.total_filed }} hours, contributing {{ card.total_hours }} actual
+                        hours of overtime.
+                        The required target for the week was {{ card.required_hours }} hours.
+                    </p>
                 </div>
             </div>
 
