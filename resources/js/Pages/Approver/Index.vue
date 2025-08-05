@@ -6,7 +6,7 @@
                     @click="closeManageRequestModal()">✕</button>
             </div>
             <div class="flex flex-col gap-2 w-full">
-                <Stepper :status="overtime.status"/>
+                <Stepper :status="overtime.status" />
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Employee Information</legend>
                     <div class="grid gap-2 mt-4">
@@ -110,7 +110,8 @@
                     <legend class="text-sm font-semibold px-2">Remarks</legend>
                     <TextArea type="text" v-model="overtimeRequestForm.remarks"
                         :message="overtimeRequestForm.errors?.remarks"
-                        :readonly="['FILED', 'DECLINED', 'CANCELED'].includes(overtime.status)" :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding to request...'"/>
+                        :disabled="['FILED', 'DECLINED', 'CANCELED'].includes(overtime.status)"
+                        :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding to request...'" />
                 </fieldset>
                 <div class="divider"></div>
                 <div class="flex justify-end gap-4">
@@ -132,12 +133,11 @@
     <div class="flex flex-col gap-6 p-4 h-screen">
         <!-- Stat Cards -->
         <div class="stats stats-horizontal shadow flex-wrap">
-            <Card title="Total Approved" :value="props?.info?.total_approved ?? 0" />
-            <Card title="For Filing" :value="0" />
-            <Card title="Pending Approvals" :value="props?.info?.total_pending ?? 0" />
-            <Card title="Required Hours Left"
-                :value="((props?.info?.required.hours ?? 0) - (props?.info?.total_hours ?? 0)) + ' hrs'" />
-            <Card title="Total Filed Requests" :value="props?.info?.total_filed ?? 0" />
+            <Card title="Total Filed" :value="card.total_filed" />
+            <Card title="For Filing" :value="card.total_approved" />
+            <Card title="Pending Approvals" :value="card.total_pending" />
+            <Card title="Required Hours Left" :value="((card.required_hours) - (card.total_hours)) + ' hrs'" />
+            <Card title="Total Requests" :value="card.total_requests" />
         </div>
 
         <!-- Weekly Overview -->
@@ -154,12 +154,12 @@
             <div class="col-span-1 card bg-base-100 shadow">
                 <div class="card-body">
                     <h2 class="card-title">Weekly Overtime Usage</h2>
-                    <progress class="progress progress-primary w-full" :value="props?.info?.total_hours"
-                        :max="props?.info?.required?.hours">
+                    <progress class="progress progress-primary w-full" :value="card.total_hours"
+                        :max="card.required_hours">
                     </progress>
 
                     <p class="text-sm text-right mt-1">
-                        {{ props?.info?.total_hours }} / {{ props?.info?.required?.hours }} hrs consumed
+                        {{ card.total_hours }} / {{ card.required_hours }} hrs consumed
                     </p>
 
                 </div>
@@ -233,9 +233,19 @@ const props = defineProps({
     message: String
 })
 
-console.log(props.info)
+
 
 const requests = ref([...props?.info?.requests ?? []])
+
+const card = ref({
+    total_requests: props?.info?.total_requests ?? 0,
+    total_approved: props?.info?.total_approved ?? 0,
+    total_pending: props?.info?.total_pending ?? 0,
+    required_hours: props?.info?.required_hours ?? 0,
+    total_filed: props?.info?.total_filed ?? 0,
+    total_hours: props?.info?.total_hours ?? 0,
+})
+
 const user = ref({
     name: '',
     employee_id: '',
