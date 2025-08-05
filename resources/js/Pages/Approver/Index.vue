@@ -173,11 +173,13 @@
                 <div class="flex justify-between mb-4">
                     <h2 class="card-title">Pending Approvals</h2>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-1">
-                            <SelectOption :options="weeks" v-model="selectedWeek" margin='' />
+                        <div class="col-span-1 w-96">
+                            <SelectOption :options="weeks" v-model="selectedWeek" margin=''
+                                @change="handleWeekSelection()" />
                         </div>
-                        <div class="col-span-1">
-                            <TextInput type="text" placeholder="Search here..." v-model="selectedYear" margin="" />
+                        <div class="col-span-1 w-96">
+                            <SelectOption :options="years" v-model="selectedYear" margin=''
+                                @change="handleWeekSelection()" />
                         </div>
                     </div>
                 </div>
@@ -224,13 +226,11 @@ import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
 import Stepper from '../Components/Stepper.vue'
-import { weeks, currentWeek } from '../utils/dropdownOptions.js'
+import { weeks, years, currentWeek } from '../utils/dropdownOptions.js'
 import Modal from '../Components/Modal.vue'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, router } from '@inertiajs/vue3'
 
-const selectedWeek = ref(currentWeek())
-const selectedYear = ref('')
 const toast = inject('toast')
 
 const props = defineProps({
@@ -238,8 +238,6 @@ const props = defineProps({
     success: Boolean,
     message: String
 })
-
-
 
 const requests = ref([...props?.info?.requests ?? []])
 
@@ -251,6 +249,10 @@ const card = ref({
     total_filed: props?.info?.totals?.total_filed ?? 0,
     total_hours: props?.info?.totals?.total_hours ?? 0,
 })
+
+const selectedWeek = ref(props?.info?.payload?.week)
+const selectedYear = ref(props?.info?.payload?.year)
+
 
 const user = ref({
     name: '',
@@ -284,12 +286,22 @@ const overtimeRequestForm = useForm({
     remarks: ''
 })
 
+// ===== Watchers =====
+
 watch(() => props?.info?.requests, (updatedRequest) => {
     requests.value = [...updatedRequest]
 })
 
 watch(() => props?.info?.totals, (updatedTotals) => {
     Object.assign(card.value, updatedTotals)
+})
+
+watch(() => props.info.payload.week, (newWeek) => {
+    selectedWeek.value = newWeek
+})
+
+watch(() => props.info.payload.year, (newYear) => {
+    selectedYear.value = newYear
 })
 
 const manageRequestModal = ref(null)
@@ -334,6 +346,8 @@ const closeManageRequestModal = () => {
     manageRequestModal.value?.close()
 }
 
+// === Requests ===
+
 const updateOvertiemRequestStatus = (status) => {
     if (status && overtimeRequestForm.id) {
         overtimeRequestForm.update_status = status
@@ -353,6 +367,15 @@ const updateOvertiemRequestStatus = (status) => {
     } else {
         toast('Failed to update schedule. Please try again', 'error')
     }
+}
+
+const handleWeekSelection = () => {
+    router.get(route('main'), {
+        year: selectedYear.value,
+        week: selectedWeek.value
+    }, {
+        preserveState: false
+    })
 }
 
 </script>
