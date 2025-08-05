@@ -177,17 +177,15 @@
         <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <div class="flex justify-between mb-4">
+
                     <h2 class="card-title">Pending Approvals</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-1 w-96">
-                            <SelectOption :options="weeks" v-model="selectedWeek" margin=''
-                                @change="handleWeekSelection()" />
-                        </div>
-                        <div class="col-span-1 w-96">
-                            <SelectOption :options="years" v-model="selectedYear" margin=''
-                                @change="handleWeekSelection()" />
-                        </div>
+                    <div class="flex flex-row flex-end gap-4 w-1/4">
+                        <SelectOption :options="weeks" v-model="selectedWeek" margin=''
+                            @change="handleWeekSelection()" />
+                        <SelectOption :options="years" v-model="selectedYear" margin=''
+                            @change="handleWeekSelection()" />
                     </div>
+
                 </div>
 
                 <div class="overflow-x-auto min-h-[40vh] max-h-[60vh]">
