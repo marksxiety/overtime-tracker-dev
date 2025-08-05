@@ -119,14 +119,14 @@
                 </fieldset>
                 <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                     <legend class="text-sm font-semibold px-2">Remarks</legend>
-                    <TextArea type="text" v-model="overtime.remarks"
+                    <TextArea type="text" v-model="overtimeRequestForm.remarks" :message="overtimeRequestForm.errors?.remarks"
                         placeholder="Enter any remarks regarding to request..." />
                 </fieldset>
                 <div class="divider"></div>
                 <div class="flex justify-end gap-4">
                     <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
-                        <button class="btn btn-secondary">DISAPPROVE</button>
-                        <button class="btn btn-primary">APPROVE</button>
+                        <button class="btn btn-secondary" @click="updateOvertiemRequestStatus('DISAPPROVED')">DISAPPROVE</button>
+                        <button class="btn btn-primary" @click="updateOvertiemRequestStatus('APPROVED')">APPROVE</button>
                     </div>
                     <div v-if="overtime.status === 'APPROVED'" class="join join-vertical lg:join-horizontal">
                         <button class="btn btn-secondary join-item">DECLINE</button>
@@ -226,9 +226,11 @@ import TextArea from '../Components/TextArea.vue'
 import { weeks, currentWeek } from '../utils/dropdownOptions.js'
 import Modal from '../Components/Modal.vue'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
+import { useForm } from '@inertiajs/vue3'
 
 const selectedWeek = ref(currentWeek())
 const selectedYear = ref('')
+const toast = inject('toast')
 
 const props = defineProps({
     info: Object,
@@ -239,7 +241,6 @@ const props = defineProps({
 console.log(props.info)
 
 const requests = ref([...props?.info?.requests ?? []])
-
 const user = ref({
     name: '',
     employee_id: '',
@@ -265,6 +266,13 @@ const overtime = ref({
     remarks: '',
 })
 
+const overtimeRequestForm = useForm({
+    id: '',
+    current_status: '',
+    update_status: '',
+    remarks: ''
+})
+
 watch(() => props?.info?.requests, (updatedRequest) => {
     requests.value = [...updatedRequest]
 })
@@ -274,6 +282,9 @@ const manageRequestModal = ref(null)
 
 const openManageRequestModal = (data) => {
     manageRequestModal.value?.open()
+
+    // id of the overtime request itself (will use for update status)
+    // for events like approval, disapproval, declining, or filing
     user.value = {
         name: data?.user?.name,
         employee_id: data?.user?.employee_id,
@@ -299,10 +310,35 @@ const openManageRequestModal = (data) => {
         remarks: data?.overtime?.remarks,
     }
 
+    // populate the data for form (to use in updating the request's status)
+    overtimeRequestForm.id = data?.id 
+    overtimeRequestForm.current_status = data?.overtime?.status,
+    overtimeRequestForm.remarks = data?.overtime?.remarks
 }
 
 const closeManageRequestModal = () => {
     manageRequestModal.value?.close()
+}
+
+const updateOvertiemRequestStatus = (status) => {
+    if (status && overtimeRequestForm.id) {
+        overtimeRequestForm.update_status = status
+        overtimeRequestForm.post(route('overtime.update'), {
+            onSuccess: () => {
+                overtimeRequestForm.reset()
+                closeManageRequestModal()
+                setTimeout(() => {
+                    toast(`Overtime request has been ${status}`, 'success')
+                }, 200);
+            },
+            onError: (errors) => {
+                toast('Failed to update schedule. Please try again', 'error')
+                console.log(errors)
+            }
+        })
+    } else {
+        toast('Failed to update schedule. Please try again', 'error')
+    }
 }
 
 </script>
