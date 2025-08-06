@@ -1,4 +1,150 @@
 <template>
+  <Modal ref="manageRequestModal" width="w-5xl">
+    <div class="py-4 mt-2">
+      <div class="flex flex-col gap-2 w-full">
+        <Stepper :status="overtime.status" />
+        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+          <legend class="text-sm font-semibold px-2">Employee Information</legend>
+          <div class="grid gap-2 mt-4">
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Name:</span>
+              </label>
+              <span class="font-medium">{{ user.name }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Email:</span>
+              </label>
+              <span class="font-medium">{{ user.email }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Employee ID: </span>
+              </label>
+              <span class="font-medium'">
+                {{ user.employee_id }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Role: </span>
+              </label>
+              <span class="font-medium capitalize">
+                {{ user.role }}</span>
+            </div>
+          </div>
+        </fieldset>
+
+
+        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+          <legend class="text-sm font-semibold px-2">Registered Schedule</legend>
+          <div class="grid gap-2 mt-4">
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Date: </span>
+              </label>
+              <span class="font-medium">{{ schedule.date }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Week: </span>
+              </label>
+              <span class="font-medium">{{ schedule.week }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Shift Code: </span>
+              </label>
+              <span class="font-medium">{{ schedule.shift_code }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Schedule: </span>
+              </label>
+              <span class="font-medium">{{ schedule.shift_start }} → {{
+                schedule.shift_end }}</span>
+            </div>
+
+          </div>
+        </fieldset>
+        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+          <legend class="text-sm font-semibold px-2">Overtime Request</legend>
+          <div class="grid gap-2 mt-4">
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Filing Date: </span>
+              </label>
+              <span class="font-medium">{{ overtime.created_at }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Time: </span>
+              </label>
+              <span class="font-medium">{{ overtime.start_time }} → {{
+                overtime.end_time }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Hour(s): </span>
+              </label>
+              <span class="font-medium">{{ overtime.hours }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+              <label class="label">
+                <span class="label-text">Status: </span>
+              </label>
+              <span :class="['font-medium', `text-${identifyColorStatus(overtime.status)}`]">{{
+                overtime.status }}</span>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+          <legend class="text-sm font-semibold px-2">Reason</legend>
+          <p class="mt-2">{{ overtime.reason }}</p>
+        </fieldset>
+        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+          <legend class="text-sm font-semibold px-2">Remarks</legend>
+          <TextArea type="text" v-model="overtimeRequestForm.remarks" :message="overtimeRequestForm.errors?.remarks"
+            :disabled="['FILED', 'DECLINED', 'CANCELED'].includes(overtime.status)"
+            :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding to request...'" />
+        </fieldset>
+        <div class="divider"></div>
+        <div class="flex justify-between gap-4">
+          <div>
+            <button class="btn btn-neutral" :disabled="overtimeRequestForm.processing"
+              @click="closeManageRequestModal()">CLOSE</button>
+          </div>
+          <div>
+            <div v-if="overtime.status === 'PENDING'" class="flex flex-end gap-2">
+              <button class="btn btn-secondary" :disabled="overtimeRequestForm.processing"
+                @click="updateOvertiemRequestStatus('DISAPPROVED')">
+                <span v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'DISAPPROVED'"
+                  class="loading loading-spinner"></span>
+                <span>DISAPPROVE</span>
+              </button>
+              <button class="btn btn-primary" :disabled="overtimeRequestForm.processing"
+                @click="updateOvertiemRequestStatus('APPROVED')"> <span
+                  v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'APPROVED'" class="
+                                    loading loading-spinner"></span>
+                <span>APPROVE</span></button>
+            </div>
+            <div v-if="overtime.status === 'APPROVED'" class="flex flex-end gap-2">
+              <button class="btn btn-secondary" :disabled="overtimeRequestForm.processing"
+                @click="updateOvertiemRequestStatus('DECLINED')"><span
+                  v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'DECLINED'" class="
+                                    loading loading-spinner"></span>
+                <span>DECLINE</span></button>
+              <button class="btn btn-primary" :disabled="overtimeRequestForm.processing"
+                @click="updateOvertiemRequestStatus('FILED')"><span
+                  v-if="overtimeRequestForm.processing && overtimeRequestForm.update_status === 'FILED'" class="
+                                    loading loading-spinner"></span>
+                <span>FILE</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Modal>
   <div class="flex flex-col gap-6 p-4 h-full">
     <!-- Breadcrumbs -->
     <div class="breadcrumbs text-sm">
@@ -118,6 +264,13 @@ const overtime = ref({
   remarks: '',
 })
 
+const overtimeRequestForm = useForm({
+  id: '',
+  current_status: '',
+  update_status: '',
+  remarks: ''
+})
+
 // ===== Watchers =====
 
 watch(() => props?.info?.requests, (updatedRequest) => {
@@ -131,6 +284,75 @@ watch(() => props.info.payload.week, (newWeek) => {
 watch(() => props.info.payload.year, (newYear) => {
   selectedYear.value = newYear
 })
+
+
+
+const manageRequestModal = ref(null)
+
+const openManageRequestModal = (data) => {
+  manageRequestModal.value?.open()
+
+  // id of the overtime request itself (will use for update status)
+  // for events like approval, disapproval, declining, or filing
+  user.value = {
+    name: data?.user?.name,
+    employee_id: data?.user?.employee_id,
+    role: data?.user?.role,
+    email: data?.user?.email
+  }
+
+  schedule.value = {
+    date: data?.schedule?.date,
+    shift_code: data?.schedule?.shift_code,
+    shift_start: data?.schedule?.shift_start,
+    shift_end: data?.schedule?.shift_end,
+    week: data?.schedule?.week,
+  }
+
+  overtime.value = {
+    start_time: data?.overtime?.start_time,
+    end_time: data?.overtime?.end_time,
+    hours: data?.overtime?.hours,
+    status: data?.overtime?.status,
+    created_at: data?.overtime?.created_at,
+    reason: data?.overtime?.reason,
+    remarks: data?.overtime?.remarks,
+  }
+
+  // populate the data for form (to use in updating the request's status)
+  overtimeRequestForm.id = data?.id
+  overtimeRequestForm.current_status = data?.overtime?.status,
+    overtimeRequestForm.remarks = data?.overtime?.remarks
+}
+
+const closeManageRequestModal = () => {
+  manageRequestModal.value?.close()
+}
+
+
+// === Requests ===
+
+const updateOvertiemRequestStatus = (status) => {
+  if (status && overtimeRequestForm.id) {
+    overtimeRequestForm.update_status = status
+    overtimeRequestForm.post(route('overtime.update'), {
+      onSuccess: () => {
+        overtimeRequestForm.reset()
+        closeManageRequestModal()
+        setTimeout(() => {
+          toast(`Overtime request has been ${status}`, 'success')
+        }, 200);
+      },
+      onError: (errors) => {
+        toast('Failed to update schedule. Please try again', 'error')
+        console.log(errors)
+      }
+    })
+  } else {
+    toast('Failed to update schedule. Please try again', 'error')
+  }
+}
+
 
 const handleWeekSelection = () => {
   router.get(route('overtime.filing'), {
