@@ -1,10 +1,11 @@
 <template>
-    <component :is="routename ? Link : 'div'" :href="routename ? route(routename) : undefined" :class="[
+    <component :is="routename ? Link : 'div'" :href="routename ? route(routename, parameters) : undefined" :class="[
         'stat bg-base-100 shadow',
         routename ? 'hover:bg-primary hover:cursor-pointer transition-colors duration-200' : ''
     ]">
         <div class="stat-title">{{ title }}</div>
         <div class="stat-value">{{ value }}</div>
+        <div v-if="description" class="stat-desc">{{ description }}</div>
     </component>
 </template>
 
@@ -14,6 +15,8 @@ import { Link } from '@inertiajs/vue3'
 defineProps({
     title: String | Number,
     value: String | Number,
-    routename: String
+    description: String,
+    routename: String,
+    parameters: Object
 })
 </script>
