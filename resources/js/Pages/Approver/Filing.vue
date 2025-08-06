@@ -150,7 +150,7 @@
     <div class="breadcrumbs text-sm">
       <ul>
         <li>
-          <Link :href="route('main')">Home</Link>
+          <Link :href="route('main')">Dashboard</Link>
         </li>
         <li>
           <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })">
