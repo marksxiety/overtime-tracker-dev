@@ -3,35 +3,26 @@
     <!-- Breadcrumbs -->
     <div class="breadcrumbs text-sm">
       <ul>
-        <li><Link :href="route('main')">Home</Link></li>
-        <li><Link :href="route('overtime.filing')">Filing Page</Link></li>
+        <li>
+          <Link :href="route('main')">Home</Link>
+        </li>
+        <li>
+          <Link :href="route('main')">Pending Page</Link>
+        </li>
+        <li>
+          <Link :href="route('overtime.filing')">Filing Page</Link>
+        </li>
       </ul>
     </div>
 
     <!-- Page Title -->
-    <div class="text-2xl font-semibold text-primary">For Filing Overtime Requests</div>
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-extrabold text-base-content">For Filing Overtime Requests</h1>
+    </div>
 
-    <!-- Stat Summary -->
     <div class="stats stats-horizontal shadow flex-wrap">
-      <div class="stat">
-        <div class="stat-title">Requests to File</div>
-        <div class="stat-value text-primary">{{ forFiling.length }}</div>
-        <div class="stat-desc">Approved but not yet filed</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-title">Total Overtime Hours</div>
-        <div class="stat-value text-accent">
-          {{ totalHours }}
-        </div>
-        <div class="stat-desc">Awaiting confirmation</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-title">Current Week</div>
-        <div class="stat-value">{{ selectedWeek }}</div>
-        <div class="stat-desc">{{ selectedYear }}</div>
-      </div>
+      <Card title="Requests to File" :value="'0'" description="Approved but not yet filed" />
+      <Card title="Total Overtime Hours" :value="'0'" description="Awaiting confirmation" />
     </div>
 
     <!-- Filing Table -->
@@ -39,16 +30,15 @@
       <div class="card-body">
         <div class="flex justify-between mb-4">
           <h2 class="card-title">Approved Requests Awaiting Filing</h2>
-
-          <div class="flex flex-row gap-4 w-1/3">
-            <SelectOption :options="weeks" v-model="selectedWeek" @change="fetchForFiling()" />
-            <SelectOption :options="years" v-model="selectedYear" @change="fetchForFiling()" />
+          <div class="flex flex-row flex-end gap-4 w-1/4">
+            <SelectOption :options="weeks" v-model="selectedWeek" margin='' @change="handleWeekSelection()" />
+            <SelectOption :options="years" v-model="selectedYear" margin='' @change="handleWeekSelection()" />
           </div>
         </div>
 
-        <div class="overflow-x-auto min-h-[40vh] max-h-[60vh]">
+        <div class="overflow-x-auto min-h-[10vh] max-h-[50vh]">
           <table class="table table-zebra w-full">
-            <thead class="sticky top-0 bg-base-300 z-10">
+            <thead class="sticky top-0 bg-base-300 z-10 rounded">
               <tr>
                 <th>Employee</th>
                 <th>Date</th>
@@ -58,16 +48,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="forFiling.length === 0">
-                <td colspan="5" class="text-center h-48 italic text-gray-400">No requests to file.</td>
+              <tr v-if="requests.length === 0">
+                <td colspan="5" class="text-center h-48 italic text-gray-400 py-4">
+                  No Awaiting Filing(s)
+                </td>
               </tr>
-              <tr v-for="request in forFiling" :key="request.id">
+              <tr v-for="request in requests" :key="request.id">
                 <td>{{ request.user.name }}</td>
                 <td>{{ request.schedule.date }}</td>
                 <td>{{ request.schedule.week }}</td>
                 <td>{{ request.overtime.hours }}</td>
                 <td class="flex gap-2 justify-center">
-                  <button class="btn btn-xs btn-primary" @click="fileOvertime(request)">File</button>
+                  <button class="btn btn-xs text-sm btn-primary"
+                    @click="openManageRequestModal(request)">Manage</button>
                 </td>
               </tr>
             </tbody>
@@ -79,43 +72,74 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { onMounted, ref, inject, watch } from 'vue'
+import Card from '../Components/Card.vue'
+import SelectOption from '../Components/SelectOption.vue'
+import TextInput from '../Components/TextInput.vue'
+import TextArea from '../Components/TextArea.vue'
+import Stepper from '../Components/Stepper.vue'
+import { weeks, years, currentWeek } from '../utils/dropdownOptions.js'
+import Modal from '../Components/Modal.vue'
+import { identifyColorStatus } from '../utils/colorIdentifier.js'
+import { useForm, router, Link } from '@inertiajs/vue3'
 
-// Mock week/year options
-const selectedWeek = ref(32)
-const selectedYear = ref(2025)
+const props = defineProps({
+  info: Object,
+  success: Boolean,
+  message: String
+})
 
-const weeks = Array.from({ length: 52 }, (_, i) => i + 1)
-const years = [2024, 2025]
+const selectedWeek = ref(props?.info?.payload?.week)
+const selectedYear = ref(props?.info?.payload?.year)
+const requests = ref([...props?.info?.requests ?? []])
 
-// Mock data (replace with props or Inertia response)
-const forFiling = ref([
-  {
-    id: 1,
-    user: { name: 'John Doe' },
-    schedule: { date: '2025-08-05', week: 32 },
-    overtime: { hours: 3 }
-  },
-  {
-    id: 2,
-    user: { name: 'Jane Smith' },
-    schedule: { date: '2025-08-06', week: 32 },
-    overtime: { hours: 2.5 }
-  }
-])
+const user = ref({
+  name: '',
+  employee_id: '',
+  role: '',
+  email: ''
+})
 
-const totalHours = computed(() =>
-  forFiling.value.reduce((sum, r) => sum + parseFloat(r.overtime.hours), 0).toFixed(2)
-)
+const schedule = ref({
+  date: '',
+  shift_code: '',
+  shift_start: '',
+  shift_end: '',
+  week: '',
+})
 
-function fetchForFiling() {
-  // Replace with actual API or Inertia request
-  console.log('Fetch filtered by week:', selectedWeek.value, 'year:', selectedYear.value)
-}
+const overtime = ref({
+  start_time: '',
+  end_time: '',
+  hours: '',
+  status: '',
+  created_at: '',
+  reason: '',
+  remarks: '',
+})
 
-function fileOvertime(request) {
-  // Replace with actual logic or modal trigger
-  console.log('Filing request:', request)
+// ===== Watchers =====
+
+watch(() => props?.info?.requests, (updatedRequest) => {
+  requests.value = [...updatedRequest]
+})
+
+watch(() => props.info.payload.week, (newWeek) => {
+  selectedWeek.value = newWeek
+})
+
+watch(() => props.info.payload.year, (newYear) => {
+  selectedYear.value = newYear
+})
+
+const handleWeekSelection = () => {
+  router.get(route('overtime.filing'), {
+    year: selectedYear.value,
+    week: selectedWeek.value,
+    status: 'APPROVED',
+    page: 'Approver/Filing'
+  }, {
+    preserveState: true
+  })
 }
 </script>
