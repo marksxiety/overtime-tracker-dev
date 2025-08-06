@@ -154,8 +154,9 @@
         <!-- Stat Cards -->
         <div class="stats stats-horizontal shadow flex-wrap">
             <Card title="Total Filed" :value="card.total_filed" />
-            <Card title="For Filing" :value="card.total_approved"  routename="overtime.filing"/>
-            <Card title="Pending Approvals" :value="card.total_pending"/>
+            <Card title="For Filing" :value="card.total_approved" routename="overtime.filing"
+                :parameters="{ status: 'APPROVED', page: 'Approver/Filing' }" />
+            <Card title="Pending Approvals" :value="card.total_pending" />
             <Card title="Total Requests" :value="card.total_requests" />
             <Card title="ROA Hours Left" :value="((card.required_hours) - (card.total_hours)).toFixed(2) + ' hrs'" />
         </div>
