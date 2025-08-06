@@ -153,10 +153,14 @@
           <Link :href="route('main')">Home</Link>
         </li>
         <li>
-          <Link :href="route('main')">Pending Page</Link>
+          <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })">
+          Pending Page
+          </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing')">Filing Page</Link>
+          <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing' })">
+          Filing Page
+          </Link>
         </li>
       </ul>
     </div>
