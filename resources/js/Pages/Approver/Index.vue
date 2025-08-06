@@ -156,7 +156,7 @@
             <Card title="Total Filed" :value="card.total_filed" />
             <Card title="For Filing" :value="card.total_approved" />
             <Card title="Pending Approvals" :value="card.total_pending" />
-            <Card title="Required Hours Left" :value="((card.required_hours) - (card.total_hours)) + ' hrs'" />
+            <Card title="ROA Hours Left" :value="((card.required_hours) - (card.total_hours)).toFixed(2) + ' hrs'" />
             <Card title="Total Requests" :value="card.total_requests" />
         </div>
 
@@ -171,7 +171,7 @@
                         with {{ card.total_approved }} approved and {{ card.total_pending }} still pending review.
                         Employees filed for {{ card.total_filed }} hours, contributing {{ card.total_hours }} actual
                         hours of overtime.
-                        The required target for the week was {{ card.required_hours }} hours.
+                        The overtime limit for the week was {{ card.required_hours }} hours.
                     </p>
                 </div>
             </div>
