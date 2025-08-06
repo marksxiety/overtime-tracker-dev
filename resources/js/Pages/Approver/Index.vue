@@ -156,7 +156,8 @@
             <Card title="Total Filed" :value="card.total_filed" />
             <Card title="For Filing" :value="card.total_approved" routename="overtime.filing"
                 :parameters="{ status: 'APPROVED', page: 'Approver/Filing' }" />
-            <Card title="Pending Approvals" :value="card.total_pending" />
+            <Card title="Pending Approvals" :value="card.total_pending" routename="overtime.pending"
+                :parameters="{ status: 'PENDING', page: 'Approver/Pending' }" />
             <Card title="Total Requests" :value="card.total_requests" />
             <Card title="ROA Hours Left" :value="((card.required_hours - card.total_hours) % 1 === 0
                 ? (card.required_hours - card.total_hours).toFixed(0)
