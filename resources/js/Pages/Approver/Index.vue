@@ -158,7 +158,9 @@
                 :parameters="{ status: 'APPROVED', page: 'Approver/Filing' }" />
             <Card title="Pending Approvals" :value="card.total_pending" />
             <Card title="Total Requests" :value="card.total_requests" />
-            <Card title="ROA Hours Left" :value="((card.required_hours) - (card.total_hours)).toFixed(2) + ' hrs'" />
+            <Card title="ROA Hours Left" :value="((card.required_hours - card.total_hours) % 1 === 0
+                ? (card.required_hours - card.total_hours).toFixed(0)
+                : (card.required_hours - card.total_hours).toFixed(2)) + ' hrs'" />
         </div>
 
         <!-- Weekly Overview -->
@@ -181,12 +183,12 @@
             <div class="col-span-1 card bg-base-100 shadow">
                 <div class="card-body">
                     <h2 class="card-title">Weekly Overtime Usage</h2>
-                    <progress class="progress progress-primary w-full" :value="card.total_hours"
-                        :max="card.required_hours">
+                    <progress class="progress progress-primary w-full" :value="card.total_hours ?? 0"
+                        :max="card.required_hours ?? 0">
                     </progress>
 
                     <p class="text-sm text-right mt-1">
-                        {{ card.total_hours }} / {{ card.required_hours }} hrs consumed
+                        {{ (card.total_hours ?? 0) }} / {{ card.required_hours }} hrs consumed
                     </p>
 
                 </div>
@@ -398,7 +400,7 @@ const handleWeekSelection = () => {
         year: selectedYear.value,
         week: selectedWeek.value
     }, {
-        preserveState: false
+        preserveState: true
     })
 }
 
