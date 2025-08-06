@@ -1,5 +1,5 @@
 <template>
-    <component :is="routename ? Link : 'div'" :href="routename || undefined" :class="[
+    <component :is="routename ? Link : 'div'" :href="routename ? route(routename) : undefined" :class="[
         'stat bg-base-100 shadow',
         routename ? 'hover:bg-primary hover:cursor-pointer transition-colors duration-200' : ''
     ]">
