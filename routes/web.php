@@ -62,6 +62,7 @@ Route::middleware('approver')->group(function () {
     Route::post('/overtime/update', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update');
 
     Route::get('/overtime/filing', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.filing');
+    Route::get('/overtime/pending', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.pending');
 });
 
 Route::get('/unauthorized', fn() => Inertia::render('Unauthorized'))->name('unauthorized');
