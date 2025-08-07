@@ -111,6 +111,19 @@ const handleWeekSelection = () => {
     })
 }
 
+function getTailwindColor(className) {
+    const div = document.createElement('div')
+    div.className = className
+    div.style.display = 'none'
+    document.body.appendChild(div)
+    const color = getComputedStyle(div).backgroundColor
+    document.body.removeChild(div)
+    return color
+}
+
+const bgColor = getTailwindColor('bg-base-300')
+
+
 const overtimeWeeklyBarGraph = ref(null);
 let BarchartInstance = null;
 function displayOvertimeWeeklyBarGraph() {
@@ -123,6 +136,7 @@ function displayOvertimeWeeklyBarGraph() {
     BarchartInstance = echarts.init(overtimeWeeklyBarGraph.value, 'dark')
 
     const option = {
+        backgroundColor: bgColor,
         title: {
             text: 'Daily Overtime Breakdown'
         },
@@ -239,20 +253,20 @@ function displayOvertimeRequestStatus() {
     PieChartInstance = echarts.init(overtimeRequestStatus.value, 'dark')
 
     let option = {
+        backgroundColor: bgColor,
         title: {
             text: 'Overtime Requests',
             left: 'center'
         },
         tooltip: {
-            trigger: 'status'
+            trigger: 'item'
         },
         legend: {
-            orient: 'horizontal',
-            bottom: '10'
+            top: 'bottom'
         },
         series: [
             {
-                name: 'Access From',
+                name: 'Status',
                 type: 'pie',
                 radius: '50%',
                 data: [
@@ -261,13 +275,10 @@ function displayOvertimeRequestStatus() {
                     { value: 580, name: 'Disapproved' },
                     { value: 484, name: 'Declined' },
                     { value: 300, name: 'Filed' }
-                ],
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
+                ], label: {
+                    show: true,
+                    color: '#808080',
+                    fontSize: 14,
                 }
             }
         ]
