@@ -50,10 +50,10 @@
         </div>
         <div class="grid grid-cols-3 gap-4">
             <div class="col-span-2">
-                <div ref="overtimeWeeklyBarGraph" class="min-h-[560px] w-full"></div>
+                <div ref="overtimeWeeklyBarGraph" class="min-h-[50vh] w-full"></div>
             </div>
             <div class="col-span-1">
-                <div ref="overtimeRequestStatus" class="min-h-[560px] w-full"></div>
+                <div ref="overtimeRequestStatus" class="min-h-[50vh] w-full"></div>
             </div>
         </div>
     </div>
@@ -259,8 +259,24 @@ function displayOvertimeRequestStatus() {
             left: 'center'
         },
         tooltip: {
-            trigger: 'item'
-        },
+            trigger: 'item',
+            formatter: function (params) {
+                let extraInfo = ''
+                if (Array.isArray(params.data.extra)) {
+                    extraInfo = params.data.extra.map((item, index) => `• ${item}`).join('<br/>')
+                } else {
+                    extraInfo = params.data.extra || ''
+                }
+
+                return `
+            <strong>${params.name}</strong><br/>
+            Count: ${params.value}<br/>
+            Percentage: ${params.percent}%<br/>
+            ${extraInfo ? '<br/><u>Details:</u><br/>' + extraInfo : ''}
+        `
+            }
+        }
+        ,
         legend: {
             top: 'bottom'
         },
@@ -270,12 +286,13 @@ function displayOvertimeRequestStatus() {
                 type: 'pie',
                 radius: '50%',
                 data: [
-                    { value: 1048, name: 'Pending' },
-                    { value: 735, name: 'Approved' },
-                    { value: 580, name: 'Disapproved' },
-                    { value: 484, name: 'Declined' },
-                    { value: 300, name: 'Filed' }
-                ], label: {
+                    { value: 1048, name: 'Pending', extra: [] },
+                    { value: 735, name: 'Approved', extra: [] },
+                    { value: 580, name: 'Disapproved', extra: ['due to cutoff', 'wrong filing'] },
+                    { value: 484, name: 'Declined', extra: ['wrong hours', 'wrong shift'] },
+                    { value: 300, name: 'Filed', extra: ['no further action'] }
+                ]
+                , label: {
                     show: true,
                     color: '#808080',
                     fontSize: 14,
