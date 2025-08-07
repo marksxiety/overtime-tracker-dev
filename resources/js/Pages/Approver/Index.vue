@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, onMounted } from 'vue'
+import { ref, inject, watch, onMounted, computed } from 'vue'
 import Card from '../Components/Card.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import { weeks, years } from '../utils/dropdownOptions.js'
@@ -73,19 +73,34 @@ const props = defineProps({
     message: String
 })
 
+console.log(props?.info?.result?.requests)
+
 const card = ref({
-    total_requests: props?.info?.totals?.total_requests ?? 0,
-    total_approved: props?.info?.totals?.total_approved ?? 0,
-    total_pending: props?.info?.totals?.total_pending ?? 0,
-    required_hours: props?.info?.totals?.required_hours ?? 0,
-    total_filed: props?.info?.totals?.total_filed ?? 0,
+    total_requests: props.info?.result?.totals.TOTAL_REQUESTS ?? 0,
+    total_approved: props.info?.result?.totals.APPROVED ?? 0,
+    total_pending: props.info?.result?.totals.PENDING ?? 0,
+    total_filed: props.info?.result?.totals.FILED ?? 0,
+    required_hours: props?.info?.result?.required_hours ?? 0,
     total_hours: props?.info?.totals?.total_hours ?? 0,
 })
 
 const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
+const pieData = ref({ ...props?.info?.result?.requests } ?? {})
+
+const pieSeriesData = computed(() => {
+    return Object.entries(pieData.value).map(([status, data]) => ({
+        name: capitalize(status.toLowerCase()),
+        value: data.value,
+        remarks: data.remarks ?? [],
+    }))
+})
 
 
+// Helper function (optional)
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
 // ===== Watchers =====
 
 watch(() => props?.info?.totals, (updatedTotals) => {
@@ -262,21 +277,20 @@ function displayOvertimeRequestStatus() {
             trigger: 'item',
             formatter: function (params) {
                 let extraInfo = ''
-                if (Array.isArray(params.data.extra)) {
-                    extraInfo = params.data.extra.map((item, index) => `• ${item}`).join('<br/>')
+                if (Array.isArray(params.data.remarks)) {
+                    extraInfo = params.data.remarks.map((item) => `• ${item}`).join('<br/>')
                 } else {
-                    extraInfo = params.data.extra || ''
+                    extraInfo = params.data.remarks || ''
                 }
 
                 return `
-            <strong>${params.name}</strong><br/>
-            Count: ${params.value}<br/>
-            Percentage: ${params.percent}%<br/>
-            ${extraInfo ? '<br/><u>Details:</u><br/>' + extraInfo : ''}
-        `
+        <strong>${params.name}</strong><br/>
+        Count: ${params.value}<br/>
+        Percentage: ${params.percent}%<br/>
+        ${extraInfo ? '<br/><u>Remarks:</u><br/>' + extraInfo : ''}
+      `
             }
-        }
-        ,
+        },
         legend: {
             top: 'bottom'
         },
@@ -285,21 +299,15 @@ function displayOvertimeRequestStatus() {
                 name: 'Status',
                 type: 'pie',
                 radius: '50%',
-                data: [
-                    { value: 1048, name: 'Pending', extra: [] },
-                    { value: 735, name: 'Approved', extra: [] },
-                    { value: 580, name: 'Disapproved', extra: ['due to cutoff', 'wrong filing'] },
-                    { value: 484, name: 'Declined', extra: ['wrong hours', 'wrong shift'] },
-                    { value: 300, name: 'Filed', extra: ['no further action'] }
-                ]
-                , label: {
+                data: pieSeriesData.value,
+                label: {
                     show: true,
                     color: '#808080',
-                    fontSize: 14,
+                    fontSize: 14
                 }
             }
         ]
-    };
+    }
 
     PieChartInstance.setOption(option);
 }
