@@ -185,24 +185,74 @@ class OvertimeRequestController extends Controller
         $message = '';
         try {
             $required_registered_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
-            $totals = DB::table('overtime_requests')
+            $requests = DB::table('overtime_requests')
                 ->join('schedules', 'schedules.id', '=', 'overtime_requests.employee_schedule_id')
+                ->join('users', 'users.id', '=', 'schedules.user_id')
+                ->select('overtime_requests.status', 'overtime_requests.remarks', 'users.name', 'overtime_requests.hours')
                 ->whereYear('schedules.date', $year)
                 ->where('schedules.week', $week)
-                ->selectRaw("
-                    COUNT(*) as total_requests,
-                    SUM(CASE WHEN status = 'APPROVED' THEN 1 ELSE 0 END) as total_approved,
-                    SUM(CASE WHEN status = 'FILED' THEN 1 ELSE 0 END) as total_filed,
-                    SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as total_pending,
-                    SUM(CASE WHEN status = 'APPROVED' THEN hours ELSE 0 END) as total_hours")
-                ->first();
+                ->get();
 
-            // consolidate the counted card countings
-            $total_filed = (int)$totals->total_filed;
-            $total_requests = $totals->total_requests;
-            $total_approved = (int)$totals->total_approved;
-            $total_pending = (int)$totals->total_pending;
-            $total_hours = $totals->total_hours;
+            $total_filed = 0;
+            $total_approved = 0;
+            $total_pending = 0;
+            $total_declined = 0;
+            $total_canceled = 0;
+            $total_disapproved = 0;
+            $total_requests = 0;
+
+            $result = [
+                'FILED' => ['value' => 0, 'remarks' => []],
+                'APPROVED' => ['value' => 0, 'remarks' => []],
+                'PENDING' => ['value' => 0, 'remarks' => []],
+                'DECLINED' => ['value' => 0, 'remarks' => []],
+                'CANCELED' => ['value' => 0, 'remarks' => []],
+                'DISAPPROVED' => ['value' => 0, 'remarks' => []],
+            ];
+
+            // Loop over requests
+            foreach ($requests as $request) {
+                $status = strtoupper($request->status); // Normalize to uppercase
+
+                // Increment overall total
+                $total_requests++;
+
+                // Handle counting and collecting remarks
+                if (isset($result[$status])) {
+                    $result[$status]['value']++;
+
+                    if (!empty($request->remarks)) {
+                        $result[$status]['remarks'][] = $request->remarks;
+                    }
+                }
+
+                switch ($status) {
+                    case 'FILED':
+                        $total_filed++;
+                        break;
+                    case 'APPROVED':
+                        $total_approved++;
+                        break;
+                    case 'PENDING':
+                        $total_pending++;
+                        break;
+                    case 'DECLINED':
+                        $total_declined++;
+                        break;
+                    case 'CANCELED':
+                        $total_canceled++;
+                        break;
+                    case 'DISAPPROVED':
+                        $total_disapproved++;
+                        break;
+                }
+            }
+
+            foreach ($result as &$entry) {
+                $entry['remarks'] = array_values(array_unique($entry['remarks']));
+            }
+            unset($entry);
+
             $required_hours = $required_registered_hours->hours;
             $success = true;
         } catch (\Throwable $th) {
@@ -212,18 +262,23 @@ class OvertimeRequestController extends Controller
 
         return inertia('Approver/Index', [
             'info' => [
-                'totals' => [
+                'result' => [
                     'required_hours' => $required_hours ?? 0,
-                    'total_hours' => $total_hours,
-                    'total_approved' => $total_approved,
-                    'total_pending' => $total_pending,
-                    'total_filed' => $total_filed,
-                    'total_requests' => $total_requests
+                    'requests' => $result,
+                    'totals' => [
+                        'FILED' => $total_filed,
+                        'APPROVED' => $total_approved,
+                        'PENDING' => $total_pending,
+                        'DECLINED' => $total_declined,
+                        'CANCELED' => $total_canceled,
+                        'DISAPPROVED' => $total_disapproved,
+                        'TOTAL_REQUESTS' => $total_requests
+                    ]
                 ],
                 'payload' => [
                     'year' => $year,
                     'week' => $week
-                ]
+                ],
             ],
             'success' => $success,
             'message' => $message
