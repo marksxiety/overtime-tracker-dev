@@ -1,7 +1,7 @@
 <template>
     <component :is="routename ? Link : 'div'" :href="routename ? route(routename, parameters) : undefined" :class="[
         'stat bg-base-100 shadow',
-        routename ? 'hover:bg-primary hover:cursor-pointer transition-colors duration-200' : ''
+        routename ? 'hover:bg-primary hover:cursor-pointer' : ''
     ]">
         <div class="stat-title">{{ title }}</div>
         <div class="stat-value">{{ value }}</div>
