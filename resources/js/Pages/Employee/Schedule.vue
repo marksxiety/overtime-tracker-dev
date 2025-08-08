@@ -129,7 +129,7 @@ async function loadScheduleData() {
         // so it can be used directly in <SelectOption>
         const shiftData = shiftsResponse?.data?.data ?? []
         shifts.value = shiftData.map(element => ({
-            label: `${element.code}: ${element.start_time} - ${element.end_time}`,
+            label: (element.start_time && element.end_time) ? `${element.code}: ${element.start_time} - ${element.end_time}` : `${element.code === 'SY' ? 'NO WORK SCHEDULE' : 'RESTDAY'}`,
             value: element.id
         }))
 
