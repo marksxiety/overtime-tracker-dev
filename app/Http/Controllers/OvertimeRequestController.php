@@ -200,38 +200,61 @@ class OvertimeRequestController extends Controller
             $total_canceled = 0;
             $total_disapproved = 0;
             $total_requests = 0;
+            $total_hours = 0;
+            $required_hours = 0;
 
             $result = [
-                'FILED' => ['value' => 0, 'remarks' => []],
-                'APPROVED' => ['value' => 0, 'remarks' => []],
-                'PENDING' => ['value' => 0, 'remarks' => []],
-                'DECLINED' => ['value' => 0, 'remarks' => []],
-                'CANCELED' => ['value' => 0, 'remarks' => []],
-                'DISAPPROVED' => ['value' => 0, 'remarks' => []],
+                [
+                    'name' => 'FILED',
+                    'value' => 0,
+                    'remarks' => []
+                ],
+                [
+                    'name' => 'APPROVED',
+                    'value' => 0,
+                    'remarks' => []
+                ],
+                [
+                    'name' => 'DECLINED',
+                    'value' => 0,
+                    'remarks' => []
+                ],
+                [
+                    'name' => 'CANCELED',
+                    'value' => 0,
+                    'remarks' => []
+                ],
+                [
+                    'name' => 'DISAPPROVED',
+                    'value' => 0,
+                    'remarks' => []
+                ],
             ];
 
-            // Loop over requests
             foreach ($requests as $request) {
                 $status = strtoupper($request->status); // Normalize to uppercase
 
                 // Increment overall total
                 $total_requests++;
 
-                // Handle counting and collecting remarks
-                if (isset($result[$status])) {
-                    $result[$status]['value']++;
+                for ($index = 0; $index < count($result); $index++) {
+                    if ($request->status === $result[$index]['name']) {
+                        $result[$index]['value']++;
 
-                    if (!empty($request->remarks)) {
-                        $result[$status]['remarks'][] = $request->remarks;
+                        if ($request->remarks) {
+                            $result[$index]['remarks'][] = $request->remarks;
+                        }
                     }
                 }
 
                 switch ($status) {
                     case 'FILED':
                         $total_filed++;
+                        $total_hours += (float)$request->hours;
                         break;
                     case 'APPROVED':
                         $total_approved++;
+                        $total_hours += (float)$request->hours;
                         break;
                     case 'PENDING':
                         $total_pending++;
@@ -248,10 +271,18 @@ class OvertimeRequestController extends Controller
                 }
             }
 
-            foreach ($result as &$entry) {
-                $entry['remarks'] = array_values(array_unique($entry['remarks']));
+
+            // remove the status that does not have any filing.
+            // this is to display only the data that has specific value to avoid 
+            // including legend in a pie graph that doesn't have a value
+            for ($counter = 0; $counter < count($result); $counter++) {
+                if ($result[$counter]['value'] === 0) {
+                    unset($result[$counter]);
+                }
             }
-            unset($entry);
+
+            // reset the index to iterate it properly
+            $result = array_values(($result));
 
             $required_hours = $required_registered_hours->hours;
             $success = true;
@@ -263,7 +294,6 @@ class OvertimeRequestController extends Controller
         return inertia('Approver/Index', [
             'info' => [
                 'result' => [
-                    'required_hours' => $required_hours ?? 0,
                     'requests' => $result,
                     'totals' => [
                         'FILED' => $total_filed,
@@ -272,7 +302,9 @@ class OvertimeRequestController extends Controller
                         'DECLINED' => $total_declined,
                         'CANCELED' => $total_canceled,
                         'DISAPPROVED' => $total_disapproved,
-                        'TOTAL_REQUESTS' => $total_requests
+                        'TOTAL_REQUESTS' => $total_requests,
+                        'TOTAL_HOURS' => $total_hours,
+                        'REQUIRED_HOURS' => $required_hours,
                     ]
                 ],
                 'payload' => [
