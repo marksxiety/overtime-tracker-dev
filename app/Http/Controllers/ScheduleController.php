@@ -19,9 +19,9 @@ class ScheduleController extends Controller
         try {
             $days = [];
             $year = $request->input('year', now()->year);
-            $week = $request->input('week', now()->isoWeek);
+            $week = $request->input('week', now()->week);
 
-            $date = CarbonImmutable::now('Asia/Manila')->setISODate($year, $week);
+            $date = CarbonImmutable::createFromDate($year, 1, 1, 'Asia/Manila')->startOfWeek(Carbon::SUNDAY)->addWeeks($week - 1);
 
             // Loop through 7 days of the week (data displaying is by week only)
             for ($i = 0; $i < 7; $i++) {
