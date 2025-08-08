@@ -67,44 +67,45 @@ import { weeks, years } from '../utils/dropdownOptions.js'
 import { router } from '@inertiajs/vue3'
 import * as echarts from 'echarts';
 
+// ===== constant variables =====
+
 const props = defineProps({
     info: Object,
     success: Boolean,
     message: String
 })
 
-console.log(props?.info?.result?.requests)
-
 const card = ref({
     total_requests: props.info?.result?.totals.TOTAL_REQUESTS ?? 0,
     total_approved: props.info?.result?.totals.APPROVED ?? 0,
     total_pending: props.info?.result?.totals.PENDING ?? 0,
     total_filed: props.info?.result?.totals.FILED ?? 0,
-    required_hours: props?.info?.result?.required_hours ?? 0,
-    total_hours: props?.info?.totals?.total_hours ?? 0,
+    required_hours: props?.info?.result?.totals?.REQUIRED_HOURS ?? 0,
+    total_hours: props?.info?.result?.totals?.TOTAL_HOURS ?? 0,
 })
 
 const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
-const pieData = ref({ ...props?.info?.result?.requests } ?? {})
+const pieData = ref([...props?.info?.result?.requests] ?? [])
 
-const pieSeriesData = computed(() => {
-    return Object.entries(pieData.value).map(([status, data]) => ({
-        name: capitalize(status.toLowerCase()),
-        value: data.value,
-        remarks: data.remarks ?? [],
-    }))
-})
-
-
-// Helper function (optional)
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-}
 // ===== Watchers =====
 
-watch(() => props?.info?.totals, (updatedTotals) => {
-    Object.assign(card.value, updatedTotals)
+watch(() => props?.info?.result, (updatedTotals) => {
+
+    // reinitialize the graph but update the pieData first
+    pieData.value = updatedTotals.requests
+    displayOvertimeRequestStatus()
+
+    // update the value of each key in card (for reactivity)
+    card.value = {
+        total_requests: updatedTotals.totals.TOTAL_REQUESTS ?? 0,
+        total_approved: updatedTotals.totals.APPROVED ?? 0,
+        total_pending: updatedTotals.totals.PENDING ?? 0,
+        total_filed: updatedTotals.totals.FILED ?? 0,
+        required_hours: updatedTotals.totals?.REQUIRED_HOURS ?? 0,
+        total_hours: updatedTotals.totals?.TOTAL_HOURS ?? 0,
+    }
+    
 })
 
 watch(() => props.info.payload.week, (newWeek) => {
@@ -299,7 +300,7 @@ function displayOvertimeRequestStatus() {
                 name: 'Status',
                 type: 'pie',
                 radius: '50%',
-                data: pieSeriesData.value,
+                data: pieData.value,
                 label: {
                     show: true,
                     color: '#808080',
