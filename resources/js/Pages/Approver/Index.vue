@@ -87,6 +87,7 @@ const card = ref({
 const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
 const pieData = ref([...props?.info?.result?.requests] ?? [])
+const barData = ref([...props?.info?.result?.breakdown] ?? [])
 
 // ===== Watchers =====
 
@@ -95,6 +96,9 @@ watch(() => props?.info?.result, (updatedTotals) => {
     // reinitialize the graph but update the pieData first
     pieData.value = updatedTotals.requests
     displayOvertimeRequestStatus()
+
+    barData.value = updatedTotals.breakdown
+    displayOvertimeWeeklyBarGraph()
 
     // update the value of each key in card (for reactivity)
     card.value = {
@@ -160,98 +164,15 @@ function displayOvertimeWeeklyBarGraph() {
             trigger: 'axis',
             axisPointer: { type: 'shadow' }
         },
-        legend: {
-            data: [
-                'Alice',
-                'Bob',
-                'Charlie',
-                'David',
-                'Eve',
-                'Frank',
-                'Grace',
-                'Heidi',
-                'Ivan'
-            ]
-        },
         xAxis: {
             type: 'category',
-            data: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            data: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         },
         yAxis: {
             type: 'value',
             name: 'Overtime Hours'
         },
-        series: [
-            {
-                name: 'Alice',
-                type: 'bar',
-                stack: 'total',
-                data: [10, 12, 8, 15, 13, 11, 10]
-            },
-            {
-                name: 'Bob',
-                type: 'bar',
-                stack: 'total',
-                data: [9, 10, 7, 12, 11, 10, 9]
-            },
-            {
-                name: 'Charlie',
-                type: 'bar',
-                stack: 'total',
-                data: [8, 9, 6, 11, 10, 9, 8]
-            },
-            {
-                name: 'David',
-                type: 'bar',
-                stack: 'total',
-                data: [7, 8, 5, 10, 9, 8, 7]
-            },
-            {
-                name: 'Eve',
-                type: 'bar',
-                stack: 'total',
-                data: [6, 7, 4, 9, 8, 7, 6]
-            },
-            {
-                name: 'Frank',
-                type: 'bar',
-                stack: 'total',
-                data: [5, 6, 3, 8, 7, 6, 5]
-            },
-            {
-                name: 'Grace',
-                type: 'bar',
-                stack: 'total',
-                data: [4, 5, 3, 7, 6, 5, 4]
-            },
-            {
-                name: 'Heidi',
-                type: 'bar',
-                stack: 'total',
-                data: [3, 4, 2, 6, 5, 4, 3]
-            },
-            {
-                name: 'Ivan',
-                type: 'bar',
-                stack: 'total',
-                data: [2, 3, 2, 5, 4, 3, 2]
-            },
-            {
-                name: 'Total',
-                type: 'line',
-                data: [54, 64, 40, 93, 83, 73, 64],
-                smooth: true
-            },
-            {
-                name: 'ROA',
-                type: 'line',
-                data: [100, 120, 100, 120, 100, 120, 100],
-                smooth: true,
-                lineStyle: {
-                    type: 'dashed',
-                }
-            }
-        ]
+        series: barData.value
     }
     BarchartInstance.setOption(option);
 }
