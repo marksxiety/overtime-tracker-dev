@@ -25,15 +25,21 @@
 
         <!-- Page Heading -->
         <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Manage Shift Codes</h1>
+            <h1 class="text-3xl font-extrabold text-base-content">Manage Shift Codes</h1>
         </div>
 
         <!-- Grid Section -->
         <div class="grid place-items-center">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[32rem] w-3/4">
-                <!-- Form Card -->
-                <div class="col-span-1">
-                    <div class="bg-base-300 p-6 rounded-2xl shadow-md h-full flex flex-col justify-center">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-8 h-[32rem] w-full max-w-7xl">
+
+                <!-- Form Panel -->
+                <div class="col-span-2">
+                    <div
+                        class="bg-base-100 p-8 rounded-2xl shadow-lg h-full flex flex-col justify-center border border-base-200">
+                        <!-- Title -->
+                        <h2 class="text-xl font-bold mb-6 text-center text-primary uppercase tracking-wide">
+                            shift Code Registration
+                        </h2>
                         <form @submit.prevent="submitForm()" class="flex flex-col gap-4">
                             <div class="join w-full items-center">
                                 <label class="input join-item border rounded w-full">
@@ -45,7 +51,6 @@
                                         <span class="text-sm text-nowrap">RD / NWS</span>
                                     </label>
                                 </label>
-
                             </div>
 
 
@@ -62,11 +67,11 @@
                 </div>
 
                 <!-- Table Section -->
-                <div class="col-span-1">
-                    <div class="bg-base-300 rounded-2xl p-4 h-full overflow-auto shadow-md">
-                        <h2 class="text-lg font-semibold mb-4">Registered Shifts</h2>
-                        <table class="table table-zebra w-full">
-                            <thead class="sticky top-0 bg-base-300 z-10 text-sm">
+                <div class="col-span-3">
+                    <div class="bg-base-100 rounded-2xl p-6 h-full overflow-auto shadow-lg border border-base-200">
+                        <h2 class="text-lg font-semibold mb-4 text-base-content">Registered Shifts</h2>
+                        <table class="table w-full text-sm">
+                            <thead class="sticky top-0 bg-base-200 z-10 text-base-content">
                                 <tr class="text-center">
                                     <th>Shift Code</th>
                                     <th>Start</th>
@@ -144,6 +149,9 @@ const submitForm = () => {
                 toast('Shift code Registered Successfully.', 'success')
             },
             onError: (errors) => {
+                if (errors.code) {
+                    toast(errors.code, 'error')
+                }
                 console.log('shift code registration failed:', errors)
             }
         })
@@ -154,6 +162,7 @@ const submitForm = () => {
                 onSuccess: () => {
                     form.reset()
                     toast('Shift code Updated Successfully.', 'success')
+                    mode.value = 'insert'
                 },
                 onError: (errors) => {
                     toast('Shift Code updating failed. Please try again.', 'danger')
