@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\CarbonImmutable;
 
 class OvertimeRequestController extends Controller
 {
@@ -188,7 +189,7 @@ class OvertimeRequestController extends Controller
             $requests = DB::table('overtime_requests')
                 ->join('schedules', 'schedules.id', '=', 'overtime_requests.employee_schedule_id')
                 ->join('users', 'users.id', '=', 'schedules.user_id')
-                ->select('schedules.date','overtime_requests.status', 'overtime_requests.remarks', 'users.name', 'overtime_requests.hours')
+                ->select('schedules.date', 'schedules.week', 'overtime_requests.status', 'overtime_requests.remarks', 'overtime_requests.reason', 'users.name', 'overtime_requests.hours')
                 ->whereYear('schedules.date', $year)
                 ->where('schedules.week', $week)
                 ->get();
@@ -255,11 +256,11 @@ class OvertimeRequestController extends Controller
                 switch ($status) {
                     case 'FILED':
                         $total_filed++;
-                        $total_hours += (float)$request->hours;
+                        $total_hours += (float)$request->hours ?? 0;
                         break;
                     case 'APPROVED':
                         $total_approved++;
-                        $total_hours += (float)$request->hours;
+                        $total_hours += (float)$request->hours ?? 0;
                         break;
                     case 'PENDING':
                         $total_pending++;
@@ -290,6 +291,52 @@ class OvertimeRequestController extends Controller
                 }
             }
 
+            // ============= FORMAT FOR BREAKDOWN OVERTIME =============
+            // get the first day of the week then get the proceeding days
+            $startOfWeek = CarbonImmutable::createFromDate($year, 1, 1, 'Asia/Manila')
+                ->startOfWeek(Carbon::SUNDAY)
+                ->addWeeks($week - 1);
+
+            // consolidate the dates that will used to join in requests data (format it in Y-m-d since that is the format of date in db)
+            $dates = [];
+            for ($i = 0; $i < 7; $i++) {
+                $dates[] = $startOfWeek->addDays($i)->format('Y-m-d');
+            }
+
+            $breakdown = [];
+
+            foreach ($requests as $req) {
+                // Find if this name already exists in breakdown
+                $index = array_search($req->name, array_column($breakdown, 'name'));
+
+                if ($index === false) {
+                    // Create a new entry with 0 hours for all dates
+                    $dataPoints = array_fill(0, count($dates), 0);
+
+                    // Fill in the hours for the matching date
+                    foreach ($dates as $i => $date) {
+                        if ($date === $req->date && in_array($req->status, ['APPROVED', 'FILED'])) {
+                            $dataPoints[$i] += $req->hours;
+                        }
+                    }
+
+                    $breakdown[] = [
+                        'name'  => $req->name,
+                        'type'  => 'bar',
+                        'stack' => 'total',
+                        'data'  => $dataPoints
+                    ];
+                } else {
+                    // Update existing entry
+                    foreach ($dates as $i => $date) {
+                        if ($date === $req->date && in_array($req->status, ['APPROVED', 'FILED'])) {
+                            $breakdown[$index]['data'][$i] += $req->hours;
+                        }
+                    }
+                }
+            }
+
+
             $required_hours = $required_registered_hours->hours;
             $success = true;
         } catch (\Throwable $th) {
@@ -301,7 +348,7 @@ class OvertimeRequestController extends Controller
             'info' => [
                 'result' => [
                     'requests' => $result,
-                    'breakdown' => $requests,
+                    'breakdown' => $breakdown,
                     'totals' => [
                         'FILED' => $total_filed,
                         'APPROVED' => $total_approved,
@@ -318,6 +365,10 @@ class OvertimeRequestController extends Controller
                     'year' => $year,
                     'week' => $week
                 ],
+                'test' => [
+                    'days' => $dates,
+                    'breakdown' => $breakdown
+                ]
             ],
             'success' => $success,
             'message' => $message
