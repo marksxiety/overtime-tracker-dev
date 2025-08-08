@@ -82,8 +82,8 @@
                             <tbody>
                                 <tr v-for="shift in shiftcodes" :key="shift.shift_code" class="text-center hover">
                                     <td class="font-semibold">{{ shift.code }}</td>
-                                    <td>{{ shift.start_time }}</td>
-                                    <td>{{ shift.end_time }}</td>
+                                    <td>{{ shift.start_time ?? 'N/A' }}</td>
+                                    <td>{{ shift.end_time ?? 'N/A' }}</td>
                                     <td class="flex flex-row gap-2 justify-center">
                                         <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs"
                                             :disabled="deleteform.processing">
@@ -204,6 +204,13 @@ const handleHypyerLink = (data) => {
     form.end_time = data.end_time
     mode.value = 'update'
     id.value = data.id
+
+    if (!data.start_time && !data.end_time) {
+        isDisabled.value = true
+    } else {
+        isDisabled.value = false
+    }
+
 }
 
 const props = defineProps({
