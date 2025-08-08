@@ -355,18 +355,6 @@ class OvertimeRequestController extends Controller
                 'smooth'=> true
             ];
 
-            $breakdown[] = [
-                'name'  => 'ROA',
-                'type'  => 'line',
-                'data' => array_fill(0, 7, round($required_hours / 7, 2)),
-                'smooth'=> true,
-                'lineStyle' => [
-                    'type' => 'dashed'
-                ]
-            ];
-
-
-
             $success = true;
         } catch (\Throwable $th) {
             $success = false;
