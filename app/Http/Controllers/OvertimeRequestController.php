@@ -205,6 +205,11 @@ class OvertimeRequestController extends Controller
 
             $result = [
                 [
+                    'name' => 'PENDING',
+                    'value' => 0,
+                    'remarks' => []
+                ],
+                [
                     'name' => 'FILED',
                     'value' => 0,
                     'remarks' => []
