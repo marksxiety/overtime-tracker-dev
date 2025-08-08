@@ -91,7 +91,7 @@
         <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
             <form @submit.prevent="submitCancelation()">
                 <!-- Stepper -->
-                <Stepper :status="formFilledOvertime.current_status"/>
+                <Stepper :status="formFilledOvertime.current_status" />
                 <!-- Filing Information -->
                 <div class="space-y-6 text-sm">
 
@@ -246,7 +246,7 @@
                         <span :class="[
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
                             'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
-                            (currentDay === days.day) ? 'bg-base-300' : ''
+                            (currentDay === days.day && currentYear === days.year && currentMonth === days.month) ? 'bg-base-300' : ''
                         ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
                         </span>
@@ -444,8 +444,12 @@ function updateCurrentMonthYear(year, month) {
     calendardays.value = [] // reset
 
     // previous month's trailing days (gray out)
+    const prevMonth = month === 0 ? 11 : month - 1
+    const prevYear = month === 0 ? year - 1 : year
     for (let i = firstDayOfMonth.value; i > 0; i--) {
         calendardays.value.push({
+            year: prevYear,
+            month: prevMonth,
             day: lastDateOfLastMonth.value - i + 1,
             type: 'prev'
         })
@@ -454,21 +458,28 @@ function updateCurrentMonthYear(year, month) {
     // current month days
     for (let i = 1; i <= lastDateOfMonth.value; i++) {
         calendardays.value.push({
+            year: year,
+            month: month,
             day: i,
             type: 'current'
         })
     }
 
     // next month's leading days (to fill the rest of the grid)
-    // use 42 to have 6 rows only (6x7)
+    // // use 42 to have 6 rows only (6x7)
+    const nextMonth = month === 11 ? 0 : month + 1
+    const nextYear = month === 11 ? year + 1 : year
     const remaining = 42 - calendardays.value.length
     for (let i = 1; i <= remaining; i++) {
         calendardays.value.push({
+            year: nextYear,
+            month: nextMonth,
             day: i,
             type: 'next'
         })
     }
 }
+
 
 
 // ========== useForm Request(s) Handler ==========
