@@ -18,8 +18,8 @@ class ShiftContoller extends Controller
         ];
 
         if ($request->timerequired) {
-            $rules['start_time'] = 'date_format:H:i';
-            $rules['end_time'] = 'date_format:H:i|after:start_time';
+            $rules['start_time'] = 'required';
+            $rules['end_time'] = 'required|after:start_time';
         }
 
         $info = [
@@ -42,8 +42,8 @@ class ShiftContoller extends Controller
                 'max:10',
                 Rule::unique('shift_codes')->ignore($shift->id),
             ],
-            'start_time' => 'required|date_format:H:i:s',
-            'end_time' => 'required|date_format:H:i:s|after:start_time',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
         ]);
 
         $shift->update($data);
