@@ -188,7 +188,7 @@ class OvertimeRequestController extends Controller
             $requests = DB::table('overtime_requests')
                 ->join('schedules', 'schedules.id', '=', 'overtime_requests.employee_schedule_id')
                 ->join('users', 'users.id', '=', 'schedules.user_id')
-                ->select('overtime_requests.status', 'overtime_requests.remarks', 'users.name', 'overtime_requests.hours')
+                ->select('schedules.date','overtime_requests.status', 'overtime_requests.remarks', 'users.name', 'overtime_requests.hours')
                 ->whereYear('schedules.date', $year)
                 ->where('schedules.week', $week)
                 ->get();
@@ -234,9 +234,7 @@ class OvertimeRequestController extends Controller
             foreach ($requests as $request) {
                 $status = strtoupper($request->status); // Normalize to uppercase
 
-                // Increment overall total
-                $total_requests++;
-
+                // ====== build the data for pie graph ======
                 for ($index = 0; $index < count($result); $index++) {
                     if ($request->status === $result[$index]['name']) {
                         $result[$index]['value']++;
@@ -247,6 +245,8 @@ class OvertimeRequestController extends Controller
                     }
                 }
 
+                // ====== consolidate all the countings for card dispaly ======
+                $total_requests++;
                 switch ($status) {
                     case 'FILED':
                         $total_filed++;
@@ -277,12 +277,13 @@ class OvertimeRequestController extends Controller
             // including legend in a pie graph that doesn't have a value
             for ($counter = 0; $counter < count($result); $counter++) {
                 if ($result[$counter]['value'] === 0) {
+                    // after unsetting, reindex and decrement so it wont 
+                    // skip the next loop
                     unset($result[$counter]);
+                    $result = array_values($result);
+                    $counter--;
                 }
             }
-
-            // reset the index to iterate it properly
-            $result = array_values(($result));
 
             $required_hours = $required_registered_hours->hours;
             $success = true;
@@ -295,6 +296,7 @@ class OvertimeRequestController extends Controller
             'info' => [
                 'result' => [
                     'requests' => $result,
+                    'breakdown' => $requests,
                     'totals' => [
                         'FILED' => $total_filed,
                         'APPROVED' => $total_approved,
