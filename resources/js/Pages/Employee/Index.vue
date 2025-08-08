@@ -497,7 +497,7 @@ const submitOvertime = () => {
 }
 
 const submitCancelation = () => {
-    formFilledOvertime.post(route('overtime.update'), {
+    formFilledOvertime.post(route('overtime.update.employee'), {
         onSuccess: () => {
             toast('Cancelation Successful', 'success')
             formFilledOvertime.reset()

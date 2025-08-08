@@ -342,7 +342,7 @@ const closeManageRequestModal = () => {
 const updateOvertiemRequestStatus = (status) => {
     if (status && overtimeRequestForm.id) {
         overtimeRequestForm.update_status = status
-        overtimeRequestForm.post(route('overtime.update'), {
+        overtimeRequestForm.post(route('overtime.update.approver'), {
             onSuccess: () => {
                 overtimeRequestForm.reset()
                 closeManageRequestModal()
