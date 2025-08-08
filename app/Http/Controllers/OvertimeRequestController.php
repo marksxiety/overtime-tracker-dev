@@ -48,26 +48,26 @@ class OvertimeRequestController extends Controller
         $validator = Validator::make($request->all(), $rules);
         $errors = $validator->errors();
 
-        if ($withTimeFormatting) {
-            // Parse shift times in 12-hour format
-            $schdule_start_time = Carbon::createFromFormat('h:i A', trim($request->shift_start_time));
-            $schdule_end_time   = Carbon::createFromFormat('h:i A', trim($request->shift_end_time));
-            // Difference in minutes
-            $start_diff = $schdule_start_time->diffInMinutes($submitted_start_time, false); // negative if earlier
-            $end_diff = $schdule_end_time->diffInMinutes($submitted_end_time, false);       // positive if later
+        // if ($withTimeFormatting) {
+        //     // Parse shift times in 12-hour format
+        //     $schdule_start_time = Carbon::createFromFormat('h:i A', trim($request->shift_start_time));
+        //     $schdule_end_time   = Carbon::createFromFormat('h:i A', trim($request->shift_end_time));
+        //     // Difference in minutes
+        //     $start_diff = $schdule_start_time->diffInMinutes($submitted_start_time, false); // negative if earlier
+        //     $end_diff = $schdule_end_time->diffInMinutes($submitted_end_time, false);       // positive if later
 
-            if ($start_diff > -60) {
-                $errors->add('start_time', 'Start time should be at least 1 hour before the scheduled start time.');
-            }
+        //     if ($start_diff > -60) {
+        //         $errors->add('start_time', 'Start time should be at least 1 hour before the scheduled start time.');
+        //     }
 
-            if ($end_diff < 60) {
-                $errors->add('end_time', 'End time should be at least 1 hour after the scheduled end time.');
-            }
+        //     if ($end_diff < 60) {
+        //         $errors->add('end_time', 'End time should be at least 1 hour after the scheduled end time.');
+        //     }
 
-            if ($errors->any()) {
-                return redirect()->back()->withErrors($errors)->withInput();
-            }
-        }
+        //     if ($errors->any()) {
+        //         return redirect()->back()->withErrors($errors)->withInput();
+        //     }
+        // }
 
         // compute the hours and convert it to float
         $hours = $this->calculateOvertimeHours($submitted_start_time, $submitted_end_time);
@@ -202,7 +202,7 @@ class OvertimeRequestController extends Controller
             $total_disapproved = 0;
             $total_requests = 0;
             $total_hours = 0;
-            $required_hours = 0;
+            $required_hours = $required_registered_hours->hours ?? 0;
 
             $result = [
                 [
@@ -335,9 +335,38 @@ class OvertimeRequestController extends Controller
                     }
                 }
             }
+            
+            $total_computed_hours = array_fill(0, count($dates), 0);
+
+            foreach ($breakdown as $br) {
+                foreach ($br['data'] as $i => $hours) {
+                    $total_computed_hours[$i] += $hours;
+                }
+            }
+
+            $rounded_total_computed_hours = array_map(function($num) {
+                return round($num, 2);
+            }, $total_computed_hours);
+
+            $breakdown[] = [
+                'name'  => 'Total',
+                'type'  => 'line',
+                'data'  => $rounded_total_computed_hours,
+                'smooth'=> true
+            ];
+
+            $breakdown[] = [
+                'name'  => 'ROA',
+                'type'  => 'line',
+                'data' => array_fill(0, 7, round($required_hours / 7, 2)),
+                'smooth'=> true,
+                'lineStyle' => [
+                    'type' => 'dashed'
+                ]
+            ];
 
 
-            $required_hours = $required_registered_hours->hours;
+
             $success = true;
         } catch (\Throwable $th) {
             $success = false;
