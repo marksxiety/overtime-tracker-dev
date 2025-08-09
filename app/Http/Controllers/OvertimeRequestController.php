@@ -23,13 +23,13 @@ class OvertimeRequestController extends Controller
             'reason' => 'required|string|min:10'
         ];
 
-        $withTimeFormatting = false;
+        $withTimeFormatting = true;
 
         $submittet_time_start_isValid = Carbon::hasFormat($request->start_time, 'H:i');
         $submittet_end_start_isValid = Carbon::hasFormat($request->end_time, 'H:i');
 
         if (!$submittet_time_start_isValid && !$submittet_end_start_isValid) {
-            $withTimeFormatting = true;
+            $withTimeFormatting = false;
             $rules[] = [
                 'start_time' => 'required|date_format:H:i',
                 'end_time' => 'required|date_format:H:i|after:start_time',
@@ -44,30 +44,88 @@ class OvertimeRequestController extends Controller
         $submitted_end_time   = Carbon::createFromFormat('H:i', trim($request->end_time));
 
 
-
         $validator = Validator::make($request->all(), $rules);
         $errors = $validator->errors();
 
-        // if ($withTimeFormatting) {
-        //     // Parse shift times in 12-hour format
-        //     $schdule_start_time = Carbon::createFromFormat('h:i A', trim($request->shift_start_time));
-        //     $schdule_end_time   = Carbon::createFromFormat('h:i A', trim($request->shift_end_time));
-        //     // Difference in minutes
-        //     $start_diff = $schdule_start_time->diffInMinutes($submitted_start_time, false); // negative if earlier
-        //     $end_diff = $schdule_end_time->diffInMinutes($submitted_end_time, false);       // positive if later
+        if ($withTimeFormatting) {
 
-        //     if ($start_diff > -60) {
-        //         $errors->add('start_time', 'Start time should be at least 1 hour before the scheduled start time.');
-        //     }
+            // GENERAL RULE:
+            // You can only file OT outside your normal shift, with at least a 60-minute gap 
+            // before your shift starts or after it ends.
+            //
+            // Example: If your shift is 08:00 to 18:00:
+            //   OK: Start at 06:00, end before 08:00
+            //   OK: Start after 18:00, end at 19:00 or later
+            //   Not OK: Anything that starts or ends during your shift
+            //   Not OK: Less than 60 mins before shift start
+            //   Not OK: Less than 60 mins after shift end
+            //
+            // Before shift: start and end must both be before shift start.
+            // After shift: end must be later than start and at least 60 mins after shift end.
 
-        //     if ($end_diff < 60) {
-        //         $errors->add('end_time', 'End time should be at least 1 hour after the scheduled end time.');
-        //     }
+            // Parse shift times
+            $schdule_start_time = Carbon::createFromFormat('h:i A', trim($request->shift_start_time));
+            $schdule_end_time   = Carbon::createFromFormat('h:i A', trim($request->shift_end_time));
 
-        //     if ($errors->any()) {
-        //         return redirect()->back()->withErrors($errors)->withInput();
-        //     }
-        // }
+            // Handle shifts crossing midnight
+            if ($schdule_end_time->lessThan($schdule_start_time)) {
+                $schdule_end_time->addDay();
+            }
+
+            // Also adjust submitted end if crosses midnight
+            if ($submitted_end_time->lessThan($submitted_start_time)) {
+                $submitted_end_time->addDay();
+            }
+
+            // 1. Block if start is within schedule
+            if ($submitted_start_time->between($schdule_start_time, $schdule_end_time, false)) {
+                $errors->add('start_time', 'Start time cannot be within the scheduled shift.');
+            }
+
+            // 2. Block if end is within schedule
+            if ($submitted_end_time->between($schdule_start_time, $schdule_end_time, false)) {
+                $errors->add('end_time', 'End time cannot be within the scheduled shift.');
+            }
+
+            // 3. Enforce 60 minutes before start
+            $start_diff = $submitted_start_time->diffInMinutes($schdule_start_time, false); // positive if earlier
+            if ($start_diff < 60 && $submitted_start_time->lessThan($schdule_start_time)) {
+                $errors->add('start_time', 'Start time must be at least 1 hour before the scheduled start.');
+            }
+
+            // 4. Enforce 60 minutes after end
+            $end_diff = $schdule_end_time->diffInMinutes($submitted_end_time, false); // positive if later
+            if ($end_diff < 60 && $submitted_end_time->greaterThan($schdule_end_time)) {
+                $errors->add('end_time', 'End time must be at least 1 hour after the scheduled end.');
+            }
+
+            // CASE 1: Start is BEFORE schedule start
+            // and at least 60 mins before schedule start
+            if ($submitted_start_time->lt($schdule_start_time) &&
+                $submitted_start_time->diffInMinutes($schdule_start_time) >= 60) {
+
+                // End must be BEFORE schedule start AND less than submitted start
+                if (!($submitted_end_time->lt($schdule_start_time) &&
+                    $submitted_end_time->lt($submitted_start_time))) {
+                    $errors->add('end_time', 'Invalid range: Filing before schedule start must also end before schedule start and before start time.');
+                }
+            }
+
+            // CASE 2: Start is AFTER schedule start
+            if ($submitted_start_time->gt($schdule_start_time)) {
+
+                // Must be more than 60 mins difference between start & end
+                // And end must be GREATER than start
+                if (!($submitted_end_time->gt($submitted_start_time) &&
+                    $submitted_start_time->diffInMinutes($submitted_end_time) > 60)) {
+                    $errors->add('end_time', 'Invalid range: Filing after schedule start must be more than 60 minutes and end after start time.');
+                }
+            }
+
+            if ($errors->any()) {
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
+        }
 
         // compute the hours and convert it to float
         $hours = $this->calculateOvertimeHours($submitted_start_time, $submitted_end_time);
