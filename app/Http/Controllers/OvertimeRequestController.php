@@ -210,13 +210,13 @@ class OvertimeRequestController extends Controller
                     'week' => $overtime->schedule->week,
                     'date' => $overtime->schedule->date,
                     'id' => $overtime->id,
-                    'start_time' => $overtime->start_time,
-                    'end_time' => $overtime->end_time,
+                    'start_time' => $overtime->start_time ? Carbon::createFromFormat('H:i:s', $overtime->start_time)->format('h:i A') : 'N/A',
+                    'end_time' => $overtime->end_time ? Carbon::createFromFormat('H:i:s', $overtime->end_time)->format('h:i A') : 'N/A',
                     'hours' => $overtime->hours,
                     'reason' => $overtime->reason,
                     'remarks' => $overtime->remarks,
                     'status' => $overtime->status,
-                    'created_at' => $overtime->created_at
+                    'created_at' => $overtime->created_at ? Carbon::parse($overtime->created_at)->setTimezone('Asia/Manila')->format('M j, Y h:i A') : 'N/A'
                 ];
             }
 
