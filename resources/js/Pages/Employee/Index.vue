@@ -295,7 +295,7 @@ console.log(props.payload)
 // ========== Calendar Refs ==========
 const currentMonthYear = ref('')
 const currentYear = ref(props?.payload?.year)
-const currentMonth = ref(props?.payload?.month)
+const currentMonth = ref(props?.payload?.month - 1)
 const currentDatetime = ref(props?.payload?.day)
 const currentDay = ref(currentDatetime.value)
 const lastDateOfMonth = ref(0)
@@ -399,11 +399,11 @@ const showOvertimeFilingModal = async (year, month, day) => {
     }
 }
 
-const handleMonthSelection = () => {
+const handleMonthSelection = (year, month, day) => {
     router.get(route('main'), {
-        year: currentYear.value,
-        month: currentMonth.value,
-        day: currentDatetime.value
+        year: year,
+        month: month,
+        day: day
     }, {
         preserveState: true
     })
@@ -435,7 +435,6 @@ const handlePreviousMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
-    handleMonthSelection()
 }
 
 const handleNextMonth = () => {
@@ -447,7 +446,6 @@ const handleNextMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
-    handleMonthSelection()
 }
 
 
@@ -457,7 +455,7 @@ function updateCurrentMonthYear(year, month) {
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
     lastDateOfLastMonth.value = new Date(year, month, 0).getDate()
     firstDayOfMonth.value = new Date(year, month, 1).getDay()
-
+    handleMonthSelection(year, month + 1, 1)
     calendardays.value = [] // reset
 
     // previous month's trailing days (gray out)
@@ -537,5 +535,15 @@ watch(() => props.info?.overtimelist, (updatedRequests) => {
     totalovertime.value = totalovertimehours
     pendingovertime.value = pendingrequests
     rejectedovertime.value = rejectedrequests
+})
+
+watch(() => props.info?.payload, (updatedPayload) => {
+
+    currentYear.value = updatedPayload.year
+    currentMonth.value = updatedPayload.month
+    currentDatetime.value = updatedPayload.day
+
+    console.log(updatedPayload)
+
 })
 </script>
