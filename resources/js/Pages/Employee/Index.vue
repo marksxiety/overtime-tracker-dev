@@ -249,7 +249,7 @@
                     ]">
                         <span :class="[
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
-                            'hover:bg-slate-200  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
+                            'hover:bg-base-300  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
                             (currentDay === days.day && currentYear === days.year && currentMonth === days.month) ? 'bg-base-300' : ''
                         ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
@@ -262,7 +262,7 @@
 </template>
 <script setup>
 // ========== Imports ==========
-import { Link, useForm } from '@inertiajs/vue3'
+import { Link, useForm, router } from '@inertiajs/vue3'
 import { onMounted, ref, inject, watch } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
@@ -283,25 +283,25 @@ const months = [
 ]
 const toast = inject('toast')
 
+// ========= Props =============
+const props = defineProps({
+    info: Object,
+    payload: Object,
+    success: Boolean,
+    errors: Object
+})
 
+console.log(props.payload)
 // ========== Calendar Refs ==========
 const currentMonthYear = ref('')
-const currentDate = ref('')
-const currentYear = ref(date.getFullYear())
-const currentMonth = ref(date.getMonth())
-const currentDatetime = ref(date.getDate())
+const currentYear = ref(props?.payload?.year)
+const currentMonth = ref(props?.payload?.month)
+const currentDatetime = ref(props?.payload?.day)
 const currentDay = ref(currentDatetime.value)
 const lastDateOfMonth = ref(0)
 const firstDayOfMonth = ref(0)
 const lastDateOfLastMonth = ref(0)
 const calendardays = ref([])
-
-// ========= Props =============
-const props = defineProps({
-    info: Object,
-    success: Boolean,
-    errors: Object
-})
 
 
 // ========== Modal Refs ==========
@@ -399,6 +399,16 @@ const showOvertimeFilingModal = async (year, month, day) => {
     }
 }
 
+const handleMonthSelection = () => {
+    router.get(route('main'), {
+        year: currentYear.value,
+        month: currentMonth.value,
+        day: currentDatetime.value
+    }, {
+        preserveState: true
+    })
+}
+
 
 const showOvertimeRequestModal = (data) => {
     formFilledOvertime.id = data.id
@@ -425,6 +435,7 @@ const handlePreviousMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
+    handleMonthSelection()
 }
 
 const handleNextMonth = () => {
@@ -436,6 +447,7 @@ const handleNextMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
+    handleMonthSelection()
 }
 
 
