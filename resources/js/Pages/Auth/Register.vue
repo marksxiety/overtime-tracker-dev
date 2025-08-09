@@ -1,23 +1,33 @@
 <template>
-    <div class="max-w-md mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
-        <h2 class="text-2xl font-bold mb-6 text-primary">Register User</h2>
-        <form @submit.prevent="submitForm">
-            <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
-            <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
-            <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid" v-model="form.employeeid" />
-            <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role" :options="options"/>
-            <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
-            <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
-            <button type="submit" class="btn btn-primary w-full"
-                :disabled="form.processing">
-                <span v-if="form.processing">Processing...</span>
-                <span v-else>Register</span>
-            </button>
-        </form>
-        <div class="mt-6 text-center"> Already have an account?
-            <Link :href="route('login')" class="link">
-            Login here
-            </Link>
+    <div class="max-w-4xl mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 w-full">
+            <div class="col-span-1 flex items-center">
+                <img :src="registerImage" alt="register" class="w-full h-2/4 object-contain" />
+            </div>
+            <div class="col-span-1">
+                <h2 class="text-2xl font-bold mb-6 text-primary">Register Here</h2>
+                <form @submit.prevent="submitForm">
+                    <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
+                    <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
+                    <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid"
+                        v-model="form.employeeid" />
+                    <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role"
+                        :options="options" />
+                    <TextInput name="Password:" type="password" :message="form.errors.password"
+                        v-model="form.password" />
+                    <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
+                    <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                        <span v-if="form.processing"><span class="loading loading-spinner loading-xs"></span>
+                            Register</span>
+                        <span v-else>Register</span>
+                    </button>
+                </form>
+                <div class="mt-6 text-center"> Already have an account?
+                    <Link :href="route('login')" class="link">
+                    Login here
+                    </Link>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -27,12 +37,13 @@ import { useForm, Link } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import TextInput from '../Components/TextInput.vue'
 import SelectOption from '../Components/SelectOption.vue'
+import registerImage from '../../images/Coder.svg'
 
 const options = ref([
-  { label: 'Choose a role', value: '' },
-  { label: 'Employee', value: 'employee' },
-  { label: 'Approver', value: 'approver' },
-  { label: 'Amin', value: 'admin' }
+    { label: 'Choose a role', value: '' },
+    { label: 'Employee', value: 'employee' },
+    { label: 'Approver', value: 'approver' },
+    { label: 'Amin', value: 'admin' }
 ])
 
 const form = useForm({

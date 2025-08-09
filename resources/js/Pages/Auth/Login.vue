@@ -1,25 +1,34 @@
 <template>
-    <div class="max-w-md mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
-        <h2 class="text-2xl font-bold mb-6 text-primary">Login User</h2>
-        <form @submit.prevent="submitForm" class="card">
-            <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
-            <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
-            <div class="flex items-end mb-4">
-                <label class="label">
-                    <input type="checkbox" checked="checked" class="checkbox checkbox-primary"
-                        v-model="form.remember" />
-                    Remember me
-                </label>
+    <div class="max-w-2xl mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 w-full">
+            <div class="col-span-1">
+                <img :src="loginImage" alt="login" class="w-full h-full object-contain" />
             </div>
-            <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
-                <span v-if="form.processing">Processing...</span>
-                <span v-else>Login</span>
-            </button>
-        </form>
-        <div class="mt-6 text-center"> Dont have an account?
-            <Link :href="route('register')" class="link">
-            Register here
-            </Link>
+            <div class="col-span-1">
+                <h2 class="text-2xl font-bold mb-6 text-primary">Login User</h2>
+                <form @submit.prevent="submitForm" class="card">
+                    <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
+                    <TextInput name="Password:" type="password" :message="form.errors.password"
+                        v-model="form.password" />
+                    <div class="flex items-end mb-4">
+                        <label class="label">
+                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary"
+                                v-model="form.remember" />
+                            Remember me
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                        <span v-if="form.processing"><span class="loading loading-spinner loading-xs"></span>
+                            Login</span>
+                        <span v-else>Login</span>
+                    </button>
+                </form>
+                <div class="mt-6 text-center"> Dont have an account?
+                    <Link :href="route('register')" class="link">
+                    Register here
+                    </Link>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -27,6 +36,7 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3'
 import TextInput from '../Components/TextInput.vue'
+import loginImage from '../../images/Secure-login.svg'
 
 const form = useForm({
     email: null,
