@@ -101,8 +101,10 @@ class OvertimeRequestController extends Controller
 
             // CASE 1: Start is BEFORE schedule start
             // and at least 60 mins before schedule start
-            if ($submitted_start_time->lt($schdule_start_time) &&
-                $submitted_start_time->diffInMinutes($schdule_start_time) >= 60) {
+            if (
+                $submitted_start_time->lt($schdule_start_time) &&
+                $submitted_start_time->diffInMinutes($schdule_start_time) >= 60
+            ) {
 
                 // End must be BEFORE schedule start AND less than submitted start
                 if (!($submitted_end_time->lt($schdule_start_time) &&
@@ -409,7 +411,7 @@ class OvertimeRequestController extends Controller
                     }
                 }
             }
-            
+
             $total_computed_hours = array_fill(0, count($dates), 0);
 
             foreach ($breakdown as $br) {
@@ -418,7 +420,7 @@ class OvertimeRequestController extends Controller
                 }
             }
 
-            $rounded_total_computed_hours = array_map(function($num) {
+            $rounded_total_computed_hours = array_map(function ($num) {
                 return round($num, 2);
             }, $total_computed_hours);
 
@@ -426,7 +428,7 @@ class OvertimeRequestController extends Controller
                 'name'  => 'Total',
                 'type'  => 'line',
                 'data'  => $rounded_total_computed_hours,
-                'smooth'=> true
+                'smooth' => true
             ];
 
             $success = true;
