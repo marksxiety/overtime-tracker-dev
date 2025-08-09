@@ -188,8 +188,12 @@ class OvertimeRequestController extends Controller
     }
 
 
-    public function fetchOvertimeRequestsBySession()
+    public function fetchOvertimeRequestsBySession(Request $request)
     {
+
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+        $day = $request->input('day', Carbon::now()->day);
 
         $overtimelist = [];
         $overtime = null;
@@ -198,8 +202,8 @@ class OvertimeRequestController extends Controller
             $overtimes = OvertimeRequest::with(['schedule' => function ($query) {
                 $query->select('id', 'week', 'date', 'user_id');
             }])
-                ->whereHas('schedule', function ($query) {
-                    $query->where('user_id', Auth::id());
+                ->whereHas('schedule', function ($query) use ($year, $month) {
+                    $query->where('user_id', Auth::id())->whereYear('date', $year)->whereMonth('date', $month);
                 })
                 ->select('id', 'employee_schedule_id', 'start_time', 'end_time', 'hours', 'reason', 'remarks', 'status', 'created_at')
                 ->orderBy('updated_at', 'desc')
@@ -230,6 +234,11 @@ class OvertimeRequestController extends Controller
         return inertia('Employee/Index', [
             'info' => [
                 'overtimelist' => $overtimelist
+            ],
+            'payload' => [
+                'year' => $year,
+                'month' => $month,
+                'day' => $day
             ],
             'success' => $success,
             'message' => $message
