@@ -2,7 +2,8 @@
     <div class="flex flex-col gap-6 p-4 min-h-screen max-h-auto">
         <!-- Stat Cards -->
         <div class="stats stats-horizontal shadow flex-wrap">
-            <Card title="Total Filed" :value="card.total_filed" />
+            <Card title="Total Filed" :value="card.total_filed" routename="overtime.filed"
+                :parameters="{ status: 'FILED', page: 'Approver/Filed' }" />
             <Card title="For Filing" :value="card.total_approved" routename="overtime.filing"
                 :parameters="{ status: 'APPROVED', page: 'Approver/Filing' }" />
             <Card title="Pending Approvals" :value="card.total_pending" routename="overtime.pending"
@@ -109,7 +110,7 @@ watch(() => props?.info?.result, (updatedTotals) => {
         required_hours: updatedTotals.totals?.REQUIRED_HOURS ?? 0,
         total_hours: updatedTotals.totals?.TOTAL_HOURS ?? 0,
     }
-    
+
 })
 
 watch(() => props.info.payload.week, (newWeek) => {
