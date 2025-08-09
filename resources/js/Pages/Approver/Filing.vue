@@ -171,8 +171,8 @@
     </div>
 
     <div class="stats stats-horizontal shadow flex-wrap">
-      <Card title="Requests to File" :value="'0'" description="Approved but not yet filed" />
-      <Card title="Total Overtime Hours" :value="'0'" description="Awaiting confirmation" />
+      <Card title="Requests to File" :value="total_requests" description="Approved but not yet filed" />
+      <Card title="Total Overtime Hours" :value="total_requests_hours" description="Awaiting confirmation" />
     </div>
 
     <!-- Filing Table -->
@@ -222,7 +222,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, inject, watch } from 'vue'
+import { onMounted, ref, inject, watch, computed } from 'vue'
 import Card from '../Components/Card.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
@@ -242,6 +242,14 @@ const props = defineProps({
 const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
 const requests = ref([...props?.info?.requests ?? []])
+
+const total_requests = computed(() => {
+  return props?.info?.requests.length
+})
+
+const total_requests_hours = computed(() => {
+  return props.info.requests.reduce((sum, r) => sum + (r.overtime?.hours ?? 0), 0).toFixed(2)
+})
 
 const user = ref({
   name: '',

@@ -145,8 +145,8 @@
     </div>
 
     <div class="stats stats-horizontal shadow flex-wrap">
-      <Card title="Filed Requests" :value="'0'" />
-      <Card title="Total Overtime Hours" :value="'0'" />
+      <Card title="Filed Requests" :value="total_requests" />
+      <Card title="Total Overtime Hours" :value="total_requests_hours" />
     </div>
 
     <!-- Filing Table -->
@@ -214,6 +214,14 @@ const props = defineProps({
 const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
 const requests = ref([...props?.info?.requests ?? []])
+
+const total_requests = computed(() => {
+  return props?.info?.requests.length
+})
+
+const total_requests_hours = computed(() => {
+  return props.info.requests.reduce((sum, r) => sum + (r.overtime?.hours ?? 0), 0).toFixed(2)
+})
 
 const user = ref({
   name: '',
