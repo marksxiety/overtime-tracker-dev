@@ -22,7 +22,7 @@ Route::get('/', function (Request $request) {
     return match ($role) {
         'admin' => Inertia::render('Admin/Index'),
         'approver' => app(OvertimeRequestController::class)->fetchTotalOvertimeRequests($request),
-        'employee' => app(OvertimeRequestController::class)->fetchOvertimeRequestsBySession(),
+        'employee' => app(OvertimeRequestController::class)->fetchOvertimeRequestsBySession($request),
         default => redirect()->route('unauthorized'),
     };
 })->middleware('auth')->name('main');
