@@ -441,6 +441,7 @@ const handlePreviousMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
+    handleMonthSelection(year, currentMonth.value + 1)
 }
 
 const handleNextMonth = () => {
@@ -452,6 +453,7 @@ const handleNextMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
+    handleMonthSelection(year, currentMonth.value + 1)
 }
 
 
@@ -461,7 +463,7 @@ function updateCurrentMonthYear(year, month) {
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
     lastDateOfLastMonth.value = new Date(year, month, 0).getDate()
     firstDayOfMonth.value = new Date(year, month, 1).getDay()
-    handleMonthSelection(year, month + 1)
+    
     calendardays.value = [] // reset
 
     // previous month's trailing days (gray out)
