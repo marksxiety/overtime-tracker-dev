@@ -42,6 +42,8 @@ Route::middleware('employee')->group(function () {
     // overtime request routes
     Route::post('/overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
     Route::post('/overtime/update', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update.employee');
+
+    Route::inertia('/profile', 'Profile')->name('profile.employee');
 });
 
 Route::middleware('admin')->group(function () {

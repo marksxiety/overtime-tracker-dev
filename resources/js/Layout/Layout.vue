@@ -17,10 +17,10 @@
                     <ul tabindex="0"
                         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-40 p-2 shadow">
                         <li>
-                            <a class="justify-between px-4 py-2">
+                            <Link :href="route('profile.employee')" class="justify-between px-4 py-2">
                                 <Icon icon="iconamoon:profile-circle-fill" width="24" height="24" />
                                 Profile
-                            </a>
+                            </Link>
                         </li>
                         <li>
                             <label class="swap swap-rotate justify-between px-4 py-2 ">
