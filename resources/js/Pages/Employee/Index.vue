@@ -90,7 +90,9 @@
             <div class="flex flex-col gap-2 w-full">
                 <div class="flex justify-end">
                     <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
-                        @click="closeOvertimeRequestModal()"><Icon icon="material-symbols:close-rounded" width="24" height="24" /></span>
+                        @click="closeOvertimeRequestModal()">
+                        <Icon icon="material-symbols:close-rounded" width="24" height="24" />
+                    </span>
                 </div>
                 <div class="max-w-lg mx-auto p-6 bg-base-100 space-y-6 w-full">
                     <form @submit.prevent="submitCancelation()">
@@ -250,7 +252,7 @@
                         <span :class="[
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
                             'hover:bg-base-300  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
-                            (currentDay === days.day && currentYear === days.year && currentMonth === days.month) ? 'bg-base-300' : ''
+                            (actualDay === parseInt(days.day) && actualYear === parseInt(days.year) && actualMonth === parseInt(days.month)) ? 'bg-base-300' : ''
                         ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
                         </span>
@@ -287,22 +289,27 @@ const toast = inject('toast')
 const props = defineProps({
     info: Object,
     payload: Object,
+    errors: Object,
+    flash: Object,
     success: Boolean,
-    errors: Object
+    message: String,
+    auth: Object,
 })
 
-console.log(props.payload)
 // ========== Calendar Refs ==========
 const currentMonthYear = ref('')
 const currentYear = ref(props?.payload?.year)
 const currentMonth = ref(props?.payload?.month - 1)
-const currentDatetime = ref(props?.payload?.day)
-const currentDay = ref(currentDatetime.value)
+
 const lastDateOfMonth = ref(0)
 const firstDayOfMonth = ref(0)
 const lastDateOfLastMonth = ref(0)
 const calendardays = ref([])
 
+// actual date (should not updated to defined specific 'day' in the calendar)
+const actualYear = ref(props?.payload?.actual?.year)
+const actualMonth = ref(props?.payload?.actual?.month - 1)
+const actualDay = ref(props?.payload?.actual?.day)
 
 // ========== Modal Refs ==========
 const overtimeFilingModal = ref(null)
@@ -399,11 +406,10 @@ const showOvertimeFilingModal = async (year, month, day) => {
     }
 }
 
-const handleMonthSelection = (year, month, day) => {
+const handleMonthSelection = (year, month) => {
     router.get(route('main'), {
         year: year,
-        month: month,
-        day: day
+        month: month
     }, {
         preserveState: true
     })
@@ -455,7 +461,7 @@ function updateCurrentMonthYear(year, month) {
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
     lastDateOfLastMonth.value = new Date(year, month, 0).getDate()
     firstDayOfMonth.value = new Date(year, month, 1).getDay()
-    handleMonthSelection(year, month + 1, 1)
+    handleMonthSelection(year, month + 1)
     calendardays.value = [] // reset
 
     // previous month's trailing days (gray out)
@@ -538,12 +544,7 @@ watch(() => props.info?.overtimelist, (updatedRequests) => {
 })
 
 watch(() => props.info?.payload, (updatedPayload) => {
-
     currentYear.value = updatedPayload.year
     currentMonth.value = updatedPayload.month
-    currentDatetime.value = updatedPayload.day
-
-    console.log(updatedPayload)
-
 })
 </script>
