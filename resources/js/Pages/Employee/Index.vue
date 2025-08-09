@@ -86,98 +86,95 @@
         </div>
     </Modal>
     <Modal ref="overtimeRequestModal">
-        <div class="px-4">
-            <div class="flex flex-col gap-2 w-full">
-                <div class="flex justify-end">
-                    <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
-                        @click="closeOvertimeRequestModal()">
-                        <Icon icon="material-symbols:close-rounded" width="24" height="24" />
-                    </span>
-                </div>
-                <div class="max-w-lg mx-auto p-6 bg-base-100 space-y-6 w-full">
-                    <form @submit.prevent="submitCancelation()">
-                        <!-- Stepper -->
-                        <Stepper :status="formFilledOvertime.current_status" />
-                        <!-- Filing Information -->
-                        <div class="space-y-6 text-sm">
+        <div class="flex flex-col gap-2 w-full">
+            <div class="flex justify-end">
+                <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
+                    @click="closeOvertimeRequestModal()">
+                    <Icon icon="material-symbols:close-rounded" width="18" height="18" />
+                </span>
+            </div>
+            <div class="max-w-lg mx-auto p-3 bg-base-100 space-y-6 w-full">
+                <form @submit.prevent="submitCancelation()">
+                    <!-- Stepper -->
+                    <Stepper :status="formFilledOvertime.current_status" />
+                    <!-- Filing Information -->
+                    <div class="space-y-6 text-sm">
 
-                            <!-- Meta Info -->
-                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                                <legend class="text-sm font-semibold px-2">Meta Information</legend>
-                                <div class="grid gap-2 mt-4">
-                                    <div class="flex flex-row gap-2">
-                                        <label class="label">
-                                            <span class="label-text">Date Filed:</span>
-                                        </label>
-                                        <span class="font-medium">{{ formFilledOvertime.created_at }}</span>
-                                    </div>
-                                    <div class="flex flex-row gap-2">
-                                        <label class="label">
-                                            <span class="label-text">Week:</span>
-                                        </label>
-                                        <span class="font-medium">{{ formFilledOvertime.week }}</span>
-                                    </div>
-                                    <div class="flex flex-row gap-2">
-                                        <label class="label">
-                                            <span class="label-text">Status: </span>
-                                        </label>
-                                        <span
-                                            :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
-                                            {{ formFilledOvertime.current_status }}</span>
-                                    </div>
+                        <!-- Meta Info -->
+                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                            <legend class="text-sm font-semibold px-2">Meta Information</legend>
+                            <div class="grid gap-2 mt-4">
+                                <div class="flex flex-row gap-2">
+                                    <label class="label">
+                                        <span class="label-text">Date Filed:</span>
+                                    </label>
+                                    <span class="font-medium">{{ formFilledOvertime.created_at }}</span>
                                 </div>
-                            </fieldset>
-
-                            <!-- Overtime Schedule -->
-                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                                <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
-                                <div class="grid gap-2 mt-4">
-                                    <div class="flex flex-row gap-2">
-                                        <label class="label">
-                                            <span class="label-text">Date: </span>
-                                        </label>
-                                        <span class="font-medium">{{ formFilledOvertime.date }}</span>
-                                    </div>
-                                    <div class="flex flex-row gap-2">
-                                        <label class="label">
-                                            <span class="label-text">Time: </span>
-                                        </label>
-                                        <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
-                                            formFilledOvertime.end_time }}</span>
-                                    </div>
-                                    <div class="flex flex-row gap-2">
-                                        <label class="label">
-                                            <span class="label-text">Total Hour(s): </span>
-                                        </label>
-                                        <span class="font-medium">{{ formFilledOvertime.hours }}</span>
-                                    </div>
+                                <div class="flex flex-row gap-2">
+                                    <label class="label">
+                                        <span class="label-text">Week:</span>
+                                    </label>
+                                    <span class="font-medium">{{ formFilledOvertime.week }}</span>
                                 </div>
-                            </fieldset>
+                                <div class="flex flex-row gap-2">
+                                    <label class="label">
+                                        <span class="label-text">Status: </span>
+                                    </label>
+                                    <span
+                                        :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
+                                        {{ formFilledOvertime.current_status }}</span>
+                                </div>
+                            </div>
+                        </fieldset>
 
-                            <!-- Reason -->
-                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                                <legend class="text-sm font-semibold px-2">Reason</legend>
-                                <p class="mt-2">{{ formFilledOvertime.reason }}</p>
-                            </fieldset>
+                        <!-- Overtime Schedule -->
+                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                            <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
+                            <div class="grid gap-2 mt-4">
+                                <div class="flex flex-row gap-2">
+                                    <label class="label">
+                                        <span class="label-text">Date: </span>
+                                    </label>
+                                    <span class="font-medium">{{ formFilledOvertime.date }}</span>
+                                </div>
+                                <div class="flex flex-row gap-2">
+                                    <label class="label">
+                                        <span class="label-text">Time: </span>
+                                    </label>
+                                    <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
+                                        formFilledOvertime.end_time }}</span>
+                                </div>
+                                <div class="flex flex-row gap-2">
+                                    <label class="label">
+                                        <span class="label-text">Total Hour(s): </span>
+                                    </label>
+                                    <span class="font-medium">{{ formFilledOvertime.hours }}</span>
+                                </div>
+                            </div>
+                        </fieldset>
 
-                            <!-- Remarks -->
-                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                                <legend class="text-sm font-semibold px-2">Remarks</legend>
-                                <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
-                            </fieldset>
-                        </div>
+                        <!-- Reason -->
+                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                            <legend class="text-sm font-semibold px-2">Reason</legend>
+                            <p class="mt-2">{{ formFilledOvertime.reason }}</p>
+                        </fieldset>
 
-                        <!-- Action Button -->
-                        <button type="submit" class="btn btn-outline w-full mt-6"
-                            :disabled="formFilledOvertime.processing || formFilledOvertime.current_status !== 'PENDING'">
-                            <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
-                            <span> Cancel Request</span>
-                        </button>
-                    </form>
-                </div>
+                        <!-- Remarks -->
+                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                            <legend class="text-sm font-semibold px-2">Remarks</legend>
+                            <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
+                        </fieldset>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button type="submit" class="btn btn-outline w-full mt-6"
+                        :disabled="formFilledOvertime.processing || formFilledOvertime.current_status !== 'PENDING'">
+                        <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
+                        <span> Cancel Request</span>
+                    </button>
+                </form>
             </div>
         </div>
-
     </Modal>
     <div class="flex flex-col gap-4">
         <div class="stats shadow grid grid-cols-3">
@@ -205,7 +202,7 @@
                     </li>
 
                     <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
-                        class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 transition-all cursor-pointer">
+                        class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col gap-1">
                                 <p class="text-sm opacity-70">{{ request.date }}</p>
@@ -251,7 +248,7 @@
                     ]">
                         <span :class="[
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
-                            'hover:bg-base-300  cursor-pointer transition duration-200 w-10 h-10 flex items-center justify-center rounded-xl',
+                            'hover:bg-base-300  cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl',
                             (actualDay === parseInt(days.day) && actualYear === parseInt(days.year) && actualMonth === parseInt(days.month)) ? 'bg-base-300' : ''
                         ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
@@ -441,7 +438,7 @@ const handlePreviousMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
-    handleMonthSelection(year, currentMonth.value + 1)
+    handleMonthSelection(currentYear.value, currentMonth.value + 1)
 }
 
 const handleNextMonth = () => {
@@ -453,7 +450,7 @@ const handleNextMonth = () => {
     }
 
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
-    handleMonthSelection(year, currentMonth.value + 1)
+    handleMonthSelection(currentYear.value, currentMonth.value + 1)
 }
 
 
