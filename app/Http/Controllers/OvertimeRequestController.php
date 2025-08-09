@@ -193,7 +193,10 @@ class OvertimeRequestController extends Controller
 
         $month = $request->input('month', Carbon::now()->month);
         $year = $request->input('year', Carbon::now()->year);
-        $day = $request->input('day', Carbon::now()->day);
+
+        $actualyear = Carbon::now()->year;
+        $actualmonth = Carbon::now()->month;
+        $actualday = Carbon::now()->day;
 
         $overtimelist = [];
         $overtime = null;
@@ -238,7 +241,11 @@ class OvertimeRequestController extends Controller
             'payload' => [
                 'year' => $year,
                 'month' => $month,
-                'day' => $day
+                'actual' => [
+                    'year' => $actualyear,
+                    'month' => $actualmonth,
+                    'day' => $actualday
+                ]
             ],
             'success' => $success,
             'message' => $message
