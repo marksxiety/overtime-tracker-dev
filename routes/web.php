@@ -66,6 +66,6 @@ Route::middleware('approver')->group(function () {
     Route::get('/overtime/pending', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.pending');
 });
 
-Route::get('/unauthorized', fn() => Inertia::render('Unauthorized'))->name('unauthorized');
+Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');
 
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('logout');

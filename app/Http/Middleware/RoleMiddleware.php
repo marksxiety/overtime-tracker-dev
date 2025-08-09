@@ -19,7 +19,7 @@ class RoleMiddleware
         $user = Auth::user();
 
         if (! $user || ! in_array($user->role, $roles)) {
-            return redirect()->route('unauthorized');
+            return redirect()->route('404');
         }
 
         return $next($request);
