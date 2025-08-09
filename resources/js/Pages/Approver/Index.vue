@@ -171,10 +171,7 @@ function displayOvertimeWeeklyBarGraph() {
         yAxis: {
             type: 'value',
             name: 'Overtime Hours',
-            min: 0,
-            max: function (value) {
-                return value.max + 20
-            }
+            min: 0
         },
         series: barData.value
     }
