@@ -17,8 +17,7 @@ export function getEmployeeOvertimeStats(requests) {
         }
     });
 
+    totalovertimehours = totalovertimehours.toFixed(2)
+
     return { totalovertimehours, pendingrequests, rejectedrequests };
 }
-
-// for approver getApproverOvertimeRequests()
-// for admin computeGlobalOvertimeStats()
