@@ -1,176 +1,180 @@
 <template>
     <Modal ref="overtimeFilingModal">
-        <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
-        <div class="flex flex-col gap-4">
-            <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1 min-h-96">
-                <div class="flex items-center justify-center h-64 gap-4 text-center" v-if="fetchingSchedule">
-                    <span class="loading loading-spinner"></span> Loading Schedule...
+        <div class="py-4 mt-2">
+            <div class="flex flex-col gap-2 w-full">
+                <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
+                <div class="flex flex-col gap-4">
+                    <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1 min-h-96">
+                        <div class="flex items-center justify-center h-64 gap-4 text-center" v-if="fetchingSchedule">
+                            <span class="loading loading-spinner"></span> Loading Schedule...
+                        </div>
+                        <div v-else>
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                                <legend class="fieldset-legend">Requested Overtime Date</legend>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-1">
+                                        <TextInput name="Date:" type="text" v-model="formFiling.date" :readonly="true"
+                                            :placeholder="''" />
+                                    </div>
+                                    <div class="col-span-1">
+                                        <TextInput name="Week:" type="text" v-model="formFiling.week" :readonly="true"
+                                            :placeholder="''" />
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                                <legend class="fieldset-legend">Your Scheduled Shift</legend>
+                                <div class="grid grid-cols-5 gap-4">
+                                    <div class="col-span-1">
+                                        <TextInput name="Shift Code:" type="text" v-model="formFiling.shift_code"
+                                            :readonly="true" :placeholder="''" />
+                                    </div>
+                                    <div class="col-span-2">
+                                        <TextInput name="Start:" type="text" v-model="formFiling.shift_start_time"
+                                            :readonly="true" :placeholder="''" />
+                                    </div>
+                                    <div class="col-span-2">
+                                        <TextInput name="End:" type="text" v-model="formFiling.shift_end_time"
+                                            :readonly="true" :placeholder="''" />
+                                    </div>
+                                </div>
+                            </fieldset>
+
+
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                                <legend class="fieldset-legend">Overtime Duration and Reason</legend>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-1">
+                                        <TextInput name="Start Time:" type="time" v-model="formFiling.start_time"
+                                            :message="formFiling.errors?.start_time" />
+                                    </div>
+                                    <div class="col-span-1">
+                                        <TextInput name="End Time:" type="time" v-model="formFiling.end_time"
+                                            :message="formFiling.errors?.end_time" />
+                                    </div>
+                                </div>
+                                <TextArea name="Reason:" type="text" v-model="formFiling.reason"
+                                    :message="formFiling.errors?.reason" />
+                            </fieldset>
+                            <div v-if="withShedule">
+                                <div class="flex justify-end gap-4">
+                                    <button type="button" class="btn btn-neutral mt-4" :disabled="formFiling.processing"
+                                        @click="closeOvertimeFilingModal()">Cancel</button>
+                                    <button type="submit" class="btn btn-primary mt-4"
+                                        :disabled="formFiling.processing">
+                                        <span v-if="formFiling.processing" class="loading loading-spinner"></span>
+                                        <span>Submit</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div v-else
+                                class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
+                                ⚠️ No registered Schedule.
+                                <div class="flex justify-center gap-6">
+                                    <button type="button" class="btn btn-neutral mt-4 w-full"
+                                        @click="closeOvertimeFilingModal()">Close</button>
+                                    <Link :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">
+                                    Add
+                                    Schedule</Link>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div v-else>
-                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                        <legend class="fieldset-legend">Requested Overtime Date</legend>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Date:" type="text" v-model="formFiling.date" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                            <div class="col-span-1">
-                                <TextInput name="Week:" type="text" v-model="formFiling.week" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                        <legend class="fieldset-legend">Your Scheduled Shift</legend>
-                        <div class="grid grid-cols-5 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Shift Code:" type="text" v-model="formFiling.shift_code"
-                                    :readonly="true" :placeholder="''" />
-                            </div>
-                            <div class="col-span-2">
-                                <TextInput name="Start:" type="text" v-model="formFiling.shift_start_time"
-                                    :readonly="true" :placeholder="''" />
-                            </div>
-                            <div class="col-span-2">
-                                <TextInput name="End:" type="text" v-model="formFiling.shift_end_time" :readonly="true"
-                                    :placeholder="''" />
-                            </div>
-                        </div>
-                    </fieldset>
-
-
-                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                        <legend class="fieldset-legend">Overtime Duration and Reason</legend>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-1">
-                                <TextInput name="Start Time:" type="time" v-model="formFiling.start_time"
-                                    :message="formFiling.errors?.start_time" />
-                            </div>
-                            <div class="col-span-1">
-                                <TextInput name="End Time:" type="time" v-model="formFiling.end_time"
-                                    :message="formFiling.errors?.end_time" />
-                            </div>
-                        </div>
-                        <TextArea name="Reason:" type="text" v-model="formFiling.reason"
-                            :message="formFiling.errors?.reason" />
-                    </fieldset>
-                    <div v-if="withShedule">
-                        <div class="flex justify-end gap-4">
-                            <button type="button" class="btn btn-neutral mt-4" :disabled="formFiling.processing"
-                                @click="closeOvertimeFilingModal()">Cancel</button>
-                            <button type="submit" class="btn btn-primary mt-4" :disabled="formFiling.processing">
-                                <span v-if="formFiling.processing" class="loading loading-spinner"></span>
-                                <span>Submit</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div v-else
-                        class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
-                        ⚠️ No registered Schedule.
-                        <div class="flex justify-center gap-6">
-                            <button type="button" class="btn btn-neutral mt-4 w-full"
-                                @click="closeOvertimeFilingModal()">Close</button>
-                            <Link :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">Add
-                            Schedule</Link>
-                        </div>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </Modal>
     <Modal ref="overtimeRequestModal">
-        <div class="flex justify-end">
-            <!-- <button class="btn btn-sm bg-none border-none" @click="closeOvertimeRequestModal()"
-                :disabled="formFilledOvertime.processing">
-                ✖
-            </button> -->
-            <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
-                @click="closeOvertimeRequestModal()">✖</span>
-        </div>
-        <div class="max-w-md mx-auto p-6 bg-base-100 space-y-6">
-            <form @submit.prevent="submitCancelation()">
-                <!-- Stepper -->
-                <Stepper :status="formFilledOvertime.current_status" />
-                <!-- Filing Information -->
-                <div class="space-y-6 text-sm">
-
-                    <!-- Meta Info -->
-                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                        <legend class="text-sm font-semibold px-2">Meta Information</legend>
-                        <div class="grid gap-2 mt-4">
-                            <div class="flex flex-row gap-2">
-                                <label class="label">
-                                    <span class="label-text">Date Filed:</span>
-                                </label>
-                                <span class="font-medium">{{ formFilledOvertime.created_at }}</span>
-                            </div>
-                            <div class="flex flex-row gap-2">
-                                <label class="label">
-                                    <span class="label-text">Week:</span>
-                                </label>
-                                <span class="font-medium">{{ formFilledOvertime.week }}</span>
-                            </div>
-                            <div class="flex flex-row gap-2">
-                                <label class="label">
-                                    <span class="label-text">Status: </span>
-                                </label>
-                                <span
-                                    :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
-                                    {{ formFilledOvertime.current_status }}</span>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <!-- Overtime Schedule -->
-                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                        <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
-                        <div class="grid gap-2 mt-4">
-                            <div class="flex flex-row gap-2">
-                                <label class="label">
-                                    <span class="label-text">Date: </span>
-                                </label>
-                                <span class="font-medium">{{ formFilledOvertime.date }}</span>
-                            </div>
-                            <div class="flex flex-row gap-2">
-                                <label class="label">
-                                    <span class="label-text">Time: </span>
-                                </label>
-                                <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
-                                    formFilledOvertime.end_time }}</span>
-                            </div>
-                            <div class="flex flex-row gap-2">
-                                <label class="label">
-                                    <span class="label-text">Total Hour(s): </span>
-                                </label>
-                                <span class="font-medium">{{ formFilledOvertime.hours }}</span>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <!-- Reason -->
-                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                        <legend class="text-sm font-semibold px-2">Reason</legend>
-                        <p class="mt-2">{{ formFilledOvertime.reason }}</p>
-                    </fieldset>
-
-                    <!-- Remarks -->
-                    <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                        <legend class="text-sm font-semibold px-2">Remarks</legend>
-                        <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
-                    </fieldset>
+        <div class="px-4">
+            <div class="flex flex-col gap-2 w-full">
+                <div class="flex justify-end">
+                    <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
+                        @click="closeOvertimeRequestModal()"><Icon icon="material-symbols:close-rounded" width="24" height="24" /></span>
                 </div>
+                <div class="max-w-lg mx-auto p-6 bg-base-100 space-y-6 w-full">
+                    <form @submit.prevent="submitCancelation()">
+                        <!-- Stepper -->
+                        <Stepper :status="formFilledOvertime.current_status" />
+                        <!-- Filing Information -->
+                        <div class="space-y-6 text-sm">
 
-                <!-- Action Button -->
-                <button type="submit" class="btn btn-outline w-full mt-6"
-                    :disabled="formFilledOvertime.processing || formFilledOvertime.current_status !== 'PENDING'">
-                    <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
-                    <span> Cancel Request</span>
-                </button>
-            </form>
+                            <!-- Meta Info -->
+                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                                <legend class="text-sm font-semibold px-2">Meta Information</legend>
+                                <div class="grid gap-2 mt-4">
+                                    <div class="flex flex-row gap-2">
+                                        <label class="label">
+                                            <span class="label-text">Date Filed:</span>
+                                        </label>
+                                        <span class="font-medium">{{ formFilledOvertime.created_at }}</span>
+                                    </div>
+                                    <div class="flex flex-row gap-2">
+                                        <label class="label">
+                                            <span class="label-text">Week:</span>
+                                        </label>
+                                        <span class="font-medium">{{ formFilledOvertime.week }}</span>
+                                    </div>
+                                    <div class="flex flex-row gap-2">
+                                        <label class="label">
+                                            <span class="label-text">Status: </span>
+                                        </label>
+                                        <span
+                                            :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
+                                            {{ formFilledOvertime.current_status }}</span>
+                                    </div>
+                                </div>
+                            </fieldset>
 
+                            <!-- Overtime Schedule -->
+                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                                <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
+                                <div class="grid gap-2 mt-4">
+                                    <div class="flex flex-row gap-2">
+                                        <label class="label">
+                                            <span class="label-text">Date: </span>
+                                        </label>
+                                        <span class="font-medium">{{ formFilledOvertime.date }}</span>
+                                    </div>
+                                    <div class="flex flex-row gap-2">
+                                        <label class="label">
+                                            <span class="label-text">Time: </span>
+                                        </label>
+                                        <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
+                                            formFilledOvertime.end_time }}</span>
+                                    </div>
+                                    <div class="flex flex-row gap-2">
+                                        <label class="label">
+                                            <span class="label-text">Total Hour(s): </span>
+                                        </label>
+                                        <span class="font-medium">{{ formFilledOvertime.hours }}</span>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Reason -->
+                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                                <legend class="text-sm font-semibold px-2">Reason</legend>
+                                <p class="mt-2">{{ formFilledOvertime.reason }}</p>
+                            </fieldset>
+
+                            <!-- Remarks -->
+                            <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                                <legend class="text-sm font-semibold px-2">Remarks</legend>
+                                <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
+                            </fieldset>
+                        </div>
+
+                        <!-- Action Button -->
+                        <button type="submit" class="btn btn-outline w-full mt-6"
+                            :disabled="formFilledOvertime.processing || formFilledOvertime.current_status !== 'PENDING'">
+                            <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
+                            <span> Cancel Request</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-
 
     </Modal>
     <div class="flex flex-col gap-4">
@@ -268,6 +272,7 @@ import { fetchUserSchedule } from '../api/schedule.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
 import Stepper from '../Components/Stepper.vue'
+import { Icon } from "@iconify/vue";
 
 
 // ========== Global Constants ==========
