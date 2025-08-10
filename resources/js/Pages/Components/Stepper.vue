@@ -1,7 +1,7 @@
 <template>
-    <ul class="steps w-full mb-6 bg-base-100" v-if="status.toUpperCase() !== 'CANCELED'">
+    <ul class="steps w-full mb-6 bg-base-100">
         <li :class="['step text-sm', `step-${identifyColorStatus(status)}`]">
-            PENDING</li>
+            {{ status === 'CANCELED' ? 'CANCELED' : 'PENDING' }}</li>
         <li
             :class="['step text-sm break-normal', ['APPROVED', 'FILED', 'DISAPPROVED'].includes(status) ? `step-${identifyColorStatus(status)} ` : '']">
             {{
