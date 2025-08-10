@@ -200,6 +200,10 @@ class ScheduleController extends Controller
                 ];
             }
 
+            // get the first and last date of the week
+            $week_start = Carbon::parse($days[0]['date'])->toFormattedDateString();
+            $week_end = Carbon::parse($days[(count($days) - 1)]['date'])->toFormattedDateString();
+
             // Build a base schedule template for each employee across all 7 days
             $employee_schedules = [];
             foreach ($employees as $employee) {
@@ -256,7 +260,12 @@ class ScheduleController extends Controller
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'info' => $employee_schedules, // Final merged employee schedule data
+            'info' => [
+                'schedules' => $employee_schedules, // Final merged employee schedule data
+                'week_start' => $week_start,
+                'week_end' => $week_end,
+                'week' => $week
+            ],
             'payload' => [
                 'year' => $year,
                 'week' => $week
