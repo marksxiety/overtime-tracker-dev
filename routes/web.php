@@ -67,7 +67,8 @@ Route::middleware('approver')->group(function () {
     Route::get('/overtime/pending', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.pending');
     Route::get('/overtime/filed', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.filed');
 
-    Route::get('/schedule/manage', [ScheduleController::class, 'manageSchedule'])->name('manage.schedule.approver');
+    Route::inertia('/schedule/manage', 'Approver/ManageSchedule')->name('schedule.manage');
+    Route::get('/schedule/employee/list', action: [ScheduleController::class, 'fetchEmployeeSchedule']);
 });
 
 Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');
