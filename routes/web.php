@@ -41,7 +41,7 @@ Route::middleware('employee')->group(function () {
 
     // overtime request routes
     Route::post('/overtime/request', [OvertimeRequestController::class, 'insertOvertimeRequest'])->name('overtime.request');
-    Route::post('/overtime/update', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update.employee');
+    Route::post('/overtime/update/employee', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update.employee');
 
     Route::inertia('/profile', 'Profile')->name('profile.employee');
 });
@@ -62,7 +62,7 @@ Route::middleware('approver')->group(function () {
     Route::post('/hours/register', [RequiredHoursController::class, 'registerRequiredHours'])->name('hours.register');
     Route::put('/hours/{requiredHours}', [RequiredHoursController::class, 'updateRequiredHour'])->name('hours.update');
 
-    Route::post('/overtime/update', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update.approver');
+    Route::post('/overtime/update/approver', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update.approver');
     Route::get('/overtime/filing', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.filing');
     Route::get('/overtime/pending', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.pending');
     Route::get('/overtime/filed', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaStatus'])->name('overtime.filed');
