@@ -9,8 +9,23 @@ export function fetchSchedule(year, week) {
     });
 }
 
+export function fetchEmployeeSchedule(year, week) {
+    return axios.get("/schedule/employee/list", {
+        params: {
+            year: year,
+            week: week,
+        },
+    });
+}
+
 export function submitSchedule(info) {
     return axios.post("/schedule/submit", {
+        schedule: info,
+    });
+}
+
+export function submitEmployeeSchedule(info) {
+    return axios.post("/schedule/employee/submit", {
         schedule: info,
     });
 }
