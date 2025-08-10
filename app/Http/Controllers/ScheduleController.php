@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\OvertimeRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use Carbon\Carbon;
@@ -165,6 +166,101 @@ class ScheduleController extends Controller
             'success' => $success,
             'message' => $message,
             'schedule' => $registered
+        ]);
+    }
+
+    public function fetchEmployeeSchedule(Request $request)
+    {
+        $schedules = [];
+        $employees = [];
+
+        try {
+            $days = [];
+
+            // Get year and week from request, default to current year/week if not provided
+            $year = $request->input('year', now()->year);
+            $week = $request->input('week', now()->week);
+
+            // Get the first day (Sunday) of the requested week in the given year
+            $date = CarbonImmutable::createFromDate($year, 1, 1, 'Asia/Manila')
+                ->startOfWeek(Carbon::SUNDAY)
+                ->addWeeks($week - 1);
+
+            // Fetch all registered employees (base dataset for generating schedules)
+            $employees = User::where('role', 'employee')->get();
+
+            // Prepare an array for all 7 days of the selected week
+            for ($i = 0; $i < 7; $i++) {
+                $current = $date->addDays($i);
+                $days[] = [
+                    'shift_id' => null, // initially no assigned shift
+                    'date' => $current->toDateString(),
+                    'week' => $week,
+                    'day' => $current->format('l'), // day name (e.g., Monday)
+                ];
+            }
+
+            // Build a base schedule template for each employee across all 7 days
+            $employee_schedules = [];
+            foreach ($employees as $employee) {
+                foreach ($days as $day) {
+                    $employee_schedules[] = [
+                        'user_id' => $employee->id,
+                        'shift_id' => $day['shift_id'],
+                        'name' => $employee->name,
+                        'date' => $day['date'],
+                        'week' => $day['week'],
+                        'day' => $day['day']
+                    ];
+                }
+            }
+
+            // Fetch actual schedules from DB for the given week/year
+            $schedules = User::leftJoin('schedules', 'users.id', '=', 'schedules.user_id')
+                ->where('users.role', 'employee')
+                ->whereYear('schedules.date', $year)
+                ->where('schedules.week', $week)
+                ->select(
+                    'users.id as user_id',
+                    'users.name',
+                    'schedules.id as schedule_id',
+                    'schedules.shift_id',
+                    'schedules.date',
+                    'schedules.week',
+                )
+                ->get();
+
+            // Match actual schedules with the base schedule template
+            // If a match is found (same date and user), update shift_id and schedule_id
+            foreach ($schedules as &$schedule) {
+                for ($j = 0; $j < count($employee_schedules); $j++) {
+                    if (
+                        $schedule['date'] === $employee_schedules[$j]['date'] &&
+                        $schedule['user_id'] === $employee_schedules[$j]['user_id']
+                    ) {
+                        $employee_schedules[$j]['schedule_id'] = $schedule['schedule_id'];
+                        $employee_schedules[$j]['shift_id'] = $schedule['shift_id'];
+                        break;
+                    }
+                }
+            }
+
+            $success = true;
+            $message = "Employee's Schedule loaded successfully";
+        } catch (\Throwable $th) {
+            $schedules = [];
+            $success = false;
+            $message = "Failed to fetch schedules due to $th";
+        }
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'info' => $employee_schedules, // Final merged employee schedule data
+            'payload' => [
+                'year' => $year,
+                'week' => $week
+            ]
         ]);
     }
 }
