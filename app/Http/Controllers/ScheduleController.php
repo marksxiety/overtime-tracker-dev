@@ -193,7 +193,6 @@ class ScheduleController extends Controller
             for ($i = 0; $i < 7; $i++) {
                 $current = $date->addDays($i);
                 $days[] = [
-                    'shift_id' => null, // initially no assigned shift
                     'date' => $current->toDateString(),
                     'week' => $week,
                     'day' => $current->format('l'), // day name (e.g., Monday)
@@ -208,14 +207,33 @@ class ScheduleController extends Controller
             $employee_schedules = [];
             foreach ($employees as $employee) {
                 foreach ($days as $day) {
-                    $employee_schedules[] = [
-                        'user_id' => $employee->id,
-                        'shift_id' => $day['shift_id'],
-                        'name' => $employee->name,
-                        'date' => $day['date'],
-                        'week' => $day['week'],
-                        'day' => $day['day']
-                    ];
+
+                    // find the index where the employee id is existing
+                    $index = array_search($employee->id, array_column($employee_schedules, 'user_id'));
+
+                    // if the index return the exact index of the value
+                    // push to schedule array of the user, this will merge all the schedule of specific user in an index
+                    if ($index !== false) {
+                        $employee_schedules[$index]['schedule'][] = [
+                            'shift_id' => null,
+                            'schedule_id' => null,
+                            'date' => $day['date'],
+                            'week' => $day['week'],
+                            'day' => $day['day']
+                        ];
+                    } else {
+                        $employee_schedules[] = [
+                            'user_id' => $employee->id,
+                            'name' => $employee->name,
+                            'schedule' => [[
+                                'shift_id' => null,
+                                'schedule_id' => null,
+                                'date' => $day['date'],
+                                'week' => $day['week'],
+                                'day' => $day['day']
+                            ]]
+                        ];
+                    }
                 }
             }
 
@@ -238,13 +256,14 @@ class ScheduleController extends Controller
             // If a match is found (same date and user), update shift_id and schedule_id
             foreach ($schedules as &$schedule) {
                 for ($j = 0; $j < count($employee_schedules); $j++) {
-                    if (
-                        $schedule['date'] === $employee_schedules[$j]['date'] &&
-                        $schedule['user_id'] === $employee_schedules[$j]['user_id']
-                    ) {
-                        $employee_schedules[$j]['schedule_id'] = $schedule['schedule_id'];
-                        $employee_schedules[$j]['shift_id'] = $schedule['shift_id'];
-                        break;
+                    if ($schedule['user_id'] === $employee_schedules[$j]['user_id']) {
+                        for ($s = 0; $s < count($employee_schedules[$j]['schedule']); $s++) {
+                            if ($employee_schedules[$j]['schedule'][$s]['date'] == $schedule['date']) {
+                                $employee_schedules[$j]['schedule'][$s]['schedule_id'] = $schedule['schedule_id'];
+                                $employee_schedules[$j]['schedule'][$s]['shift_id'] = $schedule['shift_id'];
+                                break;
+                            }
+                        }
                     }
                 }
             }
