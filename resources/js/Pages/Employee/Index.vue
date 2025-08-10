@@ -120,7 +120,7 @@
                                         <span class="label-text">Status: </span>
                                     </label>
                                     <span :class="['font-medium',
-                                        request.status === 'PENDING' ? 'text-warning' : (request.status === 'APPROVED' ? 'text-success' : (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'text-error' : (request.status === 'FILED' ? 'text-primary' : '')))
+                                        formFilledOvertime.status === 'PENDING' ? 'text-warning' : (formFilledOvertime.status === 'APPROVED' ? 'text-success' : (['DISAPPROVED', 'CANCELED'].includes(formFilledOvertime.status) ? 'text-error' : (formFilledOvertime.status === 'FILED' ? 'text-primary' : '')))
                                     ]">
                                         {{ formFilledOvertime.current_status }}</span>
                                 </div>
@@ -167,11 +167,19 @@
                     </div>
 
                     <!-- Action Button -->
-                    <button type="submit" class="btn btn-outline w-full mt-6"
-                        :disabled="formFilledOvertime.processing || formFilledOvertime.current_status !== 'PENDING'">
-                        <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
-                        <span> Cancel Request</span>
-                    </button>
+                    <div v-if="formFilledOvertime.current_status == 'PENDING'">
+                        <button v-if="!confirmingCancel" type="button" class="btn btn-outline w-full mt-6"
+                            @click="confirmingCancel = true">
+                            Cancel Request
+                        </button>
+                        <div v-else class="flex justify-end gap-6 mt-6">
+                            <button type="submit" class="btn btn-error" :disabled="formFilledOvertime.processing">
+                                <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
+                                <span> Yes, Cancel.</span></button>
+                            <button type="button" class="btn btn-neutral" @click="confirmingCancel = false"
+                                :disabled="formFilledOvertime.processing">No</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -282,6 +290,7 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ]
 const toast = inject('toast')
+const confirmingCancel = ref(false)
 
 // ========= Props =============
 const props = defineProps({
