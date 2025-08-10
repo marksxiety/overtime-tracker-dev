@@ -33,19 +33,20 @@
             </div>
 
         </div>
-        <div class="overflow-x-auto bg-base-100 p-6 rounded-lg shadow-sm">
+        <div v-for="(sched, index) in employeeSchedules" :key="index"
+            class="overflow-x-auto bg-base-100 p-6 rounded-lg shadow-sm">
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h2 class="text-xl font-semibold tracking-tight leading-tight text-base-content">
-                    Schedule for <span class="font-bold">Week 33</span>
+                    Schedule for <span class="font-bold">Week {{ sched.week }}</span>
                 </h2>
                 <p class="mt-2 sm:mt-0 text-base-content opacity-70 font-medium">
-                    Aug 10, 2025 — Aug 16, 2025
+                    {{ sched.week_start }} — {{ sched.week_end }}
                 </p>
             </div>
 
-            <table class="table w-full min-h-[24rem]">
+            <table class="table w-full h-auto">
                 <thead>
-                    <tr>
+                    <tr class="text-center">
                         <th>Employee</th>
                         <th>Sunday</th>
                         <th>Monday</th>
@@ -57,7 +58,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Table rows -->
+                    <tr v-for="sch in sched.week_schedule">
+                        <td class="text-center">{{ sch.name }}</td>
+                        <td v-for="day in sch.schedule" :key="day.date">
+                        <td class="w-full flex justify-center items-center">
+                            <span class="loading loading-spinner" v-if="isLoading"></span>
+                            <span v-else class="w-full">
+                                <SelectOption :options="shifts" v-model="day.shift_id" margin="" />
+                            </span>
+                        </td>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -76,23 +87,44 @@ import SelectOption from '../Components/SelectOption.vue'
 
 const toast = inject('toast')
 const isSubmitting = ref(false)
-
-const props = defineProps({
-    info: Object,
-    payload: Object,
-    errors: Object,
-    flash: Object,
-    success: Boolean,
-    message: String,
-    auth: Object,
-})
+const isLoading = ref(false)
 
 // Default selected from props or get manually for year and week
 const selectedYear = ref(new Date().getFullYear())
 const selectedWeek = ref(currentWeek())
 
+const employeeSchedules = ref([])
+const shifts = ref([])
+
 onMounted(async () => {
-    const scheduleResponse = await fetchEmployeeSchedule(selectedYear.value, 32)
-    console.log(scheduleResponse.data)
+    isLoading.value = true
+    const scheduleResponse = await fetchEmployeeSchedule(selectedYear.value, selectedWeek.value)
+
+    if (scheduleResponse.data.success) {
+        employeeSchedules.value = [{
+            week_schedule: scheduleResponse.data.info?.schedules,
+            week: scheduleResponse.data.info?.week,
+            week_start: scheduleResponse.data.info?.week_start,
+            week_end: scheduleResponse.data.info?.week_end,
+        }]
+
+        const shiftsResponse = await fetchShiftList()
+
+        // Format the shift data into { label, value } structure
+        // so it can be used directly in <SelectOption>
+        const shiftData = shiftsResponse?.data?.data ?? []
+        console.log(shiftData)
+        shifts.value = shiftData.map(element => ({
+            label: (element.start_time && element.end_time)
+                ? element.code
+                : `${element.code === 'SY' ? 'NWS' : 'RD'}`,
+            value: element.id
+        }))
+
+    } else {
+        toast("Loading Employee(s) schedule failed. Please try again", 'error')
+    }
+
+    isLoading.value = false
 })
 </script>
