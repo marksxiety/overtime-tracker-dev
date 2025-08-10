@@ -69,6 +69,8 @@ Route::middleware('approver')->group(function () {
 
     Route::inertia('/schedule/manage', 'Approver/ManageSchedule')->name('schedule.manage');
     Route::get('/schedule/employee/list', action: [ScheduleController::class, 'fetchEmployeeSchedule']);
+
+    Route::get('/shift/list', [ShiftContoller::class, 'shiftCodeList']);
 });
 
 Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');
