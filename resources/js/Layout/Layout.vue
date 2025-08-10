@@ -19,7 +19,7 @@
                             </Link>
                         </li>
                         <li>
-                            <Link :href="route('hours')" class="justify-between">
+                            <Link :href="route('manage.schedule.approver')" class="justify-between">
                             <Icon icon="icon-park-outline:schedule" width="24" height="24" />
                             Schedule
                             </Link>
