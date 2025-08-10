@@ -88,8 +88,7 @@
     <Modal ref="overtimeRequestModal">
         <div class="flex flex-col gap-2 w-full">
             <div class="flex justify-end">
-                <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer"
-                    @click="closeOvertimeRequestModal()">
+                <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer" @click="closeOvertimeRequestModal()">
                     <Icon icon="material-symbols:close-rounded" width="18" height="18" />
                 </span>
             </div>
@@ -120,8 +119,9 @@
                                     <label class="label">
                                         <span class="label-text">Status: </span>
                                     </label>
-                                    <span
-                                        :class="['font-medium', `text-${identifyColorStatus(formFilledOvertime.current_status)}`]">
+                                    <span :class="['font-medium',
+                                        request.status === 'PENDING' ? 'text-warning' : (request.status === 'APPROVED' ? 'text-success' : (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'text-error' : (request.status === 'FILED' ? 'text-primary' : '')))
+                                    ]">
                                         {{ formFilledOvertime.current_status }}</span>
                                 </div>
                             </div>
@@ -213,8 +213,9 @@
                             </div>
 
                             <div>
-                                <div
-                                    :class="['badge', 'badge-outline', `badge-${identifyColorStatus(request.status)}`]">
+                                <div :class="['badge', 'badge-outline',
+                                    request.status === 'PENDING' ? 'badge-warning' : (request.status === 'APPROVED' ? 'badge-success' : (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'badge-error' : (request.status === 'FILED' ? 'badge-primary' : '')))
+                                ]">
                                     {{ request.status }}
                                 </div>
                             </div>
@@ -460,7 +461,7 @@ function updateCurrentMonthYear(year, month) {
     lastDateOfMonth.value = new Date(year, month + 1, 0).getDate()
     lastDateOfLastMonth.value = new Date(year, month, 0).getDate()
     firstDayOfMonth.value = new Date(year, month, 1).getDay()
-    
+
     calendardays.value = [] // reset
 
     // previous month's trailing days (gray out)
