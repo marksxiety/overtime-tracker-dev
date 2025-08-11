@@ -63,7 +63,7 @@
                             </label>
                         </li>
                         <li>
-                            <Link :href="('logout')" method="post" class="justify-between px-4 py-2">
+                            <Link :href="route('logout')" method="post" class="justify-between px-4 py-2">
                             <Icon icon="ic:round-logout" width="24" height="24" />
                             Logout
                             </Link>
