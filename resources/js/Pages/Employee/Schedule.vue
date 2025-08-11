@@ -22,8 +22,8 @@
                 </div>
             </div>
         </div>
-        <div class="overflow-x-auto bg-base-100 p-4 rounded">
-            <table class="table min-h-96">
+        <div class="overflow-x-auto bg-base-100 p-4 rounded max-w-7xl mx-auto w-full">
+            <table class="table min-h-96 w-full text-lg">
                 <thead class="bg-base-200 rounded">
                     <tr>
                         <th>Date</th>
@@ -44,7 +44,7 @@
                             <td>{{ schedule.date }}</td>
                             <td>{{ schedule.week }}</td>
                             <td>{{ schedule.day }}</td>
-                            <td class="w-full flex justify-center items-center">
+                            <td class="flex justify-center items-center">
                                 <span class="loading loading-spinner" v-if="updateSelectedSchedule"></span>
                                 <span v-else class="w-full">
                                     <SelectOption :options="shifts" v-model="schedule.shift_code" margin="" />
@@ -69,6 +69,7 @@
                 </button>
             </div>
         </div>
+
     </div>
 </template>
 <script setup>
