@@ -1,4 +1,32 @@
 <template>
+    <Modal ref="confirmSubmitModal">
+        <div class="flex flex-col gap-2 p-2">
+            <div class="flex flex-row justify-start items-center gap-2">
+                <h3 class="text-lg font-bold">Confirm Submission</h3>
+                <Icon icon="stash:question" width="28" height="28" />
+            </div>
+
+            <p class="text-md">
+                Are you sure you want to submit the employee's schedule?
+                This action cannot be undone.
+            </p>
+            <div class="alert alert-warning px-3 py-2 rounded text-sm flex justify-center text-center gap-2">
+                <Icon icon="ph:warning" width="24" height="24" />
+                <span>Updating an employee's schedule may cause disalignment in their filed overtime.</span>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-2">
+                <button class="btn btn-sm btn-neutral" @click="closeConfirmModal()">
+                    Cancel
+                </button>
+                <button class="btn btn-sm btn-primary" @click="hanldesubmitSchedule()">
+                    Yes, Submit
+                </button>
+            </div>
+        </div>
+    </Modal>
+
+
     <div class="flex flex-col gap-6 h-full pb-12">
         <div class="breadcrumbs text-sm">
             <ul>
@@ -30,8 +58,10 @@
                     </button>
                 </div>
                 <div>
-                    <button class="btn btn-primary flex items-center gap-2 px-4" :disabled="isLoading || addingWeek">
-                        <Icon icon="mingcute:schedule-line" width="24" height="24" /> Submit Schedule
+                    <button class="btn btn-primary flex items-center gap-2 px-4" :disabled="isLoading || addingWeek"
+                        @click="openConfirmModal()">
+                        <Icon icon="mingcute:schedule-line" width="24" height="24" /> Submit
+                        Schedule
                     </button>
                 </div>
             </div>
@@ -102,6 +132,7 @@ import { fetchShiftList } from '../api/shift.js'
 import { fetchEmployeeSchedule, submitEmployeeSchedule } from '../api/schedule.js'
 
 import SelectOption from '../Components/SelectOption.vue'
+import Modal from '../Components/Modal.vue'
 
 const toast = inject('toast')
 
@@ -110,6 +141,7 @@ const isSubmitting = ref(false)
 const isLoading = ref(false)
 const alreadyLoaded = ref(false)
 const addingWeek = ref(false)
+const confirmSubmitModal = ref(null)
 
 // Default selected from props or get manually for year and week
 const selectedYear = ref(new Date().getFullYear())
@@ -197,6 +229,18 @@ const handleAddWeek = async () => {
 
 const removeSchedule = (index) => {
     employeeSchedules.value.splice(index, 1)
+}
+
+const openConfirmModal = () => {
+    confirmSubmitModal.value?.open()
+}
+
+const closeConfirmModal = () => {
+    confirmSubmitModal.value?.close()
+}
+
+const hanldesubmitSchedule = async () => {
+    console.log(employeeSchedules.value)
 }
 
 </script>
