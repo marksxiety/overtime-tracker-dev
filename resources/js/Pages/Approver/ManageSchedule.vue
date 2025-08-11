@@ -16,10 +16,11 @@
             </div>
 
             <div class="flex justify-end gap-2 mt-2">
-                <button class="btn btn-sm btn-neutral" @click="closeConfirmModal()">
+                <button class="btn btn-sm btn-neutral" @click="closeConfirmModal()" :disabled="isSubmitting">
                     Cancel
                 </button>
-                <button class="btn btn-sm btn-primary" @click="hanldesubmitSchedule()">
+                <button class="btn btn-sm btn-primary" @click="hanldesubmitSchedule()" :disabled="isSubmitting">
+                    <span v-if="isSubmitting" class="loading loading-spinner loading-xs"></span>
                     Yes, Submit
                 </button>
             </div>
@@ -124,7 +125,7 @@
 </template>
 <script setup>
 import { onMounted, ref, inject } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
 import { Icon } from "@iconify/vue"
 
 import { years, weeks, currentWeek } from '../utils/dropdownOptions.js'
@@ -135,6 +136,13 @@ import SelectOption from '../Components/SelectOption.vue'
 import Modal from '../Components/Modal.vue'
 
 const toast = inject('toast')
+
+const props = defineProps({
+    flash: Object,
+    success: Boolean,
+    auth: Object,
+})
+
 
 // flgs
 const isSubmitting = ref(false)
@@ -240,7 +248,22 @@ const closeConfirmModal = () => {
 }
 
 const hanldesubmitSchedule = async () => {
-    console.log(employeeSchedules.value)
+
+    if (employeeSchedules.value.length === 0) {
+        confirmSubmitModal.value?.close()
+        toast('Please load a schedule before submitting.', 'warning')
+    }
+
+    isSubmitting.value = true
+    let submitResponse = await submitEmployeeSchedule(employeeSchedules.value)
+    if (submitResponse.success) {
+        toast('Schedule submitted successfully', 'success')
+    } else {
+        toast('Schedule submission failed. Please try again.', 'success')
+    }
+
+    isSubmitting.value = false
+    confirmSubmitModal.value?.close()
 }
 
 </script>
