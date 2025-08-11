@@ -15,19 +15,22 @@
             <h1 class="text-2xl font-bold">Employee Schedule</h1>
             <div class="flex space-x-4 w-2/4">
                 <div class="flex-1">
-                    <SelectOption :options="years" v-model="selectedYear" :message="alreadyLoaded ? '-' : ''"/>
+                    <SelectOption :options="years" v-model="selectedYear" :message="alreadyLoaded ? '-' : ''" />
                 </div>
                 <div class="flex-1">
-                    <SelectOption :options="weeks" v-model="selectedWeek" :message="alreadyLoaded ? '-' : ''"/>
+                    <SelectOption :options="weeks" v-model="selectedWeek" :message="alreadyLoaded ? '-' : ''" />
                 </div>
                 <div>
-                    <button class="btn btn-primary flex items-center gap-2 px-4" @click="handleAddWeek()" :disabled="isLoading">
-                        <Icon icon="material-symbols:add-rounded" width="24" height="24" /> Add
-                        Week
+                    <button class="btn btn-primary flex items-center gap-2 px-4" @click="handleAddWeek()"
+                        :disabled="isLoading || addingWeek">
+                        <Icon icon="material-symbols:add-rounded" width="24" height="24" v-if="!addingWeek" />
+                        <span v-if="addingWeek"><span class="loading loading-spinner loading-xs"></span>
+                            Add Week</span>
+                        <span v-else>Add Week</span>
                     </button>
                 </div>
                 <div>
-                    <button class="btn btn-primary flex items-center gap-2 px-4" :disabled="isLoading">
+                    <button class="btn btn-primary flex items-center gap-2 px-4" :disabled="isLoading || addingWeek">
                         <Icon icon="mingcute:schedule-line" width="24" height="24" /> Submit Schedule
                     </button>
                 </div>
@@ -48,9 +51,15 @@
                     <span class="font-bold">Week {{ sched.week }} — {{ sched.year }}</span>
                 </h2>
 
-                <p class="mt-2 sm:mt-0 text-base-content opacity-70 font-medium">
-                    {{ sched.week_start }} — {{ sched.week_end }}
-                </p>
+                <div class="flex flex-row gap-6">
+                    <p class="mt-2 sm:mt-0 text-base-content opacity-70 font-medium">
+                        {{ sched.week_start }} — {{ sched.week_end }}
+                    </p>
+                    <div class="tooltip tooltip-bottom tooltip-error" data-tip="REMOVE">
+                        <Icon icon="gg:remove" width="28" height="28" @click="removeSchedule(index)"
+                            class="hover:bg-error hover:cursor-pointer rounded-full" />
+                    </div>
+                </div>
             </div>
 
             <table class="table w-full h-auto">
@@ -95,9 +104,12 @@ import { fetchEmployeeSchedule, submitEmployeeSchedule } from '../api/schedule.j
 import SelectOption from '../Components/SelectOption.vue'
 
 const toast = inject('toast')
+
+// flgs
 const isSubmitting = ref(false)
 const isLoading = ref(false)
 const alreadyLoaded = ref(false)
+const addingWeek = ref(false)
 
 // Default selected from props or get manually for year and week
 const selectedYear = ref(new Date().getFullYear())
@@ -161,7 +173,7 @@ const handleAddWeek = async () => {
     }
 
     alreadyLoaded.value = false
-
+    addingWeek.value = true
     const scheduleResponse = await fetchEmployeeSchedule(selectedYear.value, selectedWeek.value)
     if (scheduleResponse.data.success) {
         employeeSchedules.value.push({
@@ -180,6 +192,11 @@ const handleAddWeek = async () => {
     } else {
         toast("Loading Employee(s) schedule failed. Please try again", 'error')
     }
+    addingWeek.value = false
+}
+
+const removeSchedule = (index) => {
+    employeeSchedules.value.splice(index, 1)
 }
 
 </script>
