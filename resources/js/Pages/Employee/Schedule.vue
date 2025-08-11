@@ -122,7 +122,7 @@ async function loadScheduleData() {
 
     if (scheduleResponse.data?.success) {
         // Fetch all available shift codes
-        const shiftsResponse = await fetchShiftList()
+        const shiftsResponse = await fetchShiftList('employee')
         initshifts.value = shiftsResponse.data
 
         // Format the shift data into { label, value } structure

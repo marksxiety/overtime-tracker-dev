@@ -127,7 +127,7 @@ onMounted(async () => {
     // this data will be the content of the select option that allows the user
     // to change the current shift code of the emploployee on specific day
 
-    const shiftsResponse = await fetchShiftList()
+    const shiftsResponse = await fetchShiftList('approver')
 
     // Format the shift data into { label, value } structure
     // so it can be used directly in <SelectOption>
