@@ -12,6 +12,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isEmpty;
 
 class ScheduleController extends Controller
 {
@@ -286,6 +287,63 @@ class ScheduleController extends Controller
                 'week' => $week,
                 'year' => $year
             ]
+        ]);
+    }
+
+    public function submitEmployeeSchedules(Request $request)
+    {
+        $req = $request->input('schedule', []);
+        $message = '';
+        $success = false;
+
+        try {
+            if (count($req) === 0) {
+                return response()->json([
+                    'success' => $success,
+                    'message' => 'invalid request'
+                ]);
+            }
+
+            foreach ($req as $r) {
+                // r contains week, year, week_schedule (array[])
+                // iterate the week_schedule
+                foreach ($r['week_schedule'] as $sched) {
+                    // iteral the schedule to identify if the id is null
+                    // if null, insert to db else update it.
+
+                    for ($i = 0; $i < count($sched['schedule']); $i++) {
+
+                        if (empty($sched['schedule'][$i]['shift_id'])) {
+                            continue;
+                        }
+
+                        if (empty($sched['schedule'][$i]['schedule_id'])) {
+                            Schedule::create([
+                                'user_id' => $sched['user_id'],
+                                'shift_id' => $sched['schedule'][$i]['shift_id'],
+                                'date' => $sched['schedule'][$i]['date'],
+                                'week' => $sched['schedule'][$i]['week'],
+                            ]);
+                        } else {
+                            Schedule::where('id', $sched['schedule'][$i]['schedule_id'])->update([
+                                'user_id' => $sched['user_id'],
+                                'shift_id' => $sched['schedule'][$i]['shift_id'],
+                                'date' => $sched['schedule'][$i]['date'],
+                                'week' => $sched['schedule'][$i]['week'],
+                            ]);
+                        }
+                    }
+                }
+            }
+            $success = true;
+            $message = 'Submitted successfully.';
+        } catch (\Throwable $th) {
+            $message = "Failed to fetch schedules due to $th";
+        }
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message
         ]);
     }
 }
