@@ -233,6 +233,8 @@ import Modal from '../Components/Modal.vue'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
 import { useForm, router, Link } from '@inertiajs/vue3'
 
+const toast = inject('toast')
+
 const props = defineProps({
   info: Object,
   success: Boolean,
