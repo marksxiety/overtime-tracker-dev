@@ -70,7 +70,10 @@
                             </div>
                             <div v-else
                                 class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
-                                ⚠️ No registered Schedule.
+                                <div class="flex flex-row gap-2 justify-center">
+                                    <Icon icon="ph:warning" width="24" height="24" />
+                                    <p>No registered Schedule</p>
+                                </div>
                                 <div class="flex justify-center gap-6">
                                     <button type="button" class="btn btn-neutral mt-4 w-full"
                                         @click="closeOvertimeFilingModal()">Close</button>
