@@ -10,7 +10,8 @@ use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -29,10 +30,11 @@ class AuthController extends Controller
         Auth::login($user);
 
         // Redirect to home
-        return redirect()->route('main')->with('message', 'Registration successful! Welcome, ' . $user->name);
+        return redirect()->route('main')->with('message', 'Welcome, ' . $user->name);
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|string',
             'password' => 'required|string',
@@ -43,7 +45,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
 
-            return redirect()->route('main')->with('message', 'Login Successful! Welcome back, ' . Auth::user()->name);
+            return redirect()->route('main')->with('message', 'Welcome back, ' . Auth::user()->name . '!');
         }
 
         return redirect()->back()->withErrors(['email' => 'Email or Password is incorrect.', 'password' => 'Email or Password is incorrect.']);

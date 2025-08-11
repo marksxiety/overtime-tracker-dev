@@ -195,7 +195,11 @@
         </div>
 
 
-        <div class="flex mt-4 justify-end gap-2">
+        <div class="flex mt-4 gap-2" :class="greetingMessage ? 'justify-between' : 'justify-end'">
+            <p v-if="greetingMessage" class="text-left text-lg font-semibold">
+                {{ greetingMessage }}
+            </p>
+
             <Link :href="route('schedule')" class="btn btn-neutral">
             Manage Schedules
             </Link>
@@ -294,6 +298,7 @@ const months = [
 ]
 const toast = inject('toast')
 const confirmingCancel = ref(false)
+const greetingMessage = ref('')
 
 // ========= Props =============
 const props = defineProps({
@@ -373,6 +378,12 @@ onMounted(async () => {
     totalovertime.value = totalovertimehours
     pendingovertime.value = pendingrequests
     rejectedovertime.value = rejectedrequests
+
+    console.log(props.flash?.message)
+
+    if (props.flash?.message) {
+        greetingMessage.value = props.flash?.message
+    }
 })
 
 
