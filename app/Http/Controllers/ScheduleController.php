@@ -283,11 +283,8 @@ class ScheduleController extends Controller
                 'schedules' => $employee_schedules, // Final merged employee schedule data
                 'week_start' => $week_start,
                 'week_end' => $week_end,
-                'week' => $week
-            ],
-            'payload' => [
-                'year' => $year,
-                'week' => $week
+                'week' => $week,
+                'year' => $year
             ]
         ]);
     }
