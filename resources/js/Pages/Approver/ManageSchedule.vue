@@ -15,10 +15,10 @@
             <h1 class="text-2xl font-bold">Employee Schedule</h1>
             <div class="flex space-x-4 w-2/4">
                 <div class="flex-1">
-                    <SelectOption :options="years" v-model="selectedYear" />
+                    <SelectOption :options="years" v-model="selectedYear" :message="alreadyLoaded ? '-' : ''"/>
                 </div>
                 <div class="flex-1">
-                    <SelectOption :options="weeks" v-model="selectedWeek" />
+                    <SelectOption :options="weeks" v-model="selectedWeek" :message="alreadyLoaded ? '-' : ''"/>
                 </div>
                 <div>
                     <button class="btn btn-primary flex items-center gap-2 px-4" @click="handleAddWeek()" :disabled="isLoading">
@@ -97,6 +97,7 @@ import SelectOption from '../Components/SelectOption.vue'
 const toast = inject('toast')
 const isSubmitting = ref(false)
 const isLoading = ref(false)
+const alreadyLoaded = ref(false)
 
 // Default selected from props or get manually for year and week
 const selectedYear = ref(new Date().getFullYear())
@@ -155,8 +156,11 @@ const handleAddWeek = async () => {
 
     if (exists) {
         toast('Schedule for this week is already loaded.', 'warning')
+        alreadyLoaded.value = true
         return
     }
+
+    alreadyLoaded.value = false
 
     const scheduleResponse = await fetchEmployeeSchedule(selectedYear.value, selectedWeek.value)
     if (scheduleResponse.data.success) {

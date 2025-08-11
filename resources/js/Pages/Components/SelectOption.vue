@@ -8,7 +8,7 @@
             </option>
         </select>
         <p v-if="message" class="mt-1 text-sm text-red-600 px-2 py-1 text-center">
-            {{ message }}
+            {{ message == '-' ? '' : message }}
         </p>
     </div>
 </template>
