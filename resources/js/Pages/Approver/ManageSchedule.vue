@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-6 h-full">
+    <div class="flex flex-col gap-6 h-full pb-12">
         <div class="breadcrumbs text-sm">
             <ul>
                 <li>
@@ -21,20 +21,25 @@
                     <SelectOption :options="weeks" v-model="selectedWeek" />
                 </div>
                 <div>
-                    <button class="btn btn-primary flex items-center gap-2 px-4" @click="handleAddWeek()">
+                    <button class="btn btn-primary flex items-center gap-2 px-4" @click="handleAddWeek()" :disabled="isLoading">
                         <Icon icon="material-symbols:add-rounded" width="24" height="24" /> Add
                         Week
                     </button>
                 </div>
                 <div>
-                    <button class="btn btn-primary flex items-center gap-2 px-4">
+                    <button class="btn btn-primary flex items-center gap-2 px-4" :disabled="isLoading">
                         <Icon icon="mingcute:schedule-line" width="24" height="24" /> Submit Schedule
                     </button>
                 </div>
             </div>
 
         </div>
-        <div v-for="(sched, index) in employeeSchedules" :key="index"
+
+        <div v-if="isLoading" class="flex w-full bg-base-100">
+            <div class="skeleton h-96 w-full"></div>
+        </div>
+
+        <div v-else v-for="(sched, index) in employeeSchedules" :key="index"
             class="overflow-x-auto bg-base-100 p-6 rounded-lg shadow-sm">
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h2
@@ -153,6 +158,24 @@ const handleAddWeek = async () => {
         return
     }
 
+    const scheduleResponse = await fetchEmployeeSchedule(selectedYear.value, selectedWeek.value)
+    if (scheduleResponse.data.success) {
+        employeeSchedules.value.push({
+            week_schedule: scheduleResponse.data.info?.schedules,
+            week: scheduleResponse.data.info?.week,
+            year: scheduleResponse.data.info?.year,
+            week_start: scheduleResponse.data.info?.week_start,
+            week_end: scheduleResponse.data.info?.week_end,
+        })
+
+        employeeSchedules.value.sort((a, b) => {
+            if (a.year !== b.year) return a.year - b.year
+            return a.week - b.week
+        })
+
+    } else {
+        toast("Loading Employee(s) schedule failed. Please try again", 'error')
+    }
 }
 
 </script>
