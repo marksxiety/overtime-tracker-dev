@@ -72,7 +72,7 @@
                 </div>
             </div>
         </div>
-        <main class="pr-20 pl-20 f-full h-screen bg-base-300">
+        <main class="pr-20 pl-20 f-full min-h-screen bg-base-300">
             <Toast ref="toastRef" />
             <slot></slot>
         </main>
