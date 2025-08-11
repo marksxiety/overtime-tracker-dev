@@ -21,8 +21,9 @@
                     <SelectOption :options="weeks" v-model="selectedWeek" />
                 </div>
                 <div>
-                    <button class="btn btn-primary flex items-center gap-2 px-4">
-                        <Icon icon="material-symbols:add-rounded" width="24" height="24" /> Add Week
+                    <button class="btn btn-primary flex items-center gap-2 px-4" @click="handleAddWeek()">
+                        <Icon icon="material-symbols:add-rounded" width="24" height="24" /> Add
+                        Week
                     </button>
                 </div>
                 <div>
@@ -36,9 +37,12 @@
         <div v-for="(sched, index) in employeeSchedules" :key="index"
             class="overflow-x-auto bg-base-100 p-6 rounded-lg shadow-sm">
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                <h2 class="text-xl font-semibold tracking-tight leading-tight text-base-content">
-                    Schedule for <span class="font-bold">Week {{ sched.week }}</span>
+                <h2
+                    class="text-xl font-semibold tracking-tight leading-tight text-base-content flex items-center gap-2">
+                    <span>Schedule for</span>
+                    <span class="font-bold">Week {{ sched.week }} — {{ sched.year }}</span>
                 </h2>
+
                 <p class="mt-2 sm:mt-0 text-base-content opacity-70 font-medium">
                     {{ sched.week_start }} — {{ sched.week_end }}
                 </p>
@@ -96,30 +100,38 @@ const selectedWeek = ref(currentWeek())
 const employeeSchedules = ref([])
 const shifts = ref([])
 
+
 onMounted(async () => {
     isLoading.value = true
+
+
+    // fetch first the list of registered shift codes
+    // this data will be the content of the select option that allows the user
+    // to change the current shift code of the emploployee on specific day
+
+    const shiftsResponse = await fetchShiftList()
+
+    // Format the shift data into { label, value } structure
+    // so it can be used directly in <SelectOption>
+    const shiftData = shiftsResponse?.data?.data ?? []
+    console.log(shiftData)
+    shifts.value = shiftData.map(element => ({
+        label: (element.start_time && element.end_time)
+            ? element.code
+            : `${element.code === 'SY' ? 'NWS' : 'RD'}`,
+        value: element.id
+    }))
+
     const scheduleResponse = await fetchEmployeeSchedule(selectedYear.value, selectedWeek.value)
 
     if (scheduleResponse.data.success) {
         employeeSchedules.value = [{
             week_schedule: scheduleResponse.data.info?.schedules,
             week: scheduleResponse.data.info?.week,
+            year: scheduleResponse.data.info?.year,
             week_start: scheduleResponse.data.info?.week_start,
             week_end: scheduleResponse.data.info?.week_end,
         }]
-
-        const shiftsResponse = await fetchShiftList()
-
-        // Format the shift data into { label, value } structure
-        // so it can be used directly in <SelectOption>
-        const shiftData = shiftsResponse?.data?.data ?? []
-        console.log(shiftData)
-        shifts.value = shiftData.map(element => ({
-            label: (element.start_time && element.end_time)
-                ? element.code
-                : `${element.code === 'SY' ? 'NWS' : 'RD'}`,
-            value: element.id
-        }))
 
     } else {
         toast("Loading Employee(s) schedule failed. Please try again", 'error')
@@ -127,4 +139,20 @@ onMounted(async () => {
 
     isLoading.value = false
 })
+
+
+const handleAddWeek = async () => {
+
+    let exists = employeeSchedules.value.some(sched =>
+        parseInt(sched.year) === selectedYear.value &&
+        parseInt(sched.week) === selectedWeek.value
+    )
+
+    if (exists) {
+        toast('Schedule for this week is already loaded.', 'warning')
+        return
+    }
+
+}
+
 </script>
