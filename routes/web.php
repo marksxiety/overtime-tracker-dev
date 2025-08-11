@@ -46,10 +46,6 @@ Route::middleware('employee')->group(function () {
     Route::inertia('/profile', 'Profile')->name('profile.employee');
 });
 
-Route::middleware('admin')->group(function () {
-    // TBA
-});
-
 Route::middleware('approver')->group(function () {
 
     Route::get('/shift', [ShiftContoller::class, 'registeredShiftCodes'])->name('shifts');

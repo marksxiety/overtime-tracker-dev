@@ -42,8 +42,7 @@ import registerImage from '../../images/Coder.svg'
 const options = ref([
     { label: 'Choose a role', value: '' },
     { label: 'Employee', value: 'employee' },
-    { label: 'Approver', value: 'approver' },
-    { label: 'Amin', value: 'admin' }
+    { label: 'Approver', value: 'approver' }
 ])
 
 const form = useForm({
