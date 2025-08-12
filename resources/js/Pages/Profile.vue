@@ -41,29 +41,51 @@
                             {{ form.errors.avatar }}
                         </p>
                     </div>
-                    <div class="col-span-1 p-2">
-                        <TextInput name="Name:" :message="form.errors.name" v-model="form.name" placeholder=""/>
-                        <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" placeholder=""/>
-                        <div class="flex justify-between gap-4">
-                            <TextInput name="Employee ID:" type="text" :message="form.errors.email" v-model="form.email"
-                                :readonly="true" placeholder="" class="w-full" />
-                            <TextInput name="Role:" type="text" :message="form.errors.email" v-model="form.email"
-                                :readonly="true" placeholder="" class="w-full" />
-                        </div>
-                        <TextInput name="Old Password:" type="password" :message="form.errors.old_password"
-                            v-model="form.old_password" placeholder=""/>
-                        <TextInput name="Confrim New Password" type="password" v-model="form.new_password"
-                            :message="form.errors.new_password" placeholder=""/>
-                        <TextInput name="New Password" type="password" v-model="form.new_password_confirmation"
-                            :message="form.errors.new_password_confirmation" placeholder=""/>
+                    <div class="col-span-1 flex flex-col gap-4 p-2">
+                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                            <legend class="text-sm font-semibold px-2">User Information</legend>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-1">
+                                    <TextInput name="Name:" :message="form.errors.name" v-model="form.name"
+                                        placeholder="" />
+                                </div>
+                                <div class="col-span-1">
+                                    <SelectOption name="Active: " :options="[
+                                        { label: 'YES', value: 1 },
+                                        { label: 'NO', value: 0 }
+                                    ]" v-model="form.active" margin="" minwidth="" />
+                                </div>
+                            </div>
+                            <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email"
+                                placeholder="" />
+                            <div class="flex justify-between gap-4">
+                                <TextInput name="Employee ID:" type="text" :message="form.errors.employee_id"
+                                    v-model="form.employee_id" :readonly="true" placeholder="" class="w-full"
+                                    v-bind:readonly />
+                                <TextInput name="Role:" type="text" :message="form.errors.role" v-model="form.role"
+                                    :readonly="true" placeholder="" class="w-full" v-bind:readonly />
+                            </div>
+
+                        </fieldset>
+
+                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
+                            <legend class="text-sm font-semibold px-2">Change Password</legend>
+                            <TextInput name="Old Password:" type="password" :message="form.errors.old_password"
+                                v-model="form.old_password" placeholder="" />
+                            <TextInput name="New Password" type="password" v-model="form.new_password"
+                                :message="form.errors.new_password" placeholder="" />
+                            <TextInput name="Confrim New Password" type="password"
+                                v-model="form.new_password_confirmation"
+                                :message="form.errors.new_password_confirmation" placeholder="" />
+
+                        </fieldset>
                         <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
-                            <span v-if="form.processing">Processing...</span>
-                            <span v-else>Update Profile</span>
+                            <span v-if="form.processing" class="loading loading-spinner loading-xs"></span> Update
+                            Profile
                         </button>
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </template>
@@ -71,7 +93,8 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3'
 import TextInput from './Components/TextInput.vue'
-import { ref } from 'vue'
+import SelectOption from './Components/SelectOption.vue'
+import { ref, inject } from 'vue'
 import { Icon } from "@iconify/vue";
 
 const props = defineProps({
@@ -82,12 +105,15 @@ const props = defineProps({
     auth: Object,
 })
 
+const toast = inject('toast')
+
 const form = useForm({
-    name: props.user?.name ?? '',
-    email: props.user?.email ?? '',
-    employee_id: '',
-    role: '',
+    name: props.auth?.user?.name ?? '',
+    email: props.auth?.user?.email ?? '',
+    employee_id: props.auth?.user?.employeeid ?? '',
+    role: props.auth?.user?.role ?? '',
     avatar: null,
+    active: props.auth?.user?.active ?? 0,
     old_password: '',
     new_password: '',
     new_password_confirmation: ''
@@ -103,7 +129,7 @@ const triggerFileInput = () => {
 
 const change = (event) => {
     const file = event.target.files[0]
-    form.avatar = file // This is now a File object
+    form.avatar = file
     if (file) {
         const reader = new FileReader()
         reader.onload = (e) => {
@@ -117,15 +143,14 @@ const change = (event) => {
 
 
 const submitForm = () => {
-    form.post(route('update.profile.employee', props.user.id), {
+    form.post(route('profile.update.employee'), {
         onFinish: () => {
-            form.reset('title', 'email', 'old_password', 'new_password')
+            toast(props.flash?.message, 'success')
+            form.reset('old_password', 'new_password_confirmation', 'new_password')
         },
         onError: (errors) => {
-            console.error('Updating task failed:', errors)
+            toast('Updating task failed', 'error')
         }
     })
-
-    console.log('Form submitted:', form)
 }
 </script>
