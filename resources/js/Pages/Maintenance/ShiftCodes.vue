@@ -10,7 +10,7 @@
                 :disabled="deleteform.processing">Cancel</button>
         </div>
     </Modal>
-    <div class="flex flex-col gap-6 h-full">
+    <div class="flex flex-col gap-8 h-full">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">
             <ul>
@@ -35,7 +35,7 @@
                 <!-- Form Panel -->
                 <div class="col-span-2">
                     <div
-                        class="bg-base-100 p-8 rounded-2xl shadow-lg h-full flex flex-col justify-center border border-base-200">
+                        class="bg-base-100 p-8 rounded-2xl shadow-lg min-h-[50vh] flex flex-col justify-center border border-base-200">
                         <!-- Title -->
                         <h2 class="text-xl font-bold mb-6 text-center text-primary uppercase tracking-wide">
                             shift Code Registration
@@ -68,7 +68,8 @@
 
                 <!-- Table Section -->
                 <div class="col-span-3">
-                    <div class="bg-base-100 rounded-2xl p-6 h-full overflow-auto shadow-lg border border-base-200">
+                    <div
+                        class="bg-base-100 rounded-2xl p-6 max-h-[50vh] overflow-auto shadow-lg border border-base-200">
                         <h2 class="text-lg font-semibold mb-4 text-base-content">Registered Shifts</h2>
                         <table class="table w-full text-sm">
                             <thead class="sticky top-0 bg-base-200 z-10 text-base-content">
