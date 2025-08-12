@@ -132,7 +132,7 @@
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })">
+          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })" class="text-primary font-semibold underline">
           Filed
           </Link>
         </li>

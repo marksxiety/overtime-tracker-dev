@@ -158,8 +158,18 @@
                     <Link :href="route('main')">Dashboard</Link>
                 </li>
                 <li>
-                    <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })">
+                    <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })" class="text-primary font-semibold underline">
                     Pending Page
+                    </Link>
+                </li>
+                <li>
+                    <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing' })">
+                    Filing Page
+                    </Link>
+                </li>
+                <li>
+                    <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })">
+                    Filed
                     </Link>
                 </li>
             </ul>

@@ -158,8 +158,13 @@
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing' })">
+          <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing' })" class="text-primary font-semibold underline">
           Filing Page
+          </Link>
+        </li>
+        <li>
+          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })">
+          Filed
           </Link>
         </li>
       </ul>
