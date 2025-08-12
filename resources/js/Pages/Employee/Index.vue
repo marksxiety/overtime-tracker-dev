@@ -207,37 +207,26 @@
 
         <div class="flex justify-between gap-4">
             <div class="rounded-md p-4 shadow flex flex-col w-2/5 bg-base-100">
-                <h2 class="text-lg font-bold mb-4">My Requests</h2>
-
-                <!-- Make ul fill remaining space and scroll -->
-                <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm max-h-[50vh]">
-
-                    <li v-if="recentRequests.length === 0">
-                        <p class="font-light italic text-center mt-5">No Recent Request...</p>
+                <h2 class="text-lg font-bold mb-4">Upcoming Holidays</h2>
+                    <hr>
+                <ul class="flex-1 space-y-2 overflow-y-auto mt-2 pb-2 text-sm max-h-[50vh]">
+                    <li v-if="holidays.length === 0">
+                        <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
                     </li>
 
-                    <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
+                    <li v-for="(h, idx) in holidays" :key="idx"
                         class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col gap-1">
-                                <p class="text-sm opacity-70">{{ request.date }}</p>
-                                <p class="text-lg font-semibold">
-                                    {{ request.start_time }} → {{ request.end_time }}
-                                </p>
-                                <p class="text-sm opacity-75">{{ request.hours }} hr(s)</p>
-                            </div>
-
-                            <div>
-                                <div :class="['badge', 'badge-outline',
-                                    request.status === 'PENDING' ? 'badge-warning' : (request.status === 'APPROVED' ? 'badge-success' : (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'badge-error' : (request.status === 'FILED' ? 'badge-primary' : '')))
-                                ]">
-                                    {{ request.status }}
-                                </div>
+                                <p class="text-sm opacity-70">{{ h.date }}</p>
+                                <p class="text-lg font-semibold">{{ h.localName }}</p>
+                                <p class="text-sm opacity-75">{{ h.name }}</p>
                             </div>
                         </div>
                     </li>
                 </ul>
             </div>
+
             <div class="w-3/5 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
@@ -273,6 +262,40 @@
                 </ul>
             </div>
         </div>
+        <div class="flex mt-6">
+            <div class="rounded-md p-4 shadow flex flex-col w-full bg-base-100">
+                <h2 class="text-lg font-bold mb-4">My Requests</h2>
+
+                <!-- Make ul fill remaining space and scroll -->
+                <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm max-h-[50vh]">
+
+                    <li v-if="recentRequests.length === 0">
+                        <p class="font-light italic text-center mt-5">No Recent Request...</p>
+                    </li>
+
+                    <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
+                        class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-sm opacity-70">{{ request.date }}</p>
+                                <p class="text-lg font-semibold">
+                                    {{ request.start_time }} → {{ request.end_time }}
+                                </p>
+                                <p class="text-sm opacity-75">{{ request.hours }} hr(s)</p>
+                            </div>
+
+                            <div>
+                                <div :class="['badge', 'badge-outline',
+                                    request.status === 'PENDING' ? 'badge-warning' : (request.status === 'APPROVED' ? 'badge-success' : (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'badge-error' : (request.status === 'FILED' ? 'badge-primary' : '')))
+                                ]">
+                                    {{ request.status }}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </template>
 <script setup>
@@ -286,6 +309,7 @@ import Card from '../Components/Card.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 import { identifyColorStatus } from '../utils/colorIdentifier.js'
+import fetchUpcomingHolidays from '../api/upcomingHolidays.js'
 import Stepper from '../Components/Stepper.vue'
 import { Icon } from "@iconify/vue";
 
@@ -334,6 +358,7 @@ const withShedule = ref(true)
 
 // ========== Overtime Request ==========
 const recentRequests = ref([...props.info?.overtimelist] ?? [])
+const holidays = ref([])
 
 
 // ========== Card Stats ==========
@@ -379,10 +404,13 @@ onMounted(async () => {
     pendingovertime.value = pendingrequests
     rejectedovertime.value = rejectedrequests
 
-    console.log(props.flash?.message)
-
     if (props.flash?.message) {
         greetingMessage.value = props.flash?.message
+    }
+
+    let holidayResponse = await fetchUpcomingHolidays()
+    if (holidayResponse.length > 0) {
+        holidays.value = holidayResponse
     }
 })
 
