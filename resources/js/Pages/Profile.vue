@@ -99,7 +99,7 @@ import { Icon } from "@iconify/vue";
 
 const props = defineProps({
     user: Object,
-    avatar_url: Object,
+    avatar_url: String,
     errors: Object,
     flash: Object,
     auth: Object,
