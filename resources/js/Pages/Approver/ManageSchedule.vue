@@ -300,10 +300,10 @@ const hanldesubmitSchedule = async () => {
 
     isSubmitting.value = true
     let submitResponse = await submitEmployeeSchedule(employeeSchedules.value)
-    if (submitResponse.success) {
+    if (submitResponse.data.success) {
         toast('Schedule submitted successfully', 'success')
     } else {
-        toast('Schedule submission failed. Please try again.', 'success')
+        toast('Schedule submission failed. Please try again.', 'error')
     }
 
     isSubmitting.value = false
