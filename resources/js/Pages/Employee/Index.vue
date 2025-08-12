@@ -187,22 +187,11 @@
             </div>
         </div>
     </Modal>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-8">
         <div class="stats shadow grid grid-cols-3">
             <Card title="Total Overtime Hours" :value="totalovertime + ' hrs'" />
             <Card title="Pending Requests" :value="pendingovertime" />
             <Card title="Rejected Requests" :value="rejectedovertime" />
-        </div>
-
-
-        <div class="flex mt-4 gap-2" :class="greetingMessage ? 'justify-between' : 'justify-end'">
-            <p v-if="greetingMessage" class="text-left text-lg font-semibold">
-                {{ greetingMessage }}
-            </p>
-
-            <Link :href="route('schedule')" class="btn btn-neutral">
-            Manage Schedules
-            </Link>
         </div>
 
         <div class="flex justify-between gap-4">
@@ -262,7 +251,7 @@
                 </ul>
             </div>
         </div>
-        <div class="flex mt-6">
+        <div class="flex">
             <div class="rounded-md p-4 shadow flex flex-col w-full bg-base-100">
                 <h2 class="text-lg font-bold mb-4">My Requests</h2>
 
