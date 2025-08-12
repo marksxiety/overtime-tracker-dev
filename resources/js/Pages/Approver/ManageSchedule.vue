@@ -113,7 +113,7 @@
                         <td class="text-center">
                             <div class="flex justify-center">
                                 <label class="label">
-                                    <input type="checkbox" class="checkbox checkbox-primary" @change="handleDefaultShiftFill($event, index , index_sched)"
+                                    <input type="checkbox" :checked="isDefaultShift(sch.schedule)" class="checkbox checkbox-primary" @change="handleDefaultShiftFill($event, index , index_sched)"
                                         />
                                 </label>
                             </div>
@@ -181,7 +181,6 @@ onMounted(async () => {
     // Format the shift data into { label, value } structure
     // so it can be used directly in <SelectOption>
     const shiftData = shiftsResponse?.data?.data ?? []
-    console.log(shiftData)
     shifts.value = shiftData.map(element => ({
         label: (element.start_time && element.end_time)
             ? element.code
@@ -267,6 +266,17 @@ const handleDefaultShiftFill = (event, schedIndex, rowIndex) => {
     }
 }
 
+const isDefaultShift = (schedule) => {
+    let default_shiftcodes = ['SX', 'S7', 'S7', 'S7', 'S7', 'C9', 'SY']
+
+    // Compare schedule's shift labels with default codes
+    return schedule.every((day, idx) => {
+        let match = shifts.value.find(shift => shift.value === day.shift_id)
+        return match ? match.label === default_shiftcodes[idx] : false
+    })
+}
+
+
 
 const removeSchedule = (index) => {
     employeeSchedules.value.splice(index, 1)
@@ -285,6 +295,7 @@ const hanldesubmitSchedule = async () => {
     if (employeeSchedules.value.length === 0) {
         confirmSubmitModal.value?.close()
         toast('Please load a schedule before submitting.', 'warning')
+        return
     }
 
     isSubmitting.value = true
