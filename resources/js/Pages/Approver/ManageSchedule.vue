@@ -119,12 +119,12 @@
                             </div>
                         </td>
                         <td v-for="day in sch.schedule" :key="day.date">
-                        <td class="w-full flex justify-center items-center">
+                        <div class="w-full flex justify-center items-center">
                             <span class="loading loading-spinner" v-if="isLoading"></span>
                             <span v-else class="w-full">
                                 <SelectOption :options="shifts" v-model="day.shift_id" margin="" />
                             </span>
-                        </td>
+                        </div>
                         </td>
                     </tr>
                 </tbody>
