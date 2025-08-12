@@ -44,6 +44,9 @@ Route::middleware('employee')->group(function () {
     Route::post('/overtime/update/employee', [OvertimeRequestController::class, 'updateOvertimeRequestStatus'])->name('overtime.update.employee');
 
     Route::inertia('/profile', 'Profile')->name('profile.employee');
+
+    Route::post('/profile/update/employee', [AuthController::class, 'updateProfileInformation'])->name('profile.update.employee');
+
 });
 
 Route::middleware('approver')->group(function () {
