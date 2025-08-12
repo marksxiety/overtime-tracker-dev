@@ -127,4 +127,11 @@ class AuthController extends Controller
 
         return redirect()->back()->with('message', 'Profile has been updated successfully!');
     }
+
+    public function loadUserProfile() {
+        $user = Auth::user();
+        return inertia('Profile', [
+            'avatar_url' => $user->avatar ? Storage::url($user->avatar) : null,
+        ]);
+    }
 }
