@@ -4,7 +4,7 @@
             class="flex justify-between items-center bottom-2 shadow-md px-4 py-2 mb-6 bg-base-100 rounded h-14 sticky top-0 z-10">
             <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
             <div class="flex justify-between items-center gap-2 font-semibold">
-                <div v-if="$page?.props?.auth.user?.role === 'approver'" class="dropdown dropdown-end">
+                <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button"
                         class="flex gap-2 text-sm items-center hover:bg-base-300 py-2 px-4 rounded-3xl">
                         <Icon icon="tabler:clock-code" width="24" height="24" />
@@ -12,22 +12,28 @@
                     </div>
                     <ul tabindex="0"
                         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-40 p-2 shadow">
-                        <li>
+                        <li v-if="$page?.props?.auth.user?.role === 'approver'">
                             <Link :href="route('shifts')" class="justify-between">
                             <Icon icon="jam:code" width="24" height="24" />
                             Shift Codes
                             </Link>
                         </li>
-                        <li>
+                        <li v-if="$page?.props?.auth.user?.role === 'approver'">
                             <Link :href="route('schedule.manage')" class="justify-between">
                             <Icon icon="icon-park-outline:schedule" width="24" height="24" />
                             Schedule
                             </Link>
                         </li>
-                        <li>
+                        <li v-if="$page?.props?.auth.user?.role === 'approver'">
                             <Link :href="route('hours')" class="justify-between">
                             <Icon icon="tabler:clock-check" width="24" height="24" />
                             Manage ROA
+                            </Link>
+                        </li>
+                        <li v-if="$page?.props?.auth.user?.role === 'employee'">
+                            <Link :href="route('hours')" class="justify-between">
+                            <Icon icon="mingcute:schedule-line" width="24" height="24" />
+                            Schedule
                             </Link>
                         </li>
                     </ul>
