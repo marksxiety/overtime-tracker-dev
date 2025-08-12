@@ -13,7 +13,7 @@
                     <ul tabindex="0"
                         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-40 p-2 shadow">
                         <li>
-                            <Link :href="route('hours')" class="justify-between">
+                            <Link :href="route('shifts')" class="justify-between">
                             <Icon icon="jam:code" width="24" height="24" />
                             Shift Codes
                             </Link>
