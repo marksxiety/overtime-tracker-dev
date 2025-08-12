@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -59,5 +61,70 @@ class AuthController extends Controller
 
         // Redirect to login page
         return redirect()->route('login')->with('message', 'You have been logged out successfully.');
+    }
+
+    public function updateProfileInformation(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return back()->withErrors(['message' => 'Invalid Request! Not authenticated user.']);
+        }
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ];
+
+        if (
+            $request->filled('old_password') ||
+            $request->filled('new_password') ||
+            $request->filled('new_password_confirmation')
+        ) {
+            $rules['old_password'] = 'required|string|min:8';
+            $rules['new_password'] = 'required|string|min:8|confirmed';
+        }
+
+
+        $request->validate($rules);
+
+        // Check if old password matches
+        if ($request->old_password && !Hash::check($request->old_password, $user->password)) {
+            return back()->withErrors(['old_password' => 'Old password is incorrect.']);
+        }
+
+        // Check if new password is different from old password
+        if ($request->old_password === $request->new_password && $request->new_password) {
+            return back()->withErrors(['new_password' => 'New password must be different from the old password.']);
+        }
+
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if it exists
+            if ($user->avatar && file_exists(public_path('storage/' . $user->avatar))) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            // Store new avatar
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->active = $request->active;
+
+        // Only update avatar if a new one is uploaded
+        if ($avatarPath) {
+            $user->avatar = $avatarPath;
+        }
+
+        // Only update password if a new one is provided
+        if ($request->filled('new_password')) {
+            $user->password = bcrypt($request->new_password);
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('message', 'Profile has been updated successfully!');
     }
 }
