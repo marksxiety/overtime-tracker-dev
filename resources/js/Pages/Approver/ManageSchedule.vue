@@ -97,6 +97,7 @@
                 <thead>
                     <tr class="text-center">
                         <th>Employee</th>
+                        <th>Default Shift</th>
                         <th>Sunday</th>
                         <th>Monday</th>
                         <th>Tuesday</th>
@@ -107,8 +108,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="sch in sched.week_schedule">
+                    <tr v-for="(sch, index_sched) in sched.week_schedule" :key="index_sched">
                         <td class="text-center">{{ sch.name }}</td>
+                        <td class="text-center">
+                            <div class="flex justify-center">
+                                <label class="label">
+                                    <input type="checkbox" class="checkbox checkbox-primary" @change="handleDefaultShiftFill($event, index , index_sched)"
+                                        />
+                                </label>
+                            </div>
+                        </td>
                         <td v-for="day in sch.schedule" :key="day.date">
                         <td class="w-full flex justify-center items-center">
                             <span class="loading loading-spinner" v-if="isLoading"></span>
@@ -176,7 +185,7 @@ onMounted(async () => {
     shifts.value = shiftData.map(element => ({
         label: (element.start_time && element.end_time)
             ? element.code
-            : `${element.code === 'SY' ? 'NWS' : 'RD'}`,
+            : element.code,
         value: element.id
     }))
 
@@ -234,6 +243,30 @@ const handleAddWeek = async () => {
     }
     addingWeek.value = false
 }
+
+const handleDefaultShiftFill = (event, schedIndex, rowIndex) => {
+    let targetSchedule = employeeSchedules.value[schedIndex].week_schedule[rowIndex].schedule
+
+    if (event.target.checked) {
+        // Apply default shifts
+        let default_shiftcodes = ['SX', 'S7', 'S7', 'S7', 'S7', 'C9', 'SY']
+
+        let default_shiftcodes_id = default_shiftcodes.map(code => {
+            let match = shifts.value.find(shift => shift.label === code)
+            return match ? match.value : null
+        })
+
+        for (let j = 0; j < targetSchedule.length; j++) {
+            targetSchedule[j].shift_id = default_shiftcodes_id[j]
+        }
+    } else {
+        // Clear all shifts for this row
+        for (let j = 0; j < targetSchedule.length; j++) {
+            targetSchedule[j].shift_id = null
+        }
+    }
+}
+
 
 const removeSchedule = (index) => {
     employeeSchedules.value.splice(index, 1)
