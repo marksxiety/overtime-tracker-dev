@@ -202,9 +202,13 @@
             <!-- 📅 Calendar (3/4 width) -->
             <div class="w-3/4 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100 h-[60vh]">
                 <header class="flex items-center justify-between mb-4">
-                    <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
+                    <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">
+                        <Icon icon="ic:round-navigate-before" width="24" height="24" />
+                    </button>
                     <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
-                    <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">&gt;</button>
+                    <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">
+                        <Icon icon="ic:round-navigate-next" width="24" height="24" />
+                    </button>
                 </header>
 
                 <!-- Days of week -->
@@ -219,7 +223,7 @@
                 </ul>
 
                 <!-- Calendar days -->
-                <ul class="grid grid-cols-7 text-center mt-2 text-lg font-semibold">
+                <ul class="grid grid-cols-7 text-center mt-2 text-xl font-semibold">
                     <li v-for="(days, index) in calendardays" :key="index" :class="[
                         ['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '',
                         'p-3 flex justify-center items-center'
