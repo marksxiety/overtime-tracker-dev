@@ -188,35 +188,19 @@
         </div>
     </Modal>
     <div class="flex flex-col gap-8">
+
+        <!-- 🔹 Top Stats -->
         <div class="stats shadow grid grid-cols-3">
             <Card title="Total Overtime Hours" :value="totalovertime + ' hrs'" />
             <Card title="Pending Requests" :value="pendingovertime" />
             <Card title="Rejected Requests" :value="rejectedovertime" />
         </div>
 
-        <div class="flex justify-between gap-4">
-            <div class="rounded-md p-4 shadow flex flex-col w-2/5 bg-base-100">
-                <h2 class="text-lg font-bold mb-4">Upcoming Holidays</h2>
-                    <hr>
-                <ul class="flex-1 space-y-2 overflow-y-auto mt-2 pb-2 text-sm max-h-[50vh]">
-                    <li v-if="holidays.length === 0">
-                        <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
-                    </li>
+        <!-- 🔹 Main Layout -->
+        <div class="flex gap-4">
 
-                    <li v-for="(h, idx) in holidays" :key="idx"
-                        class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm opacity-70">{{ h.date }}</p>
-                                <p class="text-lg font-semibold">{{ h.localName }}</p>
-                                <p class="text-sm opacity-75">{{ h.name }}</p>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="w-3/5 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100">
+            <!-- 📅 Calendar (3/4 width) -->
+            <div class="w-3/4 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100 h-[60vh]">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">&lt;</button>
                     <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
@@ -242,7 +226,7 @@
                     ]">
                         <span :class="[
                             ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
-                            'hover:bg-base-300  cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl',
+                            'hover:bg-base-300 cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl',
                             (actualDay === parseInt(days.day) && actualYear === parseInt(days.year) && actualMonth === parseInt(days.month)) ? 'bg-base-300' : ''
                         ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
@@ -250,39 +234,60 @@
                     </li>
                 </ul>
             </div>
-        </div>
-        <div class="flex">
-            <div class="rounded-md p-4 shadow flex flex-col w-full bg-base-100">
-                <h2 class="text-lg font-bold mb-4">My Requests</h2>
 
-                <!-- Make ul fill remaining space and scroll -->
-                <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm max-h-[50vh]">
+            <!-- 📌 Side Panel (Upcoming Holidays & My Requests stacked) -->
+            <div class="w-1/4 flex flex-col gap-4">
 
-                    <li v-if="recentRequests.length === 0">
-                        <p class="font-light italic text-center mt-5">No Recent Request...</p>
-                    </li>
-
-                    <li v-for="request in recentRequests" :key="request.id" @click="showOvertimeRequestModal(request)"
-                        class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
-                        <div class="flex items-center justify-between">
+                <!-- Upcoming Holidays -->
+                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-96">
+                    <h2 class="text-lg font-bold mb-4">Upcoming Holidays</h2>
+                    <hr>
+                    <ul class="flex-1 space-y-2 overflow-y-auto mt-2 pb-2 text-sm">
+                        <li v-if="holidays.length === 0">
+                            <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
+                        </li>
+                        <li v-for="(h, idx) in holidays" :key="idx"
+                            class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                             <div class="flex flex-col gap-1">
-                                <p class="text-sm opacity-70">{{ request.date }}</p>
-                                <p class="text-lg font-semibold">
-                                    {{ request.start_time }} → {{ request.end_time }}
-                                </p>
-                                <p class="text-sm opacity-75">{{ request.hours }} hr(s)</p>
+                                <p class="text-sm opacity-70">{{ h.date }}</p>
+                                <p class="text-lg font-semibold">{{ h.localName }}</p>
+                                <p class="text-sm opacity-75">{{ h.name }}</p>
                             </div>
+                        </li>
+                    </ul>
+                </div>
 
-                            <div>
-                                <div :class="['badge', 'badge-outline',
-                                    request.status === 'PENDING' ? 'badge-warning' : (request.status === 'APPROVED' ? 'badge-success' : (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'badge-error' : (request.status === 'FILED' ? 'badge-primary' : '')))
-                                ]">
-                                    {{ request.status }}
+                <!-- My Requests -->
+                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-96">
+                    <h2 class="text-lg font-bold mb-4">My Requests</h2>
+                    <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
+                        <li v-if="recentRequests.length === 0">
+                            <p class="font-light italic text-center mt-5">No Recent Request...</p>
+                        </li>
+                        <li v-for="request in recentRequests" :key="request.id"
+                            @click="showOvertimeRequestModal(request)"
+                            class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-sm opacity-70">{{ request.date }}</p>
+                                    <p class="text-lg font-semibold">
+                                        {{ request.start_time }} → {{ request.end_time }}
+                                    </p>
+                                    <p class="text-sm opacity-75">{{ request.hours }} hr(s)</p>
+                                </div>
+                                <div>
+                                    <div :class="['badge', 'badge-outline',
+                                        request.status === 'PENDING' ? 'badge-warning' :
+                                            (request.status === 'APPROVED' ? 'badge-success' :
+                                                (['DISAPPROVED', 'CANCELED'].includes(request.status) ? 'badge-error' :
+                                                    (request.status === 'FILED' ? 'badge-primary' : '')))]">
+                                        {{ request.status }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
-                </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
