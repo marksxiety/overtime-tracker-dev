@@ -189,18 +189,15 @@
     </Modal>
     <div class="flex flex-col gap-8">
 
-        <!-- 🔹 Top Stats -->
         <div class="stats shadow grid grid-cols-3">
             <Card title="Total Overtime Hours" :value="totalovertime + ' hrs'" />
             <Card title="Pending Requests" :value="pendingovertime" />
             <Card title="Rejected Requests" :value="rejectedovertime" />
         </div>
 
-        <!-- 🔹 Main Layout -->
-        <div class="flex gap-4">
+        <div class="gap-4 grid grid-cols-5">
 
-            <!-- 📅 Calendar (3/4 width) -->
-            <div class="w-3/4 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100 h-[60vh]">
+            <div class="col-span-3 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100 h-auto">
                 <header class="flex items-center justify-between mb-4">
                     <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">
                         <Icon icon="ic:round-navigate-before" width="24" height="24" />
@@ -239,11 +236,10 @@
                 </ul>
             </div>
 
-            <!-- 📌 Side Panel (Upcoming Holidays & My Requests stacked) -->
-            <div class="w-1/4 flex flex-col gap-4">
+            <div class="col-span-2 flex flex-col gap-4">
 
                 <!-- Upcoming Holidays -->
-                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-96">
+                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-80">
                     <h2 class="text-lg font-bold mb-4">Upcoming Holidays</h2>
                     <hr>
                     <ul class="flex-1 space-y-2 overflow-y-auto mt-2 pb-2 text-sm">
@@ -262,7 +258,7 @@
                 </div>
 
                 <!-- My Requests -->
-                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-96">
+                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-80">
                     <h2 class="text-lg font-bold mb-4">My Requests</h2>
                     <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
                         <li v-if="recentRequests.length === 0">
