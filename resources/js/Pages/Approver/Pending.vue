@@ -158,7 +158,8 @@
                     <Link :href="route('main')">Dashboard</Link>
                 </li>
                 <li>
-                    <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })" class="text-primary font-semibold underline">
+                    <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })"
+                        class="text-primary font-semibold underline">
                     Pending Page
                     </Link>
                 </li>
@@ -380,11 +381,11 @@ const updateOvertiemRequestStatus = (status) => {
 
 
 const handleWeekSelection = () => {
-    router.get(route('overtime.filing'), {
+    router.get(route('overtime.pending'), {
         year: selectedYear.value,
         week: selectedWeek.value,
-        status: 'APPROVED',
-        page: 'Approver/Filing'
+        status: 'PENDING',
+        page: 'Approver/Pending'
     }, {
         preserveState: true
     })
