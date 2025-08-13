@@ -78,7 +78,7 @@
                 </div>
             </div>
         </div>
-        <main class="pr-20 pl-20 f-full min-h-screen bg-base-300">
+        <main class="w-full px-20 box-border min-h-[90vh] bg-base-300 m-0">
             <Toast ref="toastRef" />
             <slot></slot>
         </main>
