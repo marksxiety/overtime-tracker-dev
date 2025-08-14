@@ -241,18 +241,27 @@
                 <!-- Upcoming Holidays -->
                 <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-full max-h-80">
                     <h2 class="text-lg font-bold mb-4">Upcoming Holidays</h2>
-                    <hr>
                     <ul class="flex-1 space-y-2 overflow-y-auto mt-2 pb-2 text-sm">
-                        <li v-if="holidays.length === 0">
-                            <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
+                        <li v-if="loadingHolidays">
+                            <p class="font-light italic text-center mt-5"><span class="loading loading-spinner"></span>
+                                Loading Upcoming Holidays...</p>
                         </li>
-                        <li v-for="(h, idx) in holidays" :key="idx"
+                        <li v-else-if="!loadingHolidays && holidays.length > 0" v-for="(h, idx) in holidays" :key="idx"
                             class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm opacity-70">{{ h.date }}</p>
-                                <p class="text-lg font-semibold">{{ h.localName }}</p>
-                                <p class="text-sm opacity-75">{{ h.name }}</p>
+                            <div class="flex flex-row justify-between gap-8">
+                                <!-- <p class="text-sm opacity-70">{{ h.date }}</p> -->
+                                <div class="w-2/4">
+                                    <p class="text-lg font-semibold overflow-hidden text-ellipsis">{{ h.localName }}</p>
+                                    <p class="text-sm opacity-75">{{ h.name }}</p>
+                                </div>
+
+                                <div class="grid items-center">
+                                    <div class="badge badge-primary">{{ h.date }}</div>
+                                </div>
                             </div>
+                        </li>
+                        <li v-else="holidays.length === 0">
+                            <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
                         </li>
                     </ul>
                 </div>
@@ -317,6 +326,7 @@ const months = [
 const toast = inject('toast')
 const confirmingCancel = ref(false)
 const greetingMessage = ref('')
+const loadingHolidays = ref(false)
 
 // ========= Props =============
 const props = defineProps({
@@ -402,10 +412,13 @@ onMounted(async () => {
         greetingMessage.value = props.flash?.message
     }
 
+    loadingHolidays.value = true
     let holidayResponse = await fetchUpcomingHolidays()
     if (holidayResponse.length > 0) {
         holidays.value = holidayResponse
     }
+
+    loadingHolidays.value = false
 })
 
 
