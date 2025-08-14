@@ -189,8 +189,9 @@
     </Modal>
     <div class="flex flex-col gap-8">
 
-        <div class="stats shadow grid grid-cols-3">
+        <div class="stats shadow grid grid-cols-4">
             <Card title="Total Overtime Hours" :value="totalovertime + ' hrs'" />
+            <Card title="Approved Requests" :value="approvedovertime" />
             <Card title="Pending Requests" :value="pendingovertime" />
             <Card title="Rejected Requests" :value="rejectedovertime" />
         </div>
@@ -368,6 +369,7 @@ const holidays = ref([])
 // ========== Card Stats ==========
 const totalovertime = ref(0)
 const pendingovertime = ref(0)
+const approvedovertime = ref(0)
 const rejectedovertime = ref(0)
 
 // ========== Form(s) ==========
@@ -402,9 +404,10 @@ const formFilledOvertime = useForm({
 // ========== Lifecycle ==========
 onMounted(async () => {
     updateCurrentMonthYear(currentYear.value, currentMonth.value)
-    let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(recentRequests.value)
+    let { totalovertimehours, approvedrequests, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(recentRequests.value)
 
     totalovertime.value = totalovertimehours
+    approvedovertime.value = approvedrequests
     pendingovertime.value = pendingrequests
     rejectedovertime.value = rejectedrequests
 
@@ -594,9 +597,10 @@ const submitCancelation = () => {
 watch(() => props.info?.overtimelist, (updatedRequests) => {
     recentRequests.value = [...updatedRequests]
 
-    let { totalovertimehours, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(recentRequests.value)
+    let { totalovertimehours, approvedrequests, pendingrequests, rejectedrequests } = getEmployeeOvertimeStats(recentRequests.value)
 
     totalovertime.value = totalovertimehours
+    approvedovertime.value = approvedrequests
     pendingovertime.value = pendingrequests
     rejectedovertime.value = rejectedrequests
 })
