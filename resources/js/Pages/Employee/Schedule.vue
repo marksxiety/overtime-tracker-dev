@@ -61,7 +61,17 @@
                 </tbody>
             </table>
             <div class="divider"></div>
-            <div class="flex justify-end">
+            <div class="flex justify-between">
+                <div class="flex flex-col gap-2">
+                    <label class="label text-sm font-semibold">
+                        <input type="checkbox" class="checkbox checkbox-primary"
+                            @change="handleDefaultShiftFill($event, schedules)" :checked="isDefaultShift(schedules)"
+                            :disabled="isLoading || isSubmitting" />
+                        DEFAULT SHIFT
+                    </label>
+                    <span class="text-xs text-gray-500 italic">*If unchecked, the selected schedule will be
+                        erased</span>
+                </div>
                 <button type="submit" class="btn btn-neutral mt-4" @click="submitForm()"
                     :disabled="isSubmitting || isLoading">
                     <span v-if="isSubmitting" class="loading loading-spinner"></span>
@@ -143,4 +153,38 @@ async function loadScheduleData() {
     isLoading.value = false
     updateSelectedSchedule.value = false
 }
+
+
+const handleDefaultShiftFill = (event, schedule) => {
+    let default_shiftcodes = ['RESTDAY', 'S7', 'S7', 'S7', 'S7', 'C9', 'NO WORK SCHEDULE']
+    if (event.target.checked) {
+        let default_shiftcodes_id = default_shiftcodes.map(code => {
+            let match = shifts.value.find(shift => (shift.label).includes(code))
+            return match ? match.value : null
+        })
+
+        for (let j = 0; j < schedule.length; j++) {
+            schedule[j].shift_code = default_shiftcodes_id[j]
+        }
+
+    } else {
+        for (let j = 0; j < schedule.length; j++) {
+            schedule[j].shift_code = null
+        }
+    }
+}
+
+const isDefaultShift = (schedule) => {
+    let default_codes = ['SX', 'S7', 'S7', 'S7', 'S7', 'C9', 'SY']
+
+    if (initshifts.value.data?.length > 0) {
+        // Compare schedule's shift labels with default codes
+        return schedule.every((day, idx) => {
+            let match = initshifts.value.data.find(shift => shift.id === day.shift_code)
+            return match ? match.code === default_codes[idx] : false
+        })
+    }
+
+}
+
 </script>
