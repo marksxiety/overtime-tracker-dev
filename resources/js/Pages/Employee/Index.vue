@@ -256,7 +256,7 @@
                                 </div>
 
                                 <div class="grid items-center">
-                                    <div class="badge badge-primary">{{ h.date }}</div>
+                                    <div class="badge badge-primary h-auto">{{ h.date }}</div>
                                 </div>
                             </div>
                         </li>
