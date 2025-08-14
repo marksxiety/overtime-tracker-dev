@@ -31,7 +31,7 @@
                             </Link>
                         </li>
                         <li v-if="$page?.props?.auth.user?.role === 'employee'">
-                            <Link :href="route('hours')" class="justify-between">
+                            <Link :href="route('schedule')" class="justify-between">
                             <Icon icon="mingcute:schedule-line" width="24" height="24" />
                             Schedule
                             </Link>
