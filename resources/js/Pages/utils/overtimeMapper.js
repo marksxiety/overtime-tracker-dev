@@ -2,6 +2,7 @@ export function getEmployeeOvertimeStats(requests) {
     let totalovertimehours = 0;
     let pendingrequests = 0;
     let rejectedrequests = 0;
+    let approvedrequests = 0;
 
     requests.forEach((item) => {
         if (item.status.toUpperCase() === "PENDING") {
@@ -13,11 +14,17 @@ export function getEmployeeOvertimeStats(requests) {
         }
 
         if (item.status.toUpperCase() === "APPROVED") {
+            approvedrequests++;
             totalovertimehours += item.hours;
         }
     });
 
-    totalovertimehours = totalovertimehours.toFixed(2)
+    totalovertimehours = totalovertimehours.toFixed(2);
 
-    return { totalovertimehours, pendingrequests, rejectedrequests };
+    return {
+        totalovertimehours,
+        approvedrequests,
+        pendingrequests,
+        rejectedrequests,
+    };
 }
