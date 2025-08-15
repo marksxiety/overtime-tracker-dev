@@ -55,7 +55,8 @@
                         <li>
                             <label class="swap swap-rotate justify-between px-4 py-2 ">
                                 Theme
-                                <input type="checkbox" class="theme-controller" value="light" />
+                                <input type="checkbox" class="theme-controller" value="light" v-model="isLight"
+                                    @change="toggleTheme()" />
                                 <svg class="swap-off h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24">
                                     <path
@@ -88,12 +89,25 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import Toast from '../Pages/Components/Toast.vue'
-import { ref, provide } from 'vue'
+import { ref, provide, onMounted } from 'vue'
 import { Icon } from "@iconify/vue"
+import { theme, setTheme } from '../Pages/utils/themeStore.js'
 
 const toastRef = ref()
 
 provide('toast', (msg, type = 'info') => {
     toastRef.value?.showToast(msg, type)
 })
+
+const isLight = ref(theme.value === 'light')
+
+const toggleTheme = () => {
+    const newTheme = isLight.value ? 'light' : 'dark'
+    setTheme(newTheme)
+}
+
+onMounted(() => {
+    setTheme(theme.value)
+})
+
 </script>
