@@ -25,3 +25,21 @@ export function currentWeek(date = new Date()) {
   const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay()) / 7);
   return weekNumber;
 }
+
+export function getTimeOptions() {
+    const times = []
+    const pad = n => (n < 10 ? '0' + n : n)
+
+    for (let h = 0; h < 24; h++) {
+        for (let m = 0; m < 60; m += 15) {
+            const hour12 = h % 12 || 12
+            const ampm = h < 12 ? 'AM' : 'PM'
+
+            times.push({
+                label: `${pad(hour12)}:${pad(m)} ${ampm}`,
+                value: `${pad(h)}:${pad(m)}`
+            })
+        }
+    }
+    return times
+}
