@@ -45,16 +45,16 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-row flex-end gap-4 w-1/4">
-            <SelectOption :options="years" v-model="selectedYear" margin='' @change="handleWeekSelection()" />
-            <SelectOption :options="weeks" v-model="selectedWeek" margin='' @change="handleWeekSelection()" />
-        </div>
-        <div class="grid grid-cols-3 gap-4">
-            <div class="col-span-2">
-                <div ref="overtimeWeeklyBarGraph" class="min-h-[50vh] w-full"></div>
+        <div class="flex flex-col gap-4 p-4 bg-base-100 card shadow">
+            <div class="flex justify-end w-full">
+                <div class="flex flex-row gap-4 w-1/4">
+                    <SelectOption :options="years" v-model="selectedYear" margin='' @change="handleWeekSelection()" />
+                    <SelectOption :options="weeks" v-model="selectedWeek" margin='' @change="handleWeekSelection()" />
+                </div>
             </div>
-            <div class="col-span-1">
-                <div ref="overtimeRequestStatus" class="min-h-[50vh] w-full"></div>
+            <div class="w-full flex flex-row gap-4">
+                <div ref="overtimeWeeklyBarGraph" class="min-h-[50vh] w-2/3"></div>
+                <div ref="overtimeRequestStatus" class="min-h-[50vh] w-1/3"></div>
             </div>
         </div>
     </div>
@@ -167,7 +167,7 @@ function displayOvertimeWeeklyBarGraph(theme) {
     }
 
 
-    let bgColor = getTailwindColor('bg-base-300')
+    let bgColor = getTailwindColor('bg-base-100')
     const option = {
         backgroundColor: bgColor,
         title: {
@@ -211,7 +211,7 @@ function displayOvertimeRequestStatus(theme) {
     }
 
 
-    let bgColor = getTailwindColor('bg-base-300')
+    let bgColor = getTailwindColor('bg-base-100')
     let option = {
         backgroundColor: bgColor,
         title: {
