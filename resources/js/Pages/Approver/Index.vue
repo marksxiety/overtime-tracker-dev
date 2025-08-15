@@ -66,7 +66,8 @@ import Card from '../Components/Card.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import { weeks, years } from '../utils/dropdownOptions.js'
 import { router } from '@inertiajs/vue3'
-import * as echarts from 'echarts';
+import * as echarts from 'echarts'
+import { theme } from '../utils/themeStore.js'
 
 // ===== constant variables =====
 
@@ -142,20 +143,31 @@ function getTailwindColor(className) {
     return color
 }
 
-const bgColor = getTailwindColor('bg-base-300')
 
+
+
+watch(theme, (newTheme) => {
+    displayOvertimeWeeklyBarGraph(newTheme)
+    displayOvertimeRequestStatus(newTheme)
+})
 
 const overtimeWeeklyBarGraph = ref(null);
 let BarchartInstance = null;
-function displayOvertimeWeeklyBarGraph() {
+
+function displayOvertimeWeeklyBarGraph(theme) {
     if (!overtimeWeeklyBarGraph.value) return
 
     if (BarchartInstance) {
         BarchartInstance.dispose()
     }
+    if (theme === 'dark') {
+        BarchartInstance = echarts.init(overtimeWeeklyBarGraph.value, 'dark')
+    } else {
+        BarchartInstance = echarts.init(overtimeWeeklyBarGraph.value)
+    }
 
-    BarchartInstance = echarts.init(overtimeWeeklyBarGraph.value, 'dark')
 
+    let bgColor = getTailwindColor('bg-base-300')
     const option = {
         backgroundColor: bgColor,
         title: {
@@ -182,15 +194,24 @@ function displayOvertimeWeeklyBarGraph() {
 
 const overtimeRequestStatus = ref(null);
 let PieChartInstance = null;
-function displayOvertimeRequestStatus() {
+
+function displayOvertimeRequestStatus(theme) {
     if (!overtimeRequestStatus.value) return
 
     if (PieChartInstance) {
         PieChartInstance.dispose()
     }
 
-    PieChartInstance = echarts.init(overtimeRequestStatus.value, 'dark')
+    if (theme === 'dark') {
 
+        PieChartInstance = echarts.init(overtimeRequestStatus.value, 'dark')
+    } else {
+
+        PieChartInstance = echarts.init(overtimeRequestStatus.value)
+    }
+
+
+    let bgColor = getTailwindColor('bg-base-300')
     let option = {
         backgroundColor: bgColor,
         title: {
@@ -237,7 +258,8 @@ function displayOvertimeRequestStatus() {
 }
 
 onMounted(() => {
-    displayOvertimeWeeklyBarGraph()
-    displayOvertimeRequestStatus()
+    displayOvertimeWeeklyBarGraph(theme.value)
+    displayOvertimeRequestStatus(theme.value)
+
 })
 </script>
