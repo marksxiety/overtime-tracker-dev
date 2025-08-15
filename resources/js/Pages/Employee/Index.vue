@@ -46,12 +46,12 @@
                                 <legend class="fieldset-legend">Overtime Duration and Reason</legend>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-1">
-                                        <TextInput name="Start Time:" type="time" v-model="formFiling.start_time"
-                                            :message="formFiling.errors?.start_time" />
+                                        <SelectOption name="Start Time:" :message="formFiling.errors?.start_time"
+                                            v-model="formFiling.start_time" :options="timeOptions" />
                                     </div>
                                     <div class="col-span-1">
-                                        <TextInput name="End Time:" type="time" v-model="formFiling.end_time"
-                                            :message="formFiling.errors?.end_time" />
+                                        <SelectOption name="Start Time:" :message="formFiling.errors?.end_time"
+                                            v-model="formFiling.end_time" :options="timeOptions" />
                                     </div>
                                 </div>
                                 <TextArea name="Reason:" type="text" v-model="formFiling.reason"
@@ -305,17 +305,18 @@
 <script setup>
 // ========== Imports ==========
 import { Link, useForm, router } from '@inertiajs/vue3'
-import { onMounted, ref, inject, watch } from 'vue'
+import { onMounted, ref, inject, watch, computed } from 'vue'
 import Modal from '../Components/Modal.vue'
 import TextInput from '../Components/TextInput.vue'
 import TextArea from '../Components/TextArea.vue'
+import SelectOption from '../Components/SelectOption.vue'
 import Card from '../Components/Card.vue'
 import { fetchUserSchedule } from '../api/schedule.js'
 import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
-import { identifyColorStatus } from '../utils/colorIdentifier.js'
 import fetchUpcomingHolidays from '../api/upcomingHolidays.js'
+import { getTimeOptions } from '../utils/dropdownOptions.js'
 import Stepper from '../Components/Stepper.vue'
-import { Icon } from "@iconify/vue";
+import { Icon } from "@iconify/vue"
 
 
 // ========== Global Constants ==========
@@ -328,6 +329,7 @@ const toast = inject('toast')
 const confirmingCancel = ref(false)
 const greetingMessage = ref('')
 const loadingHolidays = ref(false)
+const timeOptions = computed(() => getTimeOptions())
 
 // ========= Props =============
 const props = defineProps({
