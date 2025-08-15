@@ -123,21 +123,23 @@
         </li>
         <li>
           <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })">
-          Pending Page
+          Pending
           </Link>
         </li>
         <li>
           <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing' })">
-          Filing Page
+          Filing
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })" class="text-primary font-semibold underline">
+          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })"
+            class="text-primary font-semibold underline">
           Filed
           </Link>
         </li>
       </ul>
     </div>
+
 
     <!-- Page Title -->
     <div class="flex justify-between items-center">
