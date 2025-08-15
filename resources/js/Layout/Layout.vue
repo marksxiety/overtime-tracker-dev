@@ -30,6 +30,12 @@
                             Manage ROA
                             </Link>
                         </li>
+                        <li v-if="$page?.props?.auth.user?.role === 'approver'">
+                            <Link :href="route('approver.generate.report')" class="justify-between">
+                            <Icon icon="mdi:report-box-multiple-outline" width="24" height="24" />
+                            Generate Report
+                            </Link>
+                        </li>
                         <li v-if="$page?.props?.auth.user?.role === 'employee'">
                             <Link :href="route('schedule')" class="justify-between">
                             <Icon icon="mingcute:schedule-line" width="24" height="24" />
