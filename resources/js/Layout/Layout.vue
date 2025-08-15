@@ -3,7 +3,7 @@
         <div
             class="flex justify-between items-center bottom-2 shadow-md px-4 py-2 mb-6 bg-base-100 rounded h-14 sticky top-0 z-10">
             <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
-            <div class="flex justify-between items-center gap-2 font-semibold">
+            <div v-if="$page?.props?.auth.user" class="flex justify-between items-center gap-2 font-semibold">
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button"
                         class="flex gap-2 text-sm items-center hover:bg-base-300 py-2 px-4 rounded-3xl">
