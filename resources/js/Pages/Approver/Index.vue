@@ -129,7 +129,8 @@ const handleWeekSelection = () => {
         year: selectedYear.value,
         week: selectedWeek.value
     }, {
-        preserveState: true
+        preserveState: true,
+        preserveScroll: true
     })
 }
 
@@ -146,21 +147,17 @@ function getTailwindColor(className) {
 
 
 
-watch(theme, (newTheme) => {
-    displayOvertimeWeeklyBarGraph(newTheme)
-    displayOvertimeRequestStatus(newTheme)
-})
 
 const overtimeWeeklyBarGraph = ref(null);
 let BarchartInstance = null;
 
-function displayOvertimeWeeklyBarGraph(theme) {
+function displayOvertimeWeeklyBarGraph(currTheme = theme.value) {
     if (!overtimeWeeklyBarGraph.value) return
 
     if (BarchartInstance) {
         BarchartInstance.dispose()
     }
-    if (theme === 'dark') {
+    if (currTheme === 'dark') {
         BarchartInstance = echarts.init(overtimeWeeklyBarGraph.value, 'dark')
     } else {
         BarchartInstance = echarts.init(overtimeWeeklyBarGraph.value)
@@ -195,14 +192,14 @@ function displayOvertimeWeeklyBarGraph(theme) {
 const overtimeRequestStatus = ref(null);
 let PieChartInstance = null;
 
-function displayOvertimeRequestStatus(theme) {
+function displayOvertimeRequestStatus(currTheme = theme.value) {
     if (!overtimeRequestStatus.value) return
 
     if (PieChartInstance) {
         PieChartInstance.dispose()
     }
 
-    if (theme === 'dark') {
+    if (currTheme === 'dark') {
 
         PieChartInstance = echarts.init(overtimeRequestStatus.value, 'dark')
     } else {
@@ -256,6 +253,13 @@ function displayOvertimeRequestStatus(theme) {
 
     PieChartInstance.setOption(option);
 }
+
+watch(theme, (newTheme) => {
+    if (!newTheme) return
+    displayOvertimeWeeklyBarGraph(newTheme)
+    displayOvertimeRequestStatus(newTheme)
+}, { immediate: true })
+
 
 onMounted(() => {
     displayOvertimeWeeklyBarGraph(theme.value)
