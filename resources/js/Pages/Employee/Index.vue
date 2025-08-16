@@ -198,19 +198,24 @@
 
         <div class="gap-4 grid grid-cols-5">
 
-            <div class="col-span-3 flex flex-col justify-center p-4 rounded-md shadow-md bg-base-100 h-auto">
-                <header class="flex items-center justify-between mb-4">
-                    <button class="btn btn-sm btn-neutral" @click="handlePreviousMonth()">
-                        <Icon icon="ic:round-navigate-before" width="24" height="24" />
+            <div
+                class="col-span-3 flex flex-col justify-center p-4 sm:p-6 rounded-lg shadow bg-base-100 h-auto border border-base-300">
+                <header class="flex items-center justify-between mb-4 sm:mb-6">
+                    <button class="btn btn-circle btn-sm sm:btn-md btn-ghost" @click="handlePreviousMonth()">
+                        <Icon icon="ic:round-navigate-before" class="w-12 h-12 sm:w-12 sm:h-12" />
                     </button>
-                    <p class="current-date font-bold text-xl">{{ currentMonthYear }}</p>
-                    <button class="btn btn-sm btn-neutral" @click="handleNextMonth()">
-                        <Icon icon="ic:round-navigate-next" width="24" height="24" />
+
+                    <p class="font-bold text-lg sm:text-2xl text-base-content">
+                        {{ currentMonthYear }}
+                    </p>
+
+                    <button class="btn btn-circle btn-sm sm:btn-md btn-ghost" @click="handleNextMonth()">
+                        <Icon icon="ic:round-navigate-next" class="w-12 h-12 sm:w-12 sm:h-12" />
                     </button>
                 </header>
 
-                <!-- Days of week -->
-                <ul class="grid grid-cols-7 gap-4 text-center font-semibold text-md">
+                <ul
+                    class="grid grid-cols-7 gap-2 text-center font-medium uppercase tracking-wide text-xs sm:text-sm text-base-content/70">
                     <li>Sun</li>
                     <li>Mon</li>
                     <li>Tue</li>
@@ -220,16 +225,18 @@
                     <li>Sat</li>
                 </ul>
 
-                <!-- Calendar days -->
-                <ul class="grid grid-cols-7 text-center mt-2 text-xl font-semibold">
+                <ul class="grid grid-cols-7 gap-y-2 text-center mt-3 sm:mt-4 text-sm sm:text-lg font-semibold">
                     <li v-for="(days, index) in calendardays" :key="index" :class="[
-                        ['next', 'prev'].includes(days.type) ? 'pointer-events-none' : '',
-                        'p-3 flex justify-center items-center'
+                        ['next', 'prev'].includes(days.type) ? 'pointer-events-none opacity-40' : '',
+                        'flex justify-center items-center'
                     ]">
                         <span :class="[
-                            ['next', 'prev'].includes(days.type) ? 'text-gray-400' : '',
-                            'hover:bg-base-300 cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl',
-                            (actualDay === parseInt(days.day) && actualYear === parseInt(days.year) && actualMonth === parseInt(days.month)) ? 'bg-base-300' : ''
+                            'w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-full cursor-pointer',
+                            (actualDay === parseInt(days.day) &&
+                                actualYear === parseInt(days.year) &&
+                                actualMonth === parseInt(days.month))
+                                ? 'bg-primary text-primary-content'
+                                : 'hover:bg-base-300'
                         ]" @click="showOvertimeFilingModal(currentYear, currentMonth, days.day)">
                             {{ days.day }}
                         </span>
@@ -268,7 +275,7 @@
                 </div>
 
                 <!-- My Requests -->
-                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-80">
+                <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-96">
                     <h2 class="text-lg font-bold mb-4">My Requests</h2>
                     <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
                         <li v-if="recentRequests.length === 0">
