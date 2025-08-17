@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\Storage;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -38,7 +39,11 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth.user' => fn() => $request->user()
-                ? $request->user()->only('name', 'email', 'active', 'role', 'employeeid')
+                ? collect($request->user()->only('name', 'email', 'active', 'role', 'employeeid', 'avatar'))
+                ->mapWithKeys(fn($value, $key) => $key === 'avatar'
+                    ? ['avatar_url' => $value ? Storage::url($value) : null]
+                    : [$key => $value])
+                ->toArray()
                 : null,
             'flash' => [
                 'message' => fn() => $request->session()->get('message')
