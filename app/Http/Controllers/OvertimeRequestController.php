@@ -252,8 +252,7 @@ class OvertimeRequestController extends Controller
 
     public function fetchTotalOvertimeRequests(Request $request)
     {
-
-        $week = $request->input('week', Carbon::now()->weekOfYear);
+        $week = $this->currentWeekSundayBased();
         $year = $request->input('year', Carbon::now()->year);
         $message = '';
         try {
@@ -466,7 +465,7 @@ class OvertimeRequestController extends Controller
 
     public function fetchOvertimeRequestsViaStatus(Request $request)
     {
-        $week = $request->input('week', Carbon::now()->weekOfYear);
+        $week = $this->currentWeekSundayBased();
         $year = $request->input('year', Carbon::now()->year);
         $status = $request->input('status', '');
         $page = $request->input('page', null);
@@ -555,5 +554,19 @@ class OvertimeRequestController extends Controller
             'success' => $success,
             'message' => $message
         ]);
+    }
+
+    public function currentWeekSundayBased($date = null)
+    {
+        $date = $date ?: Carbon::now();
+        $firstDayOfYear = Carbon::create($date->year, 1, 1);
+
+        // get the number of days passed since Jan 1
+        $pastDays = $firstDayOfYear->diffInDays($date);
+
+        // add firstDayOfYear weekday (0=Sunday, 6=Saturday)
+        $weekNumber = (int) ceil(($pastDays + $firstDayOfYear->dayOfWeek + 1) / 7);
+
+        return $weekNumber;
     }
 }
