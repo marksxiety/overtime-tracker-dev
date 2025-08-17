@@ -51,13 +51,15 @@
                                 class="w-8 h-8 rounded-full ring-2 ring-offset-2 ring-primary ring-offset-base-100 p-1 overflow-hidden flex items-center justify-center">
                                 <img v-if="props.auth.user?.avatar_url" :src="props.auth.user?.avatar_url" alt="avatar"
                                     class="w-full h-full object-cover rounded-full" />
-                                <Icon v-else icon="iconamoon:profile-circle-fill" width="24" height="24" />
+                                <Icon v-else
+                                    :icon="($page?.props?.auth.user?.role === 'employee') ? 'iconamoon:profile-circle-fill' : 'eos-icons:admin-outlined'"
+                                    width="24" height="24" />
                             </div>
                         </div>
                     </div>
                     <ul tabindex="0"
                         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-40 p-2 shadow">
-                        <li>
+                        <li v-if="$page?.props?.auth.user?.role === 'employee'">
                             <Link :href="route('profile.employee')" class="justify-between px-4 py-2">
                             <Icon icon="iconamoon:profile-circle-fill" width="24" height="24" />
                             Profile
