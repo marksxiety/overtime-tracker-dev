@@ -45,10 +45,15 @@
                     </ul>
                 </div>
                 <div v-if="$page?.props?.auth.user" class="dropdown dropdown-end">
-                    <div tabindex="0" role="button"
-                        class="flex gap-2 text-sm items-center hover:bg-base-300 py-2 px-4 rounded-3xl">
-                        <Icon icon="ri:user-settings-line" width="24" height="24" />
-                        Settings
+                    <div tabindex="0" role="button" class="flex gap-2 text-sm items-center py-2 px-4 rounded-3xl">
+                        <div class="avatar">
+                            <div
+                                class="w-8 h-8 rounded-full ring-2 ring-offset-2 ring-primary ring-offset-base-100 p-1 overflow-hidden flex items-center justify-center">
+                                <img v-if="props.auth.user?.avatar_url" :src="props.auth.user?.avatar_url" alt="avatar"
+                                    class="w-full h-full object-cover rounded-full" />
+                                <Icon v-else icon="iconamoon:profile-circle-fill" width="24" height="24" />
+                            </div>
+                        </div>
                     </div>
                     <ul tabindex="0"
                         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-40 p-2 shadow">
@@ -103,6 +108,14 @@ const toastRef = ref()
 
 provide('toast', (msg, type = 'info') => {
     toastRef.value?.showToast(msg, type)
+})
+
+const props = defineProps({
+    user: Object,
+    avatar_url: String,
+    errors: Object,
+    flash: Object,
+    auth: Object,
 })
 
 const isLight = ref(theme.value === 'light')
