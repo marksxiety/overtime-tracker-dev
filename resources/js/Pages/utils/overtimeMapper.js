@@ -19,7 +19,7 @@ export function getEmployeeOvertimeStats(requests) {
         }
     });
 
-    totalovertimehours = totalovertimehours.toFixed(2);
+    totalovertimehours = totalovertimehours.toFixed(2).replace(/\.00$/, "");
 
     return {
         totalovertimehours,
