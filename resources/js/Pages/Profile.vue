@@ -14,9 +14,7 @@
         </div>
 
         <!-- Page Heading -->
-        <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-extrabold text-base-content">Profile Information</h1>
-        </div>
+
         <div class="flex justify-center">
             <div class="bg-base-100 rounded-2xl p-4 w-3/4">
                 <form @submit.prevent="submitForm" class="grid gap-4 grid-cols-1 md:grid-cols-2">
@@ -44,8 +42,8 @@
                     <div class="col-span-1 flex flex-col gap-4 p-2">
                         <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                             <legend class="text-sm font-semibold px-2">User Information</legend>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="col-span-2">
                                     <TextInput name="Name:" :message="form.errors.name" v-model="form.name"
                                         placeholder="" />
                                 </div>
