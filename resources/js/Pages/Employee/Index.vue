@@ -231,7 +231,7 @@
                         'flex justify-center items-center'
                     ]">
                         <span :class="[
-                            'w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-full cursor-pointer',
+                            'w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-md cursor-pointer',
                             (actualDay === parseInt(days.day) &&
                                 actualYear === parseInt(days.year) &&
                                 actualMonth === parseInt(days.month))
