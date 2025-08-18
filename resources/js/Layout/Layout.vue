@@ -30,7 +30,8 @@
                             Manage ROA
                             </Link>
                         </li>
-                        <li v-if="$page?.props?.auth.user?.role === 'approver'">
+                        <li
+                            v-if="$page?.props?.auth.user?.role === 'approver' && $page?.props?.auth.user?.email == 'approver.user@email.com'">
                             <Link :href="route('approver.generate.report')" class="justify-between">
                             <Icon icon="mdi:report-box-multiple-outline" width="24" height="24" />
                             Generate Report
@@ -51,9 +52,11 @@
                                 class="w-8 h-8 rounded-full ring-2 ring-offset-2 ring-primary ring-offset-base-100 overflow-hidden flex items-center justify-center">
                                 <img v-if="props.auth.user?.avatar_url" :src="props.auth.user?.avatar_url" alt="avatar"
                                     class="w-full h-full object-cover rounded-full" />
-                                <Icon v-else
-                                    :icon="($page?.props?.auth.user?.role === 'employee') ? 'iconamoon:profile-circle-fill' : 'eos-icons:admin-outlined'"
-                                    width="24" height="24" />
+                                <div v-else class="flex items-center justify-center w-full h-full">
+                                    <Icon
+                                        :icon="($page?.props?.auth.user?.role === 'employee') ? 'iconamoon:profile-circle-fill' : 'eos-icons:admin-outlined'"
+                                        width="24" height="24" />
+                                </div>
                             </div>
                         </div>
                     </div>
