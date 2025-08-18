@@ -48,7 +48,7 @@
                     <div tabindex="0" role="button" class="flex gap-2 text-sm items-center py-2 px-4 rounded-3xl">
                         <div class="avatar">
                             <div
-                                class="w-8 h-8 rounded-full ring-2 ring-offset-2 ring-primary ring-offset-base-100 p-1 overflow-hidden flex items-center justify-center">
+                                class="w-8 h-8 rounded-full ring-2 ring-offset-2 ring-primary ring-offset-base-100 overflow-hidden flex items-center justify-center">
                                 <img v-if="props.auth.user?.avatar_url" :src="props.auth.user?.avatar_url" alt="avatar"
                                     class="w-full h-full object-cover rounded-full" />
                                 <Icon v-else
