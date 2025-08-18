@@ -158,7 +158,8 @@
                     <Link :href="route('main')">Dashboard</Link>
                 </li>
                 <li>
-                    <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })" class="text-primary font-semibold underline">
+                    <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })"
+                        class="text-primary font-semibold underline">
                     Pending
                     </Link>
                 </li>
@@ -183,6 +184,8 @@
         <div class="stats stats-horizontal shadow flex-wrap">
             <Card title="Requests to File" :value="total_requests" description="Approved but not yet filed" />
             <Card title="Total Overtime Hours" :value="total_requests_hours" description="Awaiting confirmation" />
+            <Card title="Registered ROA" :value="roa_hours"
+                :description="roa_hours <= 0 ? 'No ROA hours remaining — please file additional hours.' : 'You still have ROA hours available.'" />
         </div>
 
         <!-- Filing Table -->
@@ -255,6 +258,8 @@ const props = defineProps({
 const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
 const requests = ref([...props?.info?.requests ?? []])
+const roa_hours = ref(props?.info?.hours?.limit ?? 0)
+
 
 const total_requests = computed(() => {
     return props?.info?.requests.length
