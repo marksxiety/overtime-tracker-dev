@@ -1,8 +1,8 @@
 <template>
     <div class="max-w-2xl mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 w-full">
-            <div class="col-span-1">
-                <img :src="loginImage" alt="login" class="w-full h-full object-contain" />
+            <div class="col-span-1 flex justify-center">
+                <img :src="loginImage" alt="login" class="w-full h-full max-w-80 max-h-80 object-contain" />
             </div>
             <div class="col-span-1">
                 <h2 class="text-2xl font-bold mb-6 text-primary">Login User</h2>

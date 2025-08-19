@@ -1,8 +1,8 @@
 <template>
     <div class="max-w-4xl mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 w-full">
-            <div class="col-span-1 flex items-center">
-                <img :src="registerImage" alt="register" class="w-full h-2/4 object-contain" />
+            <div class="col-span-1 flex justify-center items-center">
+                <img :src="registerImage" alt="register" class="w-full h-full max-w-80 max-h-80 object-contain" />
             </div>
             <div class="col-span-1">
                 <h2 class="text-2xl font-bold mb-6 text-primary">Register Here</h2>
