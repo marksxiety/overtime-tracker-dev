@@ -1,35 +1,37 @@
 <template>
-    <div class="max-w-4xl mx-auto bg-base-100 p-8 rounded-xl shadow mt-20">
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 w-full">
-            <div class="col-span-1 flex justify-center items-center">
-                <img :src="registerImage" alt="register" class="w-full h-full max-w-80 max-h-80 object-contain" />
-            </div>
-            <div class="col-span-1">
-                <h2 class="text-2xl font-bold mb-6 text-primary">Register Here</h2>
-                <form @submit.prevent="submitForm">
-                    <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
-                    <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
-                    <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid"
-                        v-model="form.employeeid" />
-                    <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role"
-                        :options="options" />
-                    <TextInput name="Password:" type="password" :message="form.errors.password"
-                        v-model="form.password" />
-                    <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
-                    <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
-                        <span v-if="form.processing"><span class="loading loading-spinner loading-xs"></span>
-                            Register</span>
-                        <span v-else>Register</span>
-                    </button>
-                </form>
-                <div class="mt-6 text-center"> Already have an account?
-                    <Link :href="route('login')" class="link">
-                    Login here
-                    </Link>
+    <main class="w-full px-20 box-border min-h-screen bg-base-300 mb-0">
+        <div class="min-h-screen max-w-4xl mx-auto flex justify-center items-center">
+            <div class="bg-base-100 grid grid-cols-1 xl:grid-cols-2 gap-12 w-full h-auto p-8 rounded-xl shadow">
+                <div class="col-span-1 flex justify-center items-center">
+                    <img :src="registerImage" alt="register" class="w-full h-full max-w-80 max-h-80 object-contain" />
+                </div>
+                <div class="col-span-1">
+                    <h2 class="text-2xl font-bold mb-6 text-primary">Register Here</h2>
+                    <form @submit.prevent="submitForm">
+                        <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
+                        <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
+                        <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid"
+                            v-model="form.employeeid" />
+                        <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role"
+                            :options="options" />
+                        <TextInput name="Password:" type="password" :message="form.errors.password"
+                            v-model="form.password" />
+                        <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
+                        <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                            <span v-if="form.processing"><span class="loading loading-spinner loading-xs"></span>
+                                Register</span>
+                            <span v-else>Register</span>
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center"> Already have an account?
+                        <Link :href="route('login')" class="link">
+                        Login here
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 </template>
 
 <script setup>
@@ -64,4 +66,8 @@ const submitForm = () => {
         }
     })
 }
+
+defineOptions({
+    layout: null
+})
 </script>
