@@ -1,12 +1,19 @@
 <template>
-    <main class="w-full px-20 box-border min-h-screen bg-base-300 mb-0">
-        <div class="min-h-screen max-w-4xl mx-auto flex justify-center items-center">
+    <main class="w-full px-20 box-border min-h-screen bg-base-300 mb-0 flex flex-col justify-center items-center">
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-primary tracking-wide">
+                TimeTrack Pro
+            </h1>
+            <p class="text-base text-gray-500">Overtime Tracker System</p>
+        </div>
+
+        <div class="min-h-[70vh] max-w-4xl mx-auto flex justify-center items-center">
             <div class="bg-base-100 grid grid-cols-1 xl:grid-cols-2 gap-12 w-full h-auto p-8 rounded-xl shadow">
                 <div class="col-span-1 flex justify-center">
                     <img :src="loginImage" alt="login" class="w-full h-full max-w-80 max-h-80 object-contain" />
                 </div>
                 <div class="col-span-1">
-                    <h2 class="text-2xl font-bold mb-6 text-primary">Login User</h2>
+                    <h2 class="text-2xl font-bold mb-6 text-primary text-center">Sign In to TimeTrack Pro</h2>
                     <form @submit.prevent="submitForm" class="card">
                         <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
                         <TextInput name="Password:" type="password" :message="form.errors.password"
