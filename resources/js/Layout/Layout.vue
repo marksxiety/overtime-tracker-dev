@@ -2,7 +2,7 @@
     <div class="bg-base-300">
         <div
             class="flex justify-between items-center bottom-2 shadow-md px-4 py-2 mb-6 bg-base-100 rounded h-14 sticky top-0 z-10">
-            <Link :href="route('main')" class="font-bold text-sm">Overtime Tracker</Link>
+            <Link :href="route('main')" class="font-bold text-sm">TimeTrack Pro</Link>
             <div v-if="$page?.props?.auth.user" class="flex justify-between items-center gap-2 font-semibold">
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button"
@@ -52,7 +52,7 @@
                                 class="w-8 h-8 rounded-full ring-2 ring-offset-2 ring-primary ring-offset-base-100 overflow-hidden flex items-center justify-center">
                                 <img v-if="props.auth.user?.avatar_url" :src="props.auth.user?.avatar_url" alt="avatar"
                                     class="w-full h-full object-cover rounded-full" />
-                                <div v-else class="flex items-center justify-center w-full h-full">
+                                <div v-else class="flex items-center justify-center p-1 w-full h-full">
                                     <Icon
                                         :icon="($page?.props?.auth.user?.role === 'employee') ? 'iconamoon:profile-circle-fill' : 'eos-icons:admin-outlined'"
                                         width="24" height="24" />
