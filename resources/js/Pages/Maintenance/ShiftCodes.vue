@@ -29,13 +29,13 @@
         </div>
 
         <!-- Grid Section -->
-        <div class="grid place-items-center">
+        <div class="grid place-items-center min-h-[50vh]">
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-8 h-[32rem] w-full max-w-7xl">
 
                 <!-- Form Panel -->
                 <div class="col-span-2">
                     <div
-                        class="bg-base-100 p-8 rounded-2xl shadow-lg min-h-[50vh] flex flex-col justify-center border border-base-200">
+                        class="bg-base-100 p-8 rounded-2xl shadow-lg h-full flex flex-col justify-center border border-base-200">
                         <!-- Title -->
                         <h2 class="text-xl font-bold mb-6 text-center text-primary uppercase tracking-wide">
                             shift Code Registration
@@ -68,42 +68,45 @@
 
                 <!-- Table Section -->
                 <div class="col-span-3">
-                    <div
-                        class="bg-base-100 rounded-2xl p-6 max-h-[50vh] overflow-auto shadow-lg border border-base-200">
-                        <h2 class="text-lg font-semibold mb-4 text-base-content">Registered Shifts</h2>
-                        <table class="table w-full text-sm">
-                            <thead class="sticky top-0 bg-base-200 z-10 text-base-content">
-                                <tr class="text-center">
-                                    <th>Shift Code</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="shift in shiftcodes" :key="shift.shift_code" class="text-center hover">
-                                    <td class="font-semibold">{{ shift.code }}</td>
-                                    <td>{{ shift.start_time ?? 'N/A' }}</td>
-                                    <td>{{ shift.end_time ?? 'N/A' }}</td>
-                                    <td class="flex flex-row gap-2 justify-center">
-                                        <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs"
-                                            :disabled="deleteform.processing">
-                                            EDIT
-                                        </button>
-                                        <button class="btn btn-error btn-xs" @click="initiateDeletion(shift.id)"
-                                            :disabled="deleteform.processing">
-                                            <span>DELETE</span></button>
-                                    </td>
-                                </tr>
-                                <tr v-if="shiftcodes.length === 0">
-                                    <td colspan="4" class="text-center italic text-gray-400 py-4">
-                                        No shift codes available.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="bg-base-100 rounded-2xl p-6 shadow-lg border border-base-200">
+                        <!-- scrolling wrapper -->
+                        <div class="max-h-[50vh] overflow-auto">
+                            <table class="table w-full text-sm">
+                                <thead class="sticky top-0 bg-base-200 z-10 text-base-content">
+                                    <tr class="text-center">
+                                        <th>Shift Code</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="shift in shiftcodes" :key="shift.shift_code" class="text-center hover">
+                                        <td class="font-semibold">{{ shift.code }}</td>
+                                        <td>{{ shift.start_time ?? 'N/A' }}</td>
+                                        <td>{{ shift.end_time ?? 'N/A' }}</td>
+                                        <td class="flex flex-row gap-2 justify-center">
+                                            <button @click="handleHypyerLink(shift)" class="btn btn-success btn-xs"
+                                                :disabled="deleteform.processing">
+                                                EDIT
+                                            </button>
+                                            <button class="btn btn-error btn-xs" @click="initiateDeletion(shift.id)"
+                                                :disabled="deleteform.processing">
+                                                <span>DELETE</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="shiftcodes.length === 0">
+                                        <td colspan="4" class="text-center italic text-gray-400 py-4">
+                                            No shift codes available.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
