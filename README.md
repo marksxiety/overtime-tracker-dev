@@ -53,17 +53,18 @@ npm install
 
 ### 3. Setup Environment
 
-```bash
-cp .env.example .env
-```
+1. Copy the example environment file:
+    ```bash
+    cp .env.example .env
+    ```
 
--   Update .env with your database credentials and app URL.
+2. Update .env with your database credentials and app URL.
 
-## Generate the Laravel App Key:
+3. Generate the Laravel App Key:
 
-```bash
-php artisan key:generate
-```
+    ```bash
+    php artisan key:generate
+    ```
 
 ### 4. Run the Application
 
