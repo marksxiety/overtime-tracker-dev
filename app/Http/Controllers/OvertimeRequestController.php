@@ -252,7 +252,7 @@ class OvertimeRequestController extends Controller
 
     public function fetchTotalOvertimeRequests(Request $request)
     {
-        $week = $this->currentWeekSundayBased();
+        $week = $request->input('week', $this->currentWeekSundayBased());
         $year = $request->input('year', Carbon::now()->year);
         $message = '';
         try {
@@ -465,7 +465,7 @@ class OvertimeRequestController extends Controller
 
     public function fetchOvertimeRequestsViaStatus(Request $request)
     {
-        $week = $this->currentWeekSundayBased();
+        $week = $request->input('week', $this->currentWeekSundayBased());
         $year = $request->input('year', Carbon::now()->year);
         $status = $request->input('status', '');
         $page = $request->input('page', null);
