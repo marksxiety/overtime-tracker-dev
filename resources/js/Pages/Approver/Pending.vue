@@ -182,10 +182,15 @@
         </div>
 
         <div class="stats stats-horizontal shadow flex-wrap">
-            <Card title="Requests to File" :value="total_requests" description="Approved but not yet filed" />
+            <Card title="Requests to File" :value="total_requests" description="For Approval" />
             <Card title="Total Overtime Hours" :value="total_requests_hours" description="Awaiting confirmation" />
             <Card title="Registered ROA" :value="roa_hours"
                 :description="roa_hours <= 0 ? 'No ROA hours remaining — please file additional hours.' : 'You still have ROA hours available.'" />
+            <Card title="Remaining Hours" :value="remaining_hours" :description="remaining_hours === 0
+                ? 'No remaining hours'
+                : remaining_hours < 0
+                    ? 'ROA consumed exceeded — please file additional hours'
+                    : 'Remaining hours available'" />
         </div>
 
         <!-- Filing Table -->
@@ -259,7 +264,7 @@ const selectedWeek = ref(props?.info?.payload?.week)
 const selectedYear = ref(props?.info?.payload?.year)
 const requests = ref([...props?.info?.requests ?? []])
 const roa_hours = ref(props?.info?.hours?.limit ?? 0)
-
+const remaining_hours = ref(props?.info?.hours?.remaining ?? 0)
 
 const total_requests = computed(() => {
     return props?.info?.requests.length
@@ -315,7 +320,9 @@ watch(() => props.info.payload.year, (newYear) => {
     selectedYear.value = newYear
 })
 
-
+watch(() => props?.info?.hours?.remaining, (newRemaining) => {
+    remaining_hours.value = newRemaining
+})
 
 const manageRequestModal = ref(null)
 
