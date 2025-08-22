@@ -501,6 +501,7 @@ class OvertimeRequestController extends Controller
 
             // fetch the registered hours limit on the specific year and week
             $required_registered_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
+            $remaining_hours = $this->computeRemainingHours($year, $week, $required_registered_hours ?? 0);
 
             foreach ($overtime_requests as $overtime) {
                 // create instance on timestamps
@@ -554,7 +555,8 @@ class OvertimeRequestController extends Controller
                     'page' => $page
                 ],
                 'hours' => [
-                    'limit' => $required_registered_hours->hours ?? 0
+                    'limit' => $required_registered_hours->hours ?? 0,
+                    'remaining' => $remaining_hours
                 ]
             ],
             'success' => $success,
@@ -574,5 +576,16 @@ class OvertimeRequestController extends Controller
         $weekNumber = (int) ceil(($pastDays + $firstDayOfYear->dayOfWeek + 1) / 7);
 
         return $weekNumber;
+    }
+
+    public function computeRemainingHours($year, $week, $required_hours)
+    {
+        $total_hours = OvertimeRequest::where('status', 'APPROVED')
+            ->whereHas('schedule', function ($query) use ($year, $week) {
+                $query->where('year', $year)
+                    ->where('week', $week);
+            })
+            ->sum('hours');
+        return $required_hours - $total_hours ?? 0;
     }
 }
