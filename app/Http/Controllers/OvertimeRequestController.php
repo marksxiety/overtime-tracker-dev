@@ -473,6 +473,7 @@ class OvertimeRequestController extends Controller
         $overtimelist = [];
         $overtime_requests = [];
         $message = '';
+        $remaining_hours = 0;
         try {
             $overtime_requests = DB::table('overtime_requests')->join('schedules', 'schedules.id', '=', 'overtime_requests.employee_schedule_id')->join('users', 'users.id', '=', 'schedules.user_id')
                 ->leftJoin('shift_codes', 'shift_codes.id', '=', 'schedules.shift_id')
@@ -501,7 +502,7 @@ class OvertimeRequestController extends Controller
 
             // fetch the registered hours limit on the specific year and week
             $required_registered_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
-            $remaining_hours = $this->computeRemainingHours($year, $week, $required_registered_hours ?? 0);
+            $remaining_hours = $this->computeRemainingHours($year, $week, $required_registered_hours->hours ?? 0);
 
             foreach ($overtime_requests as $overtime) {
                 // create instance on timestamps
@@ -582,10 +583,10 @@ class OvertimeRequestController extends Controller
     {
         $total_hours = OvertimeRequest::where('status', 'APPROVED')
             ->whereHas('schedule', function ($query) use ($year, $week) {
-                $query->where('year', $year)
+                $query->whereYear('date', $year)
                     ->where('week', $week);
             })
             ->sum('hours');
-        return $required_hours - $total_hours ?? 0;
+        return ($required_hours ?? 0) - (float) $total_hours;
     }
 }
