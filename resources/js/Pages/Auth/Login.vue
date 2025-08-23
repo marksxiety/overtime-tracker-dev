@@ -13,7 +13,7 @@
                     <img :src="loginImage" alt="login" class="w-full h-full max-w-80 max-h-80 object-contain" />
                 </div>
                 <div class="col-span-1">
-                    <h2 class="text-2xl font-bold mb-6 text-primary text-center">Sign In to TimeTrack Pro</h2>
+                    <h2 class="text-2xl font-bold mb-6 text-primary text-center">Login</h2>
                     <form @submit.prevent="submitForm" class="card">
                         <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
                         <TextInput name="Password:" type="password" :message="form.errors.password"
