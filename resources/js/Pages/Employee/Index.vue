@@ -268,6 +268,9 @@
                                 </div>
                             </div>
                         </li>
+                        <li v-else-if="holidayMessage.length > 0">
+                            <p class="font-light italic text-center mt-5">{{ holidayMessage }}</p>
+                        </li>
                         <li v-else="holidays.length === 0">
                             <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
                         </li>
@@ -337,6 +340,7 @@ const confirmingCancel = ref(false)
 const greetingMessage = ref('')
 const loadingHolidays = ref(false)
 const timeOptions = computed(() => getTimeOptions())
+const holidayMessage = ref('')
 
 // ========= Props =============
 const props = defineProps({
@@ -425,11 +429,15 @@ onMounted(async () => {
     }
 
     loadingHolidays.value = true
-    let holidayResponse = await fetchUpcomingHolidays()
-    if (holidayResponse.length > 0) {
-        holidays.value = holidayResponse
-    }
+    let response = await fetchUpcomingHolidays()
 
+    if (response.success) {
+        if (response.holidayResponse.length > 0) {
+            holidays.value = response.holidayResponse
+        }
+    } else {
+        holidayMessage.value = 'Failed to load Upcomint Holidays.'
+    }
     loadingHolidays.value = false
 })
 
