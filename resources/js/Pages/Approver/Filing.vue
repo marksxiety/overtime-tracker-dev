@@ -150,20 +150,20 @@
     <div class="breadcrumbs text-sm">
       <ul>
         <li>
-          <Link :href="route('main')">Dashboard</Link>
+          <Link :href="route('main', { week: selectedWeek, year: selectedYear })">Dashboard</Link>
         </li>
         <li>
-          <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending' })">
+          <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending', week: selectedWeek, year: selectedYear })">
           Pending
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing' })" class="text-primary font-semibold underline">
+          <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing', week: selectedWeek, year: selectedYear })" class="text-primary font-semibold underline">
           Filing
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed' })">
+          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed', week: selectedWeek, year: selectedYear })">
           Filed
           </Link>
         </li>
