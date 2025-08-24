@@ -8,7 +8,7 @@
         </div>
 
         <div class="min-h-[70vh] max-w-7xl mx-auto flex justify-center items-center">
-            <div class="bg-base-100 grid grid-cols-1 xl:grid-cols-2 gap-12 w-full h-auto p-8 rounded-xl shadow">
+            <div class="bg-base-100 grid grid-cols-1 xl:grid-cols-2 gap-12 w-full h-auto p-8 rounded-md shadow">
                 <div class="col-span-1 flex justify-center items-center">
                     <img :src="registerImage" alt="register" class="w-full h-full max-w-80 max-h-80 object-contain" />
                 </div>

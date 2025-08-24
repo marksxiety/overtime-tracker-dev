@@ -25,7 +25,7 @@
                 <!-- Form Panel -->
                 <div class="col-span-2">
                     <div
-                        class="bg-base-100 p-8 rounded-2xl shadow-lg min-h-[50vh] flex flex-col justify-center border border-base-200">
+                        class="bg-base-100 p-8 rounded-md shadow-lg min-h-[50vh] flex flex-col justify-center border border-base-200">
                         <!-- Title -->
                         <h2 class="text-xl font-bold mb-6 text-center text-primary uppercase tracking-wide">
                             Weekly Authorization Form
@@ -49,7 +49,7 @@
 
                 <!-- Table Panel -->
                 <div class="col-span-3">
-                    <div class="bg-base-100 rounded-2xl p-6 min-h-[50vh] overflow-auto shadow-lg border border-base-200">
+                    <div class="bg-base-100 rounded-md p-6 min-h-[50vh] overflow-auto shadow-lg border border-base-200">
                         <h2 class="text-lg font-semibold mb-4 text-base-content">Registered Required Hours</h2>
                         <table class="table w-full text-sm">
                             <thead class="sticky top-0 bg-base-200 z-10 text-base-content">

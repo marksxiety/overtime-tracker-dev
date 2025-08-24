@@ -9,7 +9,7 @@
                             <span class="loading loading-spinner"></span> Loading Schedule...
                         </div>
                         <div v-else>
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
                                 <legend class="fieldset-legend">Requested Overtime Date</legend>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-1">
@@ -23,7 +23,7 @@
                                 </div>
                             </fieldset>
 
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
                                 <legend class="fieldset-legend">Your Scheduled Shift</legend>
                                 <div class="grid grid-cols-5 gap-4">
                                     <div class="col-span-1">
@@ -42,7 +42,7 @@
                             </fieldset>
 
 
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
                                 <legend class="fieldset-legend">Overtime Duration and Reason</legend>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-1">
@@ -255,7 +255,7 @@
                                 Loading Upcoming Holidays...</p>
                         </li>
                         <li v-else-if="!loadingHolidays && holidays.length > 0" v-for="(h, idx) in holidays" :key="idx"
-                            class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
+                            class="card w-full shadow-md border border-base-200 rounded-md p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                             <div class="flex flex-row justify-between gap-8">
                                 <!-- <p class="text-sm opacity-70">{{ h.date }}</p> -->
                                 <div class="w-2/4">
@@ -286,7 +286,7 @@
                         </li>
                         <li v-for="request in recentRequests" :key="request.id"
                             @click="showOvertimeRequestModal(request)"
-                            class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
+                            class="card w-full shadow-md border border-base-200 rounded-md p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                             <div class="flex items-center justify-between">
                                 <div class="flex flex-col gap-1">
                                     <p class="text-sm opacity-70">{{ request.date }}</p>
