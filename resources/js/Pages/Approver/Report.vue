@@ -1,48 +1,128 @@
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-base-300">
-        <div class="card card-side bg-base-100 shadow-xl rounded-2xl w-full max-w-5xl px-6 py-6">
-            <figure class="flex items-center justify-center w-full h-full">
-                <img :src="reportImage" alt="report" class="object-cover w-full h-full rounded-l-2xl" />
-            </figure>
-            <div class="card-body justify-center">
-                <div class="flex items-start gap-3">
-                    <div>
-                        <h2 class="card-title text-2xl font-bold">Generate Report</h2>
-                        <p class="text-sm leading-relaxed text-gray-700">
-                            Generate a tailored report for your selected period using the available filters.
-                            <br><br>
-                            <strong>Instructions:</strong>
-                        <ul class="list-disc list-inside mt-2">
-                            <li>Choose a <span class="font-semibold">Mode</span> to determine how data is grouped
-                                (e.g., <em>Weekly</em> for short-term trends, <em>Yearly</em> for annual summaries).
-                            </li>
-                            <li>Select one or multiple <span class="font-semibold">Year(s)</span> to include in the
-                                report.</li>
-                            <li>Combine multiple modes and years to generate side-by-side comparisons for better
-                                analysis.</li>
-                        </ul>
-                        </p>
+    <div class="flex flex-col items-center justify-center min-h-screen bg-base-300 px-4">
+        <div class="card bg-base-100 shadow-2xl rounded-2xl w-full max-w-5xl overflow-hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <figure class="flex items-center justify-center bg-base-200 p-6">
+                    <img :src="reportImage" alt="report" class="object-contain w-full h-full max-h-96 rounded-xl" />
+                </figure>
+                <div class="card-body flex flex-col">
+                    <h2 class="text-2xl font-bold text-primary">Generate Report</h2>
+                    <p class="text-sm text-gray-500">Choose your preferred options to generate a detailed overtime
+                        tracking report.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button"
+                                class="flex gap-2 text-sm items-center hover:border-primary bg-base-300 py-2 px-4 rounded-md text-center">
+                                {{ selectedMode ? selectedMode : 'Select Mode:' }}
+                            </div>
+                            <ul tabindex="0"
+                                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 p-2 w-full shadow">
+                                <li v-for="mode in modes" :key=mode.value>
+                                    <label class="label">
+                                        <input type="radio" class="radio radio-primary rounded-md" :value="mode.value"
+                                            v-model="selectedMode" />
+                                        {{ mode.label }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button"
+                                class="flex gap-2 text-sm items-center hover:border-primary bg-base-300 py-2 px-4 rounded-md text-center">
+                                Select Year:
+                            </div>
+                            <ul tabindex="0"
+                                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 p-2 w-full shadow">
+                                <li v-for="year in years" :key=year.value>
+                                    <label class="label">
+                                        <input type="checkbox" class="checkbox checkbox-primary rounded-md"
+                                            :value="year.value" v-model="selectedYear" />
+                                        {{ year.label }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dropdown dropdown-end" :disabled="selectedMode === 'monthly' ? false : true">
+                            <div tabindex="0" role="button"
+                                class="flex gap-2 text-sm items-center hover:border-primary bg-base-300 py-2 px-4 rounded-md text-center">
+                                Select Month:
+                            </div>
+                            <ul tabindex="0"
+                                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 p-2 w-full shadow">
+                                <li v-for="month in months" :key=month.value>
+                                    <label class="label">
+                                        <input type="checkbox" class="checkbox checkbox-primary rounded-md"
+                                            :value="month.value" v-model="selectedMonth" />
+                                        {{ month.label }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dropdown dropdown-end" :disabled="selectedMode === 'weekly' ? false : true">
+                            <div tabindex="0" role="button"
+                                class="flex gap-2 text-sm items-center hover:border-primary bg-base-300 py-2 px-4 rounded-md text-center">
+                                Select Week:
+                            </div>
+                            <ul tabindex="0"
+                                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 p-2 w-full shadow">
+                                <li v-for="week in weeks" :key=week.value>
+                                    <label class="label">
+                                        <input type="checkbox" class="checkbox checkbox-primary rounded-md"
+                                            :value="week.value" v-model="selectedWeek" />
+                                        {{ week.label }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-wrap gap-4 justify-center p-4">
-                    <div class="filter">
-                        <input class="btn filter-reset" type="radio" name="metaframeworks" aria-label="All" />
-                        <input v-for="(mode, index) in modes" :key="index" class="btn" type="radio"
-                            name="metaframeworks" :aria-label="mode" :value="mode" />
+                    <div class="card-actions justify-end mt-6">
+                        <button class="btn btn-primary w-full md:w-auto">Generate</button>
+                        <button class="btn btn-neutral w-full md:w-auto" @click="handleClearState()">Clear</button>
                     </div>
-                </div>
-                <div class="card-actions justify-end p-4">
-                    <button class="btn btn-primary">Generate</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-
 <script setup>
-import { Icon } from "@iconify/vue"
+import { ref } from 'vue'
 import reportImage from '../../images/generate-report.svg'
+import SelectOption from '../Components/SelectOption.vue'
+import { years, weeks } from '../utils/dropdownOptions.js'
 
-const modes = ["Weekly", "Monthly", "Quarterly", "Yearly"]
+const selectedMode = ref(null)
+const selectedYear = ref([])
+const selectedMonth = ref('')
+const selectedWeek = ref('')
+
+const modes = ref([
+    { label: 'Select Mode:', value: null },
+    { label: 'Yearly', value: 'yearly' },
+    { label: 'Monthly', value: 'monthly' },
+    { label: 'Weekly', value: 'weekly' },
+])
+
+const months = ref([
+    { label: 'January', value: '01' },
+    { label: 'February', value: '02' },
+    { label: 'March', value: '03' },
+    { label: 'April', value: '04' },
+    { label: 'May', value: '05' },
+    { label: 'June', value: '06' },
+    { label: 'July', value: '07' },
+    { label: 'August', value: '08' },
+    { label: 'September', value: '09' },
+    { label: 'October', value: '10' },
+    { label: 'November', value: '11' },
+    { label: 'December', value: '12' }
+])
+
+
+const handleClearState = () => {
+    selectedMode.value = ''
+    selectedYear.value = ''
+    selectedMonth.value = ''
+    selectedWeek.value = ''
+}
 </script>

@@ -30,8 +30,7 @@
                             Manage ROA
                             </Link>
                         </li>
-                        <li
-                            v-if="$page?.props?.auth.user?.role === 'approver' && $page?.props?.auth.user?.email == 'approver.user@email.com'">
+                        <li v-if="$page?.props?.auth.user?.role === 'approver'">
                             <Link :href="route('approver.generate.report')" class="justify-between">
                             <Icon icon="mdi:report-box-multiple-outline" width="24" height="24" />
                             Generate Report
