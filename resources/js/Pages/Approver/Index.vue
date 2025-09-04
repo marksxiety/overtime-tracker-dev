@@ -174,6 +174,10 @@ function displayOvertimeWeeklyBarGraph(currTheme = theme.value) {
             trigger: 'axis',
             axisPointer: { type: 'shadow' }
         },
+        legend: {
+            top: 'bottom',
+            data: barData.value.map(s => s.name)
+        },
         xAxis: {
             type: 'category',
             data: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
