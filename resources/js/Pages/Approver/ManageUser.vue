@@ -31,19 +31,113 @@
             </div>
         </div>
 
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4">
-            <div v-for="user in users" :key="user.id" class="p-4 rounded-lg border">
-                <h2 class="font-semibold">{{ user.name }}</h2>
-                <p class="text-sm">{{ user.email }}</p>
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="user in users" :key="user.id" class="card bg-base-100 shadow-xl">
+                <!-- Avatar + Name -->
+                <div class="card-body">
+                    <div class="flex items-center gap-4">
+                        <!-- Avatar -->
+                        <div class="avatar">
+                            <div class="w-16 h-16 rounded-full overflow-hidden bg-base-200">
+                                <!-- If avatar URL exists, show the image -->
+                                <img v-if="user.avatar_url" :src="user.avatar_url" alt="Avatar"
+                                    class="w-full h-full object-cover" />
+
+                                <!-- If no avatar, wrap the icon in a flex container -->
+                                <div v-else-if="!user.avatar_url && user.name"
+                                    class="w-full h-full flex items-center justify-center">
+                                    <Icon icon="iconamoon:profile-circle-fill" class="w-10 h-10" />
+                                </div>
+
+                                <!-- If even name is missing, fallback -->
+                                <div v-else
+                                    class="w-full h-full flex items-center justify-center bg-neutral text-neutral-content">
+                                    <span class="text-xl font-bold">?</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Name + Email -->
+                        <div>
+                            <h2 class="card-title text-lg">{{ user.name }}</h2>
+                            <p class="text-sm">{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <!-- User Details -->
+                    <div class="mt-4 space-y-1 text-sm">
+                        <p><span class="font-medium">Employee ID:</span> {{ user.employeeid }}</p>
+                        <p><span class="font-medium">Role:</span> {{ user.role }}</p>
+                        <p>
+                            <span class="font-medium">Active:</span>
+                            <span :class="user.active ? 'text-success font-medium' : 'text-error font-medium'">
+                                {{ user.active ? 'Yes' : 'No' }}
+                            </span>
+                        </p>
+                        <p><span class="font-medium">Created:</span> {{ new Date(user.created_at).toLocaleDateString()
+                            }}</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div v-else class="flex flex-col gap-2">
-            <div v-for="user in users" :key="user.id" class="p-3 border rounded-md flex justify-between">
-                <span>{{ user.name }}</span>
-                <span class="text-sm text-gray-500">{{ user.email }}</span>
+        <div v-else class="flex flex-col gap-4">
+            <div v-for="user in users" :key="user.id" class="card bg-base-100 shadow-md">
+                <div class="card-body p-4">
+                    <!-- Accordion -->
+                    <div class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-lg">
+                        <input type="checkbox" />
+
+                        <!-- Summary -->
+                        <div class="collapse-title text-lg font-medium flex items-center gap-3">
+                            <!-- Avatar -->
+                            <div class="avatar">
+                                <div class="w-10 h-10 rounded-full overflow-hidden bg-base-200">
+                                    <!-- If avatar URL exists -->
+                                    <img v-if="user.avatar_url" :src="user.avatar_url" alt="Avatar"
+                                        class="w-full h-full object-cover" />
+
+                                    <!-- If no avatar, show profile icon -->
+                                    <div v-else-if="!user.avatar_url && user.name"
+                                        class="w-full h-full flex items-center justify-center">
+                                        <Icon icon="iconamoon:profile-circle-fill" class="w-6 h-6" />
+                                    </div>
+
+                                    <!-- Fallback if even name is missing -->
+                                    <div v-else
+                                        class="w-full h-full flex items-center justify-center bg-neutral text-neutral-content">
+                                        <span class="text-sm font-bold">?</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Name + Email -->
+                            <div class="flex flex-col">
+                                <span>{{ user.name }}</span>
+                                <span class="text-sm">{{ user.email }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="collapse-content text-sm space-y-1">
+                            <p><span class="font-medium">Employee ID:</span> {{ user.employeeid }}</p>
+                            <p><span class="font-medium">Role:</span> {{ user.role }}</p>
+                            <p>
+                                <span class="font-medium">Active:</span>
+                                <span :class="user.active ? 'text-success font-medium' : 'text-error font-medium'">
+                                    {{ user.active ? 'Yes' : 'No' }}
+                                </span>
+                            </p>
+                            <p><span class="font-medium">Created:</span> {{ new
+                                Date(user.created_at).toLocaleDateString() }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+
     </div>
 </template>
 
@@ -51,13 +145,14 @@
 import { Link } from '@inertiajs/vue3'
 import { Icon } from "@iconify/vue"
 import { ref } from "vue"
-
-// mock user data (replace with props or API call)
-const users = ref([
-    { id: 1, name: "Alice Johnson", email: "alice@example.com" },
-    { id: 2, name: "Bob Smith", email: "bob@example.com" },
-    { id: 3, name: "Charlie Brown", email: "charlie@example.com" },
-])
+const props = defineProps({
+    user: Object,
+    avatar_url: String,
+    errors: Object,
+    flash: Object,
+    auth: Object,
+    users: Object,
+})
 
 // default view mode
 const viewMode = ref("grid")
