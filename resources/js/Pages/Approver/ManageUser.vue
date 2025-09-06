@@ -70,18 +70,25 @@
                         <p><span class="font-medium">Employee ID:</span> {{ user.employeeid }}</p>
                         <p><span class="font-medium">Role:</span> {{ user.role }}</p>
                         <p>
-                            <span class="font-medium">Active:</span>
+                            <span class="font-medium">Active: </span>
                             <span :class="user.active ? 'text-success font-medium' : 'text-error font-medium'">
                                 {{ user.active ? 'Yes' : 'No' }}
                             </span>
                         </p>
                         <p><span class="font-medium">Created:</span> {{ new Date(user.created_at).toLocaleDateString()
-                            }}</p>
+                        }}</p>
+                    </div>
+                    <div class="flex justify-end flex-row w-full gap-2">
+                        <button type="submit" class="btn btn-xs btn-success btn-outline">
+                            <Icon icon="mdi:pencil" class="w-4 h-4 mr-1" /> EDIT
+                        </button>
+                        <button type="submit" class="btn btn-xs btn-error btn-outline">
+                            <Icon icon="mdi:trash-can" class="w-4 h-4 mr-1" /> DELETE
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
         <div v-else class="flex flex-col gap-4">
             <div v-for="user in users" :key="user.id" class="card bg-base-100 shadow-md">
                 <div class="card-body p-4">
@@ -94,17 +101,12 @@
                             <!-- Avatar -->
                             <div class="avatar">
                                 <div class="w-10 h-10 rounded-full overflow-hidden bg-base-200">
-                                    <!-- If avatar URL exists -->
                                     <img v-if="user.avatar_url" :src="user.avatar_url" alt="Avatar"
                                         class="w-full h-full object-cover" />
-
-                                    <!-- If no avatar, show profile icon -->
                                     <div v-else-if="!user.avatar_url && user.name"
                                         class="w-full h-full flex items-center justify-center">
                                         <Icon icon="iconamoon:profile-circle-fill" class="w-6 h-6" />
                                     </div>
-
-                                    <!-- Fallback if even name is missing -->
                                     <div v-else
                                         class="w-full h-full flex items-center justify-center bg-neutral text-neutral-content">
                                         <span class="text-sm font-bold">?</span>
@@ -115,12 +117,12 @@
                             <!-- Name + Email -->
                             <div class="flex flex-col">
                                 <span>{{ user.name }}</span>
-                                <span class="text-sm">{{ user.email }}</span>
+                                <span class="text-sm text-gray-500">{{ user.email }}</span>
                             </div>
                         </div>
 
                         <!-- Details -->
-                        <div class="collapse-content text-sm space-y-1">
+                        <div class="collapse-content text-sm space-y-2">
                             <p><span class="font-medium">Employee ID:</span> {{ user.employeeid }}</p>
                             <p><span class="font-medium">Role:</span> {{ user.role }}</p>
                             <p>
@@ -131,6 +133,16 @@
                             </p>
                             <p><span class="font-medium">Created:</span> {{ new
                                 Date(user.created_at).toLocaleDateString() }}</p>
+
+                            <!-- Actions -->
+                            <div class="flex justify-end gap-2 pt-3">
+                                <button type="button" class="btn btn-xs btn-outline btn-success">
+                                    <Icon icon="mdi:pencil" class="w-4 h-4 mr-1" /> Edit
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline btn-error">
+                                    <Icon icon="mdi:trash-can" class="w-4 h-4 mr-1" /> Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
