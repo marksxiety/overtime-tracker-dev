@@ -29,6 +29,10 @@ class OvertimeRequestController extends Controller
         $validator = Validator::make($request->all(), $rules);
         $errors = $validator->errors();
 
+        if ($errors->any()) {
+            return redirect()->back()->withErrors($errors)->withInput();
+        }
+
         // parse the submitted start and end hour of the user
         $submitted_start_time = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . trim($request->start_time));
         $submitted_end_time = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . trim($request->end_time));
@@ -40,11 +44,11 @@ class OvertimeRequestController extends Controller
         // if the schedule is not have a time format, it has a format in request like '--'
         $withTimeChecking = $isShiftStartTime || $isShiftEndTime;
 
-        // Parse shift times
-        $schedule_start_time = Carbon::createFromFormat('Y-m-d h:i A', $request->date . ' ' . trim($request->shift_start_time));
-        $schedule_end_time   = Carbon::createFromFormat('Y-m-d h:i A', $request->date . ' ' . trim($request->shift_end_time));
-
         if ($withTimeChecking) {
+
+            // Parse shift times
+            $schedule_start_time = Carbon::createFromFormat('Y-m-d h:i A', $request->date . ' ' . trim($request->shift_start_time));
+            $schedule_end_time   = Carbon::createFromFormat('Y-m-d h:i A', $request->date . ' ' . trim($request->shift_end_time));
 
             if ($schedule_end_time->lessThan($schedule_start_time)) {
                 // Night shift → shift schedule_end forward by 1 day
