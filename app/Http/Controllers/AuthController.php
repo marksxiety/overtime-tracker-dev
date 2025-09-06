@@ -128,10 +128,35 @@ class AuthController extends Controller
         return redirect()->back()->with('message', 'Profile has been updated successfully!');
     }
 
-    public function loadUserProfile() {
+    public function loadUserProfile()
+    {
         $user = Auth::user();
         return inertia('Profile', [
             'avatar_url' => $user->avatar ? Storage::url($user->avatar) : null,
         ]);
+    }
+
+
+
+    public function RegisteredUsers()
+    {
+        try {
+            $users = User::query()->orderBy('id', 'asc')->get()
+                ->map(function ($user) {
+                    $user->avatar_url = $user->avatar
+                        ? Storage::url($user->avatar)
+                        : null;
+                    return $user;
+                });
+
+            return inertia('Approver/ManageUser', [
+                'users' => $users
+            ]);
+        } catch (\Throwable $th) {
+            return inertia('Approver/ManageUser', [
+                'users' => [],
+                'errors' => 'Failed to load registered users'
+            ]);
+        }
     }
 }
