@@ -46,7 +46,6 @@ Route::middleware('employee')->group(function () {
     Route::get('/employee/profile', [AuthController::class, 'loadUserProfile'])->name('profile.employee');
 
     Route::post('/profile/update/employee', [AuthController::class, 'updateProfileInformation'])->name('profile.update.employee');
-
 });
 
 Route::middleware('approver')->group(function () {
@@ -75,6 +74,7 @@ Route::middleware('approver')->group(function () {
     Route::inertia('/generate/report', 'Approver/Report')->name('approver.generate.report');
 
     Route::get('/users/registered', [AuthController::class, 'RegisteredUsers'])->name('approver.manage.user');
+    Route::post('/users/update', [AuthController::class, 'updateUserInformation'])->name('approver.update.user');
 });
 
 Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');
