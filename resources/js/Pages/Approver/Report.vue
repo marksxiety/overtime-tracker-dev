@@ -14,7 +14,8 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <SelectOption name="Select Mode:" :options="modes" v-model="selectedMode" />
-                        <SelectOption name="Select Year:" :options="years" v-model="selectedYear" />
+                        <SelectOption name="Select Year:" :options="years" v-model="selectedYear"
+                            :disabled="selectedMode !== '' ? true : false" />
                         <SelectOption name="Select Month:" :options="months" v-model="selectedMonth" />
                         <SelectOption name="Select Week:" :options="weeks" v-model="selectedWeek" />
                     </div>
@@ -39,6 +40,7 @@ const selectedMonth = ref('')
 const selectedWeek = ref('')
 
 const modes = ref([
+    { label: '', value: '' },
     { label: 'Yearly', value: 'yearly' },
     { label: 'Monthly', value: 'monthly' },
     { label: 'Weekly', value: 'weekly' },
