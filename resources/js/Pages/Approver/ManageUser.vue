@@ -1,4 +1,53 @@
 <template>
+    <Modal ref="displayUserModal">
+        <h3 class="text-lg font-bold mb-4">Update User Profile</h3>
+
+        <form @submit.prevent="updateUserProfile()">
+            <!-- Name -->
+            <div class="form-control mb-3">
+                <label class="label font-medium">Name</label>
+                <input v-model="selectedUser.name" type="text" class="input input-bordered w-full" required />
+            </div>
+
+            <!-- Email -->
+            <div class="form-control mb-3">
+                <label class="label font-medium">Email</label>
+                <input v-model="selectedUser.email" type="email" class="input input-bordered w-full" required />
+            </div>
+
+            <!-- Active -->
+            <div class="form-control mb-3">
+                <label class="label font-medium">Active</label>
+                <select v-model="selectedUser.active" class="select select-bordered w-full">
+                    <option :value="1">Yes</option>
+                    <option :value="0">No</option>
+                </select>
+            </div>
+
+            <!-- Password update section (optional) -->
+            <div class="divider">Change Password</div>
+            <div class="form-control mb-3">
+                <label class="label font-medium">Old Password</label>
+                <input v-model="selectedUser.old_password" type="password" class="input input-bordered w-full" />
+            </div>
+            <div class="form-control mb-3">
+                <label class="label font-medium">New Password</label>
+                <input v-model="selectedUser.new_password" type="password" class="input input-bordered w-full" />
+            </div>
+            <div class="form-control mb-3">
+                <label class="label font-medium">Confirm New Password</label>
+                <input v-model="selectedUser.new_password_confirmation" type="password"
+                    class="input input-bordered w-full" />
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" class="btn btn-outline" @click="closeUserModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </Modal>
+
     <div class="flex flex-col gap-6 h-full pb-12">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">
@@ -79,7 +128,8 @@
                         }}</p>
                     </div>
                     <div class="flex justify-end flex-row w-full gap-2">
-                        <button type="submit" class="btn btn-xs btn-success btn-outline">
+                        <button type="submit" class="btn btn-xs btn-success btn-outline"
+                            @click="handleSelectedUser(user)">
                             <Icon icon="mdi:pencil" class="w-4 h-4 mr-1" /> EDIT
                         </button>
                         <button type="submit" class="btn btn-xs btn-error btn-outline">
@@ -152,11 +202,14 @@
 
     </div>
 </template>
-
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import { Icon } from "@iconify/vue"
 import { ref } from "vue"
+import Modal from '../Components/Modal.vue'
+
+const displayUserModal = ref(null)
+
 const props = defineProps({
     user: Object,
     avatar_url: String,
@@ -165,6 +218,44 @@ const props = defineProps({
     auth: Object,
     users: Object,
 })
+
+const selectedUser = useForm({
+    id: null,
+    active: null,
+    email: null,
+    name: null,
+    employeeid: null,
+    role: null,
+    old_password: null,
+    new_password: null,
+    new_password_confirmation: null,
+})
+
+const handleSelectedUser = (data) => {
+    selectedUser.id = data.id
+    selectedUser.active = data.active
+    selectedUser.email = data.email
+    selectedUser.name = data.name
+    selectedUser.employeeid = data.employeeid
+    selectedUser.role = data.role
+
+    displayUserModal.value?.open()
+}
+
+const closeUserModal = () => {
+    displayUserModal.value?.close()
+    selectedUser.reset()
+}
+
+const updateUserProfile = () => {
+    selectedUser.post(route('approver.update.user'), {
+        preserveState: true,
+        onSuccess: () => {
+            closeUserModal()
+            selectedUser.reset()
+        }
+    })
+}
 
 // default view mode
 const viewMode = ref("grid")
