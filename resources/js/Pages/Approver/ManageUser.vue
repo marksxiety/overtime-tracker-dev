@@ -4,46 +4,34 @@
 
         <form @submit.prevent="updateUserProfile()">
             <!-- Name -->
-            <div class="form-control mb-3">
-                <label class="label font-medium">Name</label>
-                <input v-model="selectedUser.name" type="text" class="input input-bordered w-full" required />
-            </div>
+            <TextInput name="Name:" type="text" :message="selectedUser.errors.name" v-model="selectedUser.name"
+                placeholder="" />
 
             <!-- Email -->
-            <div class="form-control mb-3">
-                <label class="label font-medium">Email</label>
-                <input v-model="selectedUser.email" type="email" class="input input-bordered w-full" required />
-            </div>
+            <TextInput name="Email:" type="email" :message="selectedUser.errors.email" v-model="selectedUser.email"
+                placeholder="" />
 
             <!-- Active -->
-            <div class="form-control mb-3">
-                <label class="label font-medium">Active</label>
-                <select v-model="selectedUser.active" class="select select-bordered w-full">
-                    <option :value="1">Yes</option>
-                    <option :value="0">No</option>
-                </select>
-            </div>
+            <SelectOption name="Active: " :options="[
+                { label: 'YES', value: 1 },
+                { label: 'NO', value: 0 }
+            ]" v-model="selectedUser.active" margin="" minwidth="" />
 
             <!-- Password update section (optional) -->
             <div class="divider">Change Password</div>
-            <div class="form-control mb-3">
-                <label class="label font-medium">Old Password</label>
-                <input v-model="selectedUser.old_password" type="password" class="input input-bordered w-full" />
-            </div>
-            <div class="form-control mb-3">
-                <label class="label font-medium">New Password</label>
-                <input v-model="selectedUser.new_password" type="password" class="input input-bordered w-full" />
-            </div>
-            <div class="form-control mb-3">
-                <label class="label font-medium">Confirm New Password</label>
-                <input v-model="selectedUser.new_password_confirmation" type="password"
-                    class="input input-bordered w-full" />
-            </div>
+            <TextInput name="Old Password:" type="password" :message="selectedUser.errors.old_password"
+                v-model="selectedUser.old_password" placeholder="" />
+            <TextInput name="New Password" type="password" v-model="selectedUser.new_password"
+                :message="selectedUser.errors.new_password" placeholder="" />
+            <TextInput name="Confrim New Password" type="password" v-model="selectedUser.new_password_confirmation"
+                :message="selectedUser.errors.new_password_confirmation" placeholder="" />
 
             <!-- Buttons -->
             <div class="flex justify-end gap-2 mt-4">
-                <button type="button" class="btn btn-outline" @click="closeUserModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-outline" :disabled="selectedUser.processing"
+                    @click="closeUserModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" :disabled="selectedUser.processing"><span
+                        v-if="selectedUser.processing" class="loading loading-spinner loading-xs"></span>Update</button>
             </div>
         </form>
     </Modal>
@@ -186,7 +174,8 @@
 
                             <!-- Actions -->
                             <div class="flex justify-end gap-2 pt-3">
-                                <button type="button" class="btn btn-xs btn-outline btn-success">
+                                <button type="button" class="btn btn-xs btn-outline btn-success"
+                                    @click="handleSelectedUser(user)">
                                     <Icon icon="mdi:pencil" class="w-4 h-4 mr-1" /> Edit
                                 </button>
                                 <button type="button" class="btn btn-xs btn-outline btn-error">
@@ -205,10 +194,13 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3'
 import { Icon } from "@iconify/vue"
-import { ref } from "vue"
+import { ref, inject } from "vue"
 import Modal from '../Components/Modal.vue'
+import TextInput from '../Components/TextInput.vue'
+import SelectOption from '../Components/SelectOption.vue'
 
 const displayUserModal = ref(null)
+const toast = inject('toast')
 
 const props = defineProps({
     user: Object,
@@ -253,6 +245,9 @@ const updateUserProfile = () => {
         onSuccess: () => {
             closeUserModal()
             selectedUser.reset()
+            toast('Profile updated successfull', 'success')
+        }, onError: () => {
+            toast('Updating profile failed. Please try again', 'error')
         }
     })
 }
