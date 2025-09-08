@@ -1,8 +1,7 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-base-300 px-4">
-        <div class="card bg-base-100 shadow-2xl rounded-2xl w-full max-w-5xl overflow-hidden">
+        <div class="card bg-base-100 shadow-2xl rounded-2xl w-full max-w-5xl overflow-visible">
             <div class="grid md:grid-cols-2 gap-6">
-
                 <figure class="flex items-center justify-center bg-base-200 p-6">
                     <img :src="reportImage" alt="report" class="object-contain w-full h-full max-h-96 rounded-xl" />
                 </figure>
@@ -19,9 +18,9 @@
                         <SelectOption name="Select Month:" :options="months" v-model="selectedMonth" />
                         <SelectOption name="Select Week:" :options="weeks" v-model="selectedWeek" />
                     </div>
-
                     <div class="card-actions justify-end mt-6">
                         <button class="btn btn-primary w-full md:w-auto">Generate</button>
+                        <button class="btn btn-neutral w-full md:w-auto" @click="handleClearState()">Clear</button>
                     </div>
                 </div>
             </div>
@@ -33,23 +32,17 @@
 import { ref } from 'vue'
 import reportImage from '../../images/generate-report.svg'
 import SelectOption from '../Components/SelectOption.vue'
+import { years, weeks } from '../utils/dropdownOptions.js'
 
-const selectedMode = ref('')
-const selectedYear = ref('')
-const selectedMonth = ref('')
-const selectedWeek = ref('')
+const selectedMode = ref(null)
+const selectedYear = ref([])
+const selectedMonth = ref([])
+const selectedWeek = ref([])
 
 const modes = ref([
-    { label: '', value: '' },
     { label: 'Yearly', value: 'yearly' },
     { label: 'Monthly', value: 'monthly' },
     { label: 'Weekly', value: 'weekly' },
-])
-
-const years = ref([
-    { label: '2023', value: '2023' },
-    { label: '2024', value: '2024' },
-    { label: '2025', value: '2025' },
 ])
 
 const months = ref([
@@ -57,12 +50,21 @@ const months = ref([
     { label: 'February', value: '02' },
     { label: 'March', value: '03' },
     { label: 'April', value: '04' },
+    { label: 'May', value: '05' },
+    { label: 'June', value: '06' },
+    { label: 'July', value: '07' },
+    { label: 'August', value: '08' },
+    { label: 'September', value: '09' },
+    { label: 'October', value: '10' },
+    { label: 'November', value: '11' },
+    { label: 'December', value: '12' }
 ])
 
-const weeks = ref([
-    { label: 'Week 1', value: '1' },
-    { label: 'Week 2', value: '2' },
-    { label: 'Week 3', value: '3' },
-    { label: 'Week 4', value: '4' },
-])
+
+const handleClearState = () => {
+    selectedMode.value = ''
+    selectedYear.value = ''
+    selectedMonth.value = ''
+    selectedWeek.value = ''
+}
 </script>

@@ -73,6 +73,8 @@ Route::middleware('approver')->group(function () {
     Route::post('/schedule/employee/submit', [ScheduleController::class, 'submitEmployeeSchedules']);
 
     Route::inertia('/generate/report', 'Approver/Report')->name('approver.generate.report');
+
+    Route::get('/users/registered', [AuthController::class, 'RegisteredUsers'])->name('approver.manage.user');
 });
 
 Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');

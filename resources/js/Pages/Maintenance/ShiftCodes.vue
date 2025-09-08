@@ -35,7 +35,7 @@
                 <!-- Form Panel -->
                 <div class="col-span-2">
                     <div
-                        class="bg-base-100 p-8 rounded-2xl shadow-lg h-full flex flex-col justify-center border border-base-200">
+                        class="bg-base-100 p-8 rounded-md shadow-lg h-full flex flex-col justify-center border border-base-200">
                         <!-- Title -->
                         <h2 class="text-xl font-bold mb-6 text-center text-primary uppercase tracking-wide">
                             shift Code Registration
@@ -68,7 +68,7 @@
 
                 <!-- Table Section -->
                 <div class="col-span-3">
-                    <div class="bg-base-100 rounded-2xl p-6 shadow-lg border border-base-200">
+                    <div class="bg-base-100 rounded-md p-6 shadow-lg border border-base-200">
                         <!-- scrolling wrapper -->
                         <div class="max-h-[50vh] overflow-auto">
                             <table class="table w-full text-sm">

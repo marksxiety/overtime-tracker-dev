@@ -19,19 +19,34 @@ function formatHolidayDate(date) {
 let url = `https://date.nager.at/api/v3/publicholidays/${currentYear}/PH`;
 
 export default async function fetchUpcomingHolidays() {
-    let res = await axios.get(url);
-    let response = res.data;
     let upcoming_holidays = [];
+    try {
+        let res = await axios.get(url);
+        let response = res.data;
 
-    if (Array.isArray(response) && response.length > 0) {
-        upcoming_holidays = response
-            .filter((holiday) => holiday.date >= currentDate)
-            .map((holiday) => ({
-                date: formatHolidayDate(holiday.date),
-                localName: holiday.localName,
-                name: holiday.name,
-            }));
+        if (Array.isArray(response) && response.length > 0) {
+            upcoming_holidays = response
+                .filter((holiday) => holiday.date >= currentDate)
+                .map((holiday) => ({
+                    date: formatHolidayDate(holiday.date),
+                    localName: holiday.localName,
+                    name: holiday.name,
+                }));
+        }
+
+        return {
+            success: true,
+            upcoming_holidays: upcoming_holidays,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            upcoming_holidays: upcoming_holidays,
+        };
+    } finally {
+        return {
+            success: false,
+            upcoming_holidays: upcoming_holidays,
+        };
     }
-
-    return upcoming_holidays;
 }

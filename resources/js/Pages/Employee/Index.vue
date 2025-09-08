@@ -9,7 +9,7 @@
                             <span class="loading loading-spinner"></span> Loading Schedule...
                         </div>
                         <div v-else>
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
                                 <legend class="fieldset-legend">Requested Overtime Date</legend>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-1">
@@ -23,7 +23,7 @@
                                 </div>
                             </fieldset>
 
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
                                 <legend class="fieldset-legend">Your Scheduled Shift</legend>
                                 <div class="grid grid-cols-5 gap-4">
                                     <div class="col-span-1">
@@ -42,7 +42,7 @@
                             </fieldset>
 
 
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
                                 <legend class="fieldset-legend">Overtime Duration and Reason</legend>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-1">
@@ -255,7 +255,7 @@
                                 Loading Upcoming Holidays...</p>
                         </li>
                         <li v-else-if="!loadingHolidays && holidays.length > 0" v-for="(h, idx) in holidays" :key="idx"
-                            class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
+                            class="card w-full shadow-md border border-base-200 rounded-md p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                             <div class="flex flex-row justify-between gap-8">
                                 <!-- <p class="text-sm opacity-70">{{ h.date }}</p> -->
                                 <div class="w-2/4">
@@ -267,6 +267,9 @@
                                     <div class="badge badge-primary h-auto">{{ h.date }}</div>
                                 </div>
                             </div>
+                        </li>
+                        <li v-else-if="holidayMessage.length > 0">
+                            <p class="font-light italic text-center mt-5">{{ holidayMessage }}</p>
                         </li>
                         <li v-else="holidays.length === 0">
                             <p class="font-light italic text-center mt-5">No Upcoming Holidays...</p>
@@ -283,7 +286,7 @@
                         </li>
                         <li v-for="request in recentRequests" :key="request.id"
                             @click="showOvertimeRequestModal(request)"
-                            class="card w-full shadow-md border border-base-200 rounded-box p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
+                            class="card w-full shadow-md border border-base-200 rounded-md p-4 hover:shadow-md hover:border-primary duration-300 cursor-pointer">
                             <div class="flex items-center justify-between">
                                 <div class="flex flex-col gap-1">
                                     <p class="text-sm opacity-70">{{ request.date }}</p>
@@ -337,6 +340,7 @@ const confirmingCancel = ref(false)
 const greetingMessage = ref('')
 const loadingHolidays = ref(false)
 const timeOptions = computed(() => getTimeOptions())
+const holidayMessage = ref('')
 
 // ========= Props =============
 const props = defineProps({
@@ -425,11 +429,15 @@ onMounted(async () => {
     }
 
     loadingHolidays.value = true
-    let holidayResponse = await fetchUpcomingHolidays()
-    if (holidayResponse.length > 0) {
-        holidays.value = holidayResponse
-    }
+    let response = await fetchUpcomingHolidays()
 
+    if (response.success) {
+        if (response.holidayResponse.length > 0) {
+            holidays.value = response.holidayResponse
+        }
+    } else {
+        holidayMessage.value = 'Failed to load Upcomint Holidays.'
+    }
     loadingHolidays.value = false
 })
 
