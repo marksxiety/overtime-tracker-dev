@@ -50,7 +50,7 @@
                                             v-model="formFiling.start_time" :options="timeOptions" />
                                     </div>
                                     <div class="col-span-1">
-                                        <SelectOption name="Start Time:" :message="formFiling.errors?.end_time"
+                                        <SelectOption name="End Time:" :message="formFiling.errors?.end_time"
                                             v-model="formFiling.end_time" :options="timeOptions" />
                                     </div>
                                 </div>
@@ -432,12 +432,15 @@ onMounted(async () => {
     let response = await fetchUpcomingHolidays()
 
     if (response.success) {
-        if (response.holidayResponse.length > 0) {
-            holidays.value = response.holidayResponse
+        if (response.holidays.length > 0) {
+        holidays.value = response.holidays
+        } else {
+        holidayMessage.value = 'No upcoming holidays found.'
         }
     } else {
-        holidayMessage.value = 'Failed to load Upcomint Holidays.'
+        holidayMessage.value = 'Failed to load Upcoming Holidays.'
     }
+
     loadingHolidays.value = false
 })
 
