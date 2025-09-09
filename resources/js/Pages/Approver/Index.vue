@@ -218,7 +218,7 @@ function displayOvertimeRequestStatus(currTheme = theme.value) {
     let option = {
         backgroundColor: bgColor,
         title: {
-            text: 'Overtime Requests',
+            text: 'Requests Status',
             left: 'center'
         },
         tooltip: {
