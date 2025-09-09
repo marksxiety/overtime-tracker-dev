@@ -140,7 +140,7 @@ async function loadScheduleData() {
         // so it can be used directly in <SelectOption>
         const shiftData = shiftsResponse?.data?.data ?? []
         shifts.value = shiftData.map(element => ({
-            label: (element.start_time && element.end_time) ? `${element.code}: ${element.start_time} - ${element.end_time}` : `${element.code === 'SY' ? 'NO WORK SCHEDULE' : 'RESTDAY'}`,
+            label: (element.start_time && element.end_time) ? `${element.code}: ${element.start_time} - ${element.end_time}` : `${element.code === 'SY' ? 'NO WORK SCHEDULE' : 'RESTDAY/HOLIDAY'}`,
             value: element.id
         }))
 
@@ -156,7 +156,7 @@ async function loadScheduleData() {
 
 
 const handleDefaultShiftFill = (event, schedule) => {
-    let default_shiftcodes = ['RESTDAY', 'S7', 'S7', 'S7', 'S7', 'C9', 'NO WORK SCHEDULE']
+    let default_shiftcodes = ['RESTDAY/HOLIDAY', 'S7', 'S7', 'S7', 'S7', 'C9', 'NO WORK SCHEDULE']
     if (event.target.checked) {
         let default_shiftcodes_id = default_shiftcodes.map(code => {
             let match = shifts.value.find(shift => (shift.label).includes(code))
