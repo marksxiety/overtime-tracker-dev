@@ -198,8 +198,8 @@
           <table class="table table-zebra w-full">
             <thead class="sticky top-0 bg-base-300 z-10 rounded">
               <tr>
-                <th>Employee</th>
                 <th>Employee ID</th>
+                <th>Employee</th>
                 <th>Date</th>
                 <th>Week</th>
                 <th>Hours</th>
@@ -213,8 +213,8 @@
                 </td>
               </tr>
               <tr v-for="request in requests" :key="request.id">
-                <td>{{ request.user.name }}</td>
                 <td>{{ request.user.employee_id }}</td>
+                <td>{{ request.user.name }}</td>
                 <td>{{ request.schedule.date }}</td>
                 <td>{{ request.schedule.week }}</td>
                 <td>{{ request.overtime.hours }}</td>
