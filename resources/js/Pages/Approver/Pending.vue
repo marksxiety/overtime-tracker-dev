@@ -202,10 +202,8 @@
                 <div class="flex justify-between mb-4">
                     <h2 class="card-title">Approved Requests Awaiting Filing</h2>
                     <div class="flex flex-row flex-end gap-4 w-1/4">
-                        <SelectOption :options="weeks" v-model="selectedWeek" margin=''
-                            @change="handleWeekSelection()" />
-                        <SelectOption :options="years" v-model="selectedYear" margin=''
-                            @change="handleWeekSelection()" />
+                        <SelectOption :options="years" v-model="selectedYear" margin='' @change="handleWeekSelection()" />
+                        <SelectOption :options="weeks" v-model="selectedWeek" margin='' @change="handleWeekSelection()" />
                     </div>
                 </div>
 
