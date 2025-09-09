@@ -46,7 +46,7 @@
         </div>
     </Modal>
 
-    <div class="flex flex-col gap-6 h-full pb-12">
+    <div class="flex flex-col gap-6 h-screen pb-12">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">
             <ul>
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-auto">
             <div v-for="user in users" :key="user.id" class="card bg-base-100 shadow-xl">
                 <!-- Avatar + Name -->
                 <div class="card-body">
@@ -134,7 +134,7 @@
                 </div>
             </div>
         </div>
-        <div v-else class="flex flex-col gap-4">
+        <div v-else class="flex flex-col gap-4 overflow-auto">
             <div v-for="user in users" :key="user.id" class="card bg-base-100 shadow-md">
                 <div class="card-body p-4">
                     <!-- Accordion -->
