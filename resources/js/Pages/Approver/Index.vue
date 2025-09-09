@@ -7,11 +7,13 @@
             <Card title="For Filing" :value="card.total_approved" routename="overtime.filing"
                 :parameters="{ status: 'APPROVED', page: 'Approver/Filing', week: selectedWeek, year: selectedYear }" />
             <Card title="Pending Approvals" :value="card.total_pending" routename="overtime.pending"
-                :parameters="{ status: 'PENDING', page: 'Approver/Pending', week: selectedWeek, year: selectedYear }" />
+                :parameters="{ status: 'PENDING', page: 'Approver/Pending', week: selectedWeek, year: selectedYear }"
+                :description="card.total_pending > 0 ? 'For approval waiting' : ''" />
             <Card title="Total Requests" :value="card.total_requests" />
             <Card title="ROA Hours Left" :value="((card.required_hours - card.total_hours) % 1 === 0
                 ? (card.required_hours - card.total_hours).toFixed(0)
-                : (card.required_hours - card.total_hours).toFixed(2)) + ' hrs'" />
+                : (card.required_hours - card.total_hours).toFixed(2)) + ' hr(s)'"
+                :description="(card.required_hours - card.total_hours) <= 0 ? 'No ROA hours left' : (card.required_hours - card.total_hours) <= 10 ? 'Only 10 hrs left' : ''" />
         </div>
 
         <!-- Weekly Overview -->
@@ -176,7 +178,7 @@ function displayOvertimeWeeklyBarGraph(currTheme = theme.value) {
         },
         legend: {
             top: 'bottom',
-            data: barData.value.map(s => s.name)
+            data: barData.value.filter(s => s.name !== 'Total').map(s => s.name)
         },
         xAxis: {
             type: 'category',
