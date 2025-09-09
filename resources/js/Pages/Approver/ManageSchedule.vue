@@ -70,12 +70,14 @@
         </div>
 
         <div v-if="isLoading" class="flex w-full items-center justify-center rounded-md bg-base-100 py-4">
-            <span class="loading loading-spinner mr-2"></span> 
+            <span class="loading loading-spinner mr-2"></span>
             Loading current schedule...
         </div>
 
         <div v-else v-for="(sched, index) in employeeSchedules" :key="index"
-            class="overflow-x-auto bg-base-100 p-6 rounded-lg shadow-sm">
+            class="bg-base-100 p-6 rounded-lg shadow-sm">
+
+            <!-- Top Section (fixed, does not scroll) -->
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h2
                     class="text-xl font-semibold tracking-tight leading-tight text-base-content flex items-center gap-2">
@@ -94,43 +96,48 @@
                 </div>
             </div>
 
-            <table class="table w-full h-auto">
-                <thead>
-                    <tr class="text-center">
-                        <th>Employee</th>
-                        <th>Default Shift</th>
-                        <th>Sunday</th>
-                        <th>Monday</th>
-                        <th>Tuesday</th>
-                        <th>Wednesday</th>
-                        <th>Thursday</th>
-                        <th>Friday</th>
-                        <th>Saturday</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(sch, index_sched) in sched.week_schedule" :key="index_sched">
-                        <td class="text-center">{{ sch.name }}</td>
-                        <td class="text-center">
-                            <div class="flex justify-center">
-                                <label class="label">
-                                    <input type="checkbox" :checked="isDefaultShift(sch.schedule)" class="checkbox checkbox-primary" @change="handleDefaultShiftFill($event, index , index_sched)"
-                                        />
-                                </label>
-                            </div>
-                        </td>
-                        <td v-for="day in sch.schedule" :key="day.date">
-                        <div class="w-full flex justify-center items-center">
-                            <span class="loading loading-spinner" v-if="isLoading"></span>
-                            <span v-else class="w-full">
-                                <SelectOption :options="shifts" v-model="day.shift_id" margin="" />
-                            </span>
-                        </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Scrollable Table -->
+            <div class="max-h-80 overflow-y-auto overflow-x-auto">
+                <table class="table w-full h-auto">
+                    <thead class="sticky top-0 bg-base-200 z-10">
+                        <tr class="text-center">
+                            <th>Employee</th>
+                            <th>Default Shift</th>
+                            <th>Sunday</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(sch, index_sched) in sched.week_schedule" :key="index_sched">
+                            <td class="text-center">{{ sch.name }}</td>
+                            <td class="text-center">
+                                <div class="flex justify-center">
+                                    <label class="label">
+                                        <input type="checkbox" :checked="isDefaultShift(sch.schedule)"
+                                            class="checkbox checkbox-primary"
+                                            @change="handleDefaultShiftFill($event, index, index_sched)" />
+                                    </label>
+                                </div>
+                            </td>
+                            <td v-for="day in sch.schedule" :key="day.date">
+                                <div class="w-full flex justify-center items-center">
+                                    <span class="loading loading-spinner" v-if="isLoading"></span>
+                                    <span v-else class="w-full">
+                                        <SelectOption :options="shifts" v-model="day.shift_id" margin="" />
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
 </template>
 <script setup>
