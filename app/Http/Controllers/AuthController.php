@@ -159,4 +159,52 @@ class AuthController extends Controller
             ]);
         }
     }
+
+
+    public function updateUserInformation(Request $request)
+    {
+        $user = User::find($request->id);
+
+        if (!$user) {
+            return back()->withErrors(['message' => 'User is not registered.']);
+        }
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ];
+
+        if (
+            $request->filled('old_password') ||
+            $request->filled('new_password') ||
+            $request->filled('new_password_confirmation')
+        ) {
+            $rules['old_password'] = 'required|string|min:8';
+            $rules['new_password'] = 'required|string|min:8|confirmed';
+        }
+
+        $request->validate($rules);
+
+        // Check if old password matches
+        if ($request->old_password && !Hash::check($request->old_password, $user->password)) {
+            return back()->withErrors(['old_password' => 'Old password is incorrect.']);
+        }
+
+        // Check if new password is different from old password
+        if ($request->old_password === $request->new_password && $request->new_password) {
+            return back()->withErrors(['new_password' => 'New password must be different from the old password.']);
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->active = $request->active;
+
+        // Only update password if a new one is provided
+        if ($request->filled('new_password')) {
+            $user->password = bcrypt($request->new_password);
+        }
+
+        $user->update();
+        return redirect()->back()->with('message', 'User Profile has been updated successfully!');
+    }
 }

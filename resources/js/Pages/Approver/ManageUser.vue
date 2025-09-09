@@ -1,4 +1,41 @@
 <template>
+    <Modal ref="displayUserModal">
+        <h3 class="text-lg font-bold mb-4">Update User Profile</h3>
+
+        <form @submit.prevent="updateUserProfile()">
+            <!-- Name -->
+            <TextInput name="Name:" type="text" :message="selectedUser.errors.name" v-model="selectedUser.name"
+                placeholder="" />
+
+            <!-- Email -->
+            <TextInput name="Email:" type="email" :message="selectedUser.errors.email" v-model="selectedUser.email"
+                placeholder="" />
+
+            <!-- Active -->
+            <SelectOption name="Active: " :options="[
+                { label: 'YES', value: 1 },
+                { label: 'NO', value: 0 }
+            ]" v-model="selectedUser.active" margin="" minwidth="" />
+
+            <!-- Password update section (optional) -->
+            <div class="divider">Change Password</div>
+            <TextInput name="Old Password:" type="password" :message="selectedUser.errors.old_password"
+                v-model="selectedUser.old_password" placeholder="" />
+            <TextInput name="New Password" type="password" v-model="selectedUser.new_password"
+                :message="selectedUser.errors.new_password" placeholder="" />
+            <TextInput name="Confrim New Password" type="password" v-model="selectedUser.new_password_confirmation"
+                :message="selectedUser.errors.new_password_confirmation" placeholder="" />
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" class="btn btn-outline" :disabled="selectedUser.processing"
+                    @click="closeUserModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" :disabled="selectedUser.processing"><span
+                        v-if="selectedUser.processing" class="loading loading-spinner loading-xs"></span>Update</button>
+            </div>
+        </form>
+    </Modal>
+
     <div class="flex flex-col gap-6 h-full pb-12">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">
@@ -79,7 +116,8 @@
                         }}</p>
                     </div>
                     <div class="flex justify-end flex-row w-full gap-2">
-                        <button type="submit" class="btn btn-xs btn-success btn-outline">
+                        <button type="submit" class="btn btn-xs btn-success btn-outline"
+                            @click="handleSelectedUser(user)">
                             <Icon icon="mdi:pencil" class="w-4 h-4 mr-1" /> EDIT
                         </button>
                         <button type="submit" class="btn btn-xs btn-error btn-outline">
@@ -136,7 +174,8 @@
 
                             <!-- Actions -->
                             <div class="flex justify-end gap-2 pt-3">
-                                <button type="button" class="btn btn-xs btn-outline btn-success">
+                                <button type="button" class="btn btn-xs btn-outline btn-success"
+                                    @click="handleSelectedUser(user)">
                                     <Icon icon="mdi:pencil" class="w-4 h-4 mr-1" /> Edit
                                 </button>
                                 <button type="button" class="btn btn-xs btn-outline btn-error">
@@ -152,11 +191,17 @@
 
     </div>
 </template>
-
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import { Icon } from "@iconify/vue"
-import { ref } from "vue"
+import { ref, inject } from "vue"
+import Modal from '../Components/Modal.vue'
+import TextInput from '../Components/TextInput.vue'
+import SelectOption from '../Components/SelectOption.vue'
+
+const displayUserModal = ref(null)
+const toast = inject('toast')
+
 const props = defineProps({
     user: Object,
     avatar_url: String,
@@ -165,6 +210,47 @@ const props = defineProps({
     auth: Object,
     users: Object,
 })
+
+const selectedUser = useForm({
+    id: null,
+    active: null,
+    email: null,
+    name: null,
+    employeeid: null,
+    role: null,
+    old_password: null,
+    new_password: null,
+    new_password_confirmation: null,
+})
+
+const handleSelectedUser = (data) => {
+    selectedUser.id = data.id
+    selectedUser.active = data.active
+    selectedUser.email = data.email
+    selectedUser.name = data.name
+    selectedUser.employeeid = data.employeeid
+    selectedUser.role = data.role
+
+    displayUserModal.value?.open()
+}
+
+const closeUserModal = () => {
+    displayUserModal.value?.close()
+    selectedUser.reset()
+}
+
+const updateUserProfile = () => {
+    selectedUser.post(route('approver.update.user'), {
+        preserveState: true,
+        onSuccess: () => {
+            closeUserModal()
+            selectedUser.reset()
+            toast('Profile updated successfull', 'success')
+        }, onError: () => {
+            toast('Updating profile failed. Please try again', 'error')
+        }
+    })
+}
 
 // default view mode
 const viewMode = ref("grid")
