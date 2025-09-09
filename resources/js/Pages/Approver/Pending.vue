@@ -375,7 +375,7 @@ const closeManageRequestModal = () => {
 // === Requests ===
 
 const updateOvertiemRequestStatus = (status) => {
-    if (roa_hours.value === 0) {
+    if (roa_hours.value === 0 && status === 'APPROVED') {
         toast('No registered ROA yet.', 'error')
         return
     }
