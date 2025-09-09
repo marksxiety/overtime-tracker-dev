@@ -69,8 +69,9 @@
 
         </div>
 
-        <div v-if="isLoading" class="flex w-full bg-base-100">
-            <div class="skeleton h-96 w-full"></div>
+        <div v-if="isLoading" class="flex w-full items-center justify-center rounded-md bg-base-100 py-4">
+            <span class="loading loading-spinner mr-2"></span> 
+            Loading current schedule...
         </div>
 
         <div v-else v-for="(sched, index) in employeeSchedules" :key="index"
