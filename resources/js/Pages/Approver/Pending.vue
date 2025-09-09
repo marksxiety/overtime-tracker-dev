@@ -220,7 +220,7 @@
                         </thead>
                         <tbody>
                             <tr v-if="requests.length === 0">
-                                <td colspan="5" class="text-center h-48 italic text-gray-400 py-4">
+                                <td colspan="6" class="text-center h-48 italic text-gray-400 py-4">
                                     No pending request(s)
                                 </td>
                             </tr>
@@ -372,6 +372,11 @@ const closeManageRequestModal = () => {
 // === Requests ===
 
 const updateOvertiemRequestStatus = (status) => {
+    if (roa_hours.value === 0) {
+        toast('No registered ROA yet.', 'error')
+        return
+    }
+
     if (status && overtimeRequestForm.id) {
         overtimeRequestForm.update_status = status
         overtimeRequestForm.post(route('overtime.update.approver'), {

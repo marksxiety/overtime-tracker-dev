@@ -205,7 +205,7 @@
             </thead>
             <tbody>
               <tr v-if="requests.length === 0">
-                <td colspan="5" class="text-center h-48 italic text-gray-400 py-4">
+                <td colspan="6" class="text-center h-48 italic text-gray-400 py-4">
                   No Awaiting Filing(s)
                 </td>
               </tr>
