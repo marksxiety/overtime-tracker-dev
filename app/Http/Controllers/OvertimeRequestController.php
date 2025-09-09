@@ -498,7 +498,7 @@ class OvertimeRequestController extends Controller
                     'overtime_requests.reason',
                     'overtime_requests.remarks',
                     'overtime_requests.created_at'
-                )->where('status', $status)->whereYear('schedules.date', $year)->where('schedules.week', $week)->orderBy('created_at')->get();
+                )->where('status', $status)->whereYear('schedules.date', $year)->where('schedules.week', $week)->orderBy('users.employeeid')->orderBy('overtime_requests.created_at')->get();
 
             // fetch the registered hours limit on the specific year and week
             $required_registered_hours = DB::table('required_hours')->where('year', $year)->where('week', $week)->orderBy('updated_at', 'desc')->select('required_hours.required_hours as hours')->first();
