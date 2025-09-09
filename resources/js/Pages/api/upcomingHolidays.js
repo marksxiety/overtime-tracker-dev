@@ -1,52 +1,39 @@
-// upcomingHolidays.js
-import axios from "axios";
+import axios from "axios"
 
-let currentYear = new Date().getFullYear();
-let currentDate = new Date().toLocaleDateString("en-CA", {
+const currentYear = new Date().getFullYear()
+const currentDate = new Date().toLocaleDateString("en-CA", {
     timeZone: "Asia/Manila",
-});
+})
 
 function formatHolidayDate(date) {
-    let dateInstance = new Date(date);
-
+    const dateInstance = new Date(date)
     return dateInstance.toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
-    });
+    })
 }
 
-let url = `https://date.nager.at/api/v3/publicholidays/${currentYear}/PH`;
+const url = `https://date.nager.at/api/v3/publicholidays/${currentYear}/PH`
 
 export default async function fetchUpcomingHolidays() {
-    let upcoming_holidays = [];
+    let upcoming_holidays = []
     try {
-        let res = await axios.get(url);
-        let response = res.data;
+        const res = await axios.get(url)
+        const response = res.data
 
         if (Array.isArray(response) && response.length > 0) {
             upcoming_holidays = response
-                .filter((holiday) => holiday.date >= currentDate)
+                .filter((holiday) => new Date(holiday.date) >= new Date(currentDate))
                 .map((holiday) => ({
                     date: formatHolidayDate(holiday.date),
                     localName: holiday.localName,
                     name: holiday.name,
-                }));
+                }))
         }
 
-        return {
-            success: true,
-            upcoming_holidays: upcoming_holidays,
-        };
+        return { success: true, holidays: upcoming_holidays }
     } catch (error) {
-        return {
-            success: false,
-            upcoming_holidays: upcoming_holidays,
-        };
-    } finally {
-        return {
-            success: false,
-            upcoming_holidays: upcoming_holidays,
-        };
+        return { success: false, holidays: upcoming_holidays }
     }
 }
