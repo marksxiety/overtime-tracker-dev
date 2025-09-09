@@ -61,8 +61,11 @@
                             <label class="label">
                                 <span class="label-text">Schedule: </span>
                             </label>
-                            <span class="font-medium">{{ schedule.shift_start }} → {{
-                                schedule.shift_end }}</span>
+                        <span class="font-medium">
+                        {{ schedule.shift_start === '--' || schedule.shift_end === '--' 
+                            ? 'N/A' 
+                            : schedule.shift_start + ' → ' + schedule.shift_end }}
+                        </span>
                         </div>
 
                     </div>
