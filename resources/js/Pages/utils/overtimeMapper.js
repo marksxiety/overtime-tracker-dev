@@ -13,7 +13,7 @@ export function getEmployeeOvertimeStats(requests) {
             rejectedrequests++;
         }
 
-        if (item.status.toUpperCase() === "APPROVED") {
+        if (item.status.toUpperCase() === "APPROVED" || item.status.toUpperCase() === "FILED" ) {
             approvedrequests++;
             totalovertimehours += item.hours;
         }
