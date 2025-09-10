@@ -5,7 +5,7 @@
             <div class="grid md:grid-cols-2 gap-8">
                 <figure class="flex items-center justify-center bg-base-200 p-8 rounded-l-3xl">
                     <img :src="reportImage" alt="report"
-                        class="object-contain w-full h-full max-h-[22rem] drop-shadow-md" />
+                        class="object-contain w-full h-full max-h-[15rem] drop-shadow-md" />
                 </figure>
                 <div class="card-body flex flex-col justify-center">
                     <h2 class="text-3xl font-extrabold text-primary tracking-tight">Generate Report</h2>
@@ -17,15 +17,19 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                        <TextInput name="Start Date:" type="date" v-model="selectedDateRange.start_date"/>
-                        <TextInput name="End Date:" type="date" v-model="selectedDateRange.end_date"/>
+                        <TextInput name="Start Date:" type="date" v-model="selectedDateRange.start_date"
+                            :message="selectedDateRange.errors?.start_date" />
+                        <TextInput name="End Date:" type="date" v-model="selectedDateRange.end_date"
+                            :message="selectedDateRange.errors?.end_date" />
                     </div>
 
                     <div class="card-actions justify-end mt-8 gap-3 flex-wrap">
-                        <button class="btn btn-neutral w-full md:w-auto shadow-sm" @click="handleClearState" :disabled="isLoading">
+                        <button class="btn btn-neutral w-full md:w-auto shadow-sm" @click="handleClearState"
+                            :disabled="isLoading">
                             RESET
                         </button>
-                        <button class="btn btn-primary w-full md:w-auto shadow-md" @click="handleGenerateReport" :disabled="isLoading">
+                        <button class="btn btn-primary w-full md:w-auto shadow-md" @click="handleGenerateReport"
+                            :disabled="isLoading">
                             GENERATE
                         </button>
                     </div>
@@ -48,6 +52,13 @@ const selectedDateRange = useForm({
     end_date: null
 })
 
+const props = defineProps({
+    requests: Object,
+    errors: Object,
+    flash: Object,
+    auth: Object,
+})
+
 const handleClearState = () => {
     selectedDateRange.start_date = ''
     selectedDateRange.end_date = ''
@@ -55,8 +66,16 @@ const handleClearState = () => {
 
 const handleGenerateReport = () => {
     isLoading.value = true
-    setTimeout(() => {
-        isLoading.value = false
-    }, 5000)
+    selectedDateRange.get(route('approver.generate.report.daterange'), {
+        preserveState: true,
+        preserveScroll: true,  
+        onError: (errors) => {
+            console.log("Validation errors:", errors) 
+        },
+        onFinish: () => {
+            console.log("Reactive errors:", selectedDateRange.errors)
+            isLoading.value = false
+        }
+    })
 }
 </script>
