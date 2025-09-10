@@ -1,4 +1,5 @@
 <template>
+    <Head title="Registered Hours Limit"  />
     <div class="flex flex-col gap-8 h-screen px-6 py-4">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs text-sm">

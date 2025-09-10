@@ -1,4 +1,5 @@
 <template>
+    <Head title="Report Generator"  />
     <div class="flex flex-col items-center justify-center min-h-screen bg-base-300 px-4">
         <div class="card bg-base-100 shadow-2xl rounded-2xl w-full max-w-5xl overflow-visible">
             <div class="grid md:grid-cols-2 gap-6">

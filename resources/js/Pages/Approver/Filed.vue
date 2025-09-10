@@ -1,4 +1,5 @@
 <template>
+  <Head title="Filed List"  />
   <Modal ref="manageRequestModal" width="w-5xl">
     <div class="py-4 mt-2">
       <div class="flex flex-col gap-2 w-full">

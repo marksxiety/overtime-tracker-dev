@@ -1,4 +1,5 @@
 <template>
+    <Head title="Manage Shift Codes"  />
     <Modal ref="modalRef">
         <h2 class="text-lg font-bold mb-4">Are you sure you want to delete?</h2>
         <div class="flex justify-end gap-4">

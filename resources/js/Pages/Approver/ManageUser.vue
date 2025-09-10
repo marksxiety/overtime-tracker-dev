@@ -1,4 +1,5 @@
 <template>
+    <Head title="Manage Users"  />
     <Modal ref="displayUserModal">
         <div class="flex flex-col">
             <h3 class="text-lg font-bold mb-4">Update User Profile</h3>

@@ -1,4 +1,5 @@
 <template>
+    <Head title="Login"  />
     <main class="w-full px-20 box-border min-h-screen bg-base-300 mb-0 flex flex-col justify-center items-center">
         <div class="mb-8 text-center">
             <h1 class="text-4xl font-extrabold text-primary tracking-wide">
