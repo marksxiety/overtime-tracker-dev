@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class OvertimeRequestController extends Controller
 {
@@ -39,7 +40,7 @@ class OvertimeRequestController extends Controller
         // if there's a time format, implement the time checking
         // if the schedule is not have a time format, it has a format in request like '--'
         $withTimeChecking = $request->shift_start_time !== '--' || $request->shift_end_time !== '--';
-        
+
         if ($withTimeChecking) {
 
             // Parse shift times
@@ -588,5 +589,39 @@ class OvertimeRequestController extends Controller
             })
             ->sum('hours');
         return ($required_hours ?? 0) - (float) $total_hours;
+    }
+
+    public function fetchOvertimeRequestsViaDateRange(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $requests = OvertimeRequest::with(['schedule.user'])
+            ->whereHas('schedule', function ($query) use ($request) {
+                $query->whereBetween('date', [$request->start_date, $request->end_date])
+                    ->whereHas('user', fn($q) => $q->where('role', 'employee'));
+            })
+            ->get()
+            ->map(function ($req) {
+                return [
+                    'hours' => $req->hours,
+                    'status' => $req->status,
+                    'date' => $req->schedule->date,
+                    'week' => $req->schedule->week,
+                    'user_name' => $req->schedule->user->name,
+                    'user_avatar' => $req->schedule->user->avatar ? Storage::url($req->schedule->user->avatar) : null,
+                ];
+            });
+
+
+        return inertia('Approver/Report', [
+            'requests' => $requests,
+        ]);
     }
 }
