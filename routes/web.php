@@ -71,10 +71,11 @@ Route::middleware('approver')->group(function () {
     Route::get('/approver/shift/list', [ShiftContoller::class, 'shiftCodeList']);
     Route::post('/schedule/employee/submit', [ScheduleController::class, 'submitEmployeeSchedules']);
 
-    Route::inertia('/generate/report', 'Approver/Report')->name('approver.generate.report');
-
     Route::get('/users/registered', [AuthController::class, 'RegisteredUsers'])->name('approver.manage.user');
     Route::post('/users/update', [AuthController::class, 'updateUserInformation'])->name('approver.update.user');
+
+    Route::inertia('/generate/report/option', 'Approver/Report')->name('approver.generate.report');
+    Route::get('/generate/report', [OvertimeRequestController::class, 'fetchOvertimeRequestsViaDateRange'])->name('approver.generate.report.daterange');
 });
 
 Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');
