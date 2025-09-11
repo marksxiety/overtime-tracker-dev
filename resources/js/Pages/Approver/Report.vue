@@ -13,7 +13,7 @@
 
                     <div v-if="isLoading" class="flex items-center gap-3 mt-4 text-primary">
                         <span class="loading loading-spinner loading-md"></span>
-                        <span class="font-medium">This may take a while depending on date range. Kindly wait...</span>
+                        <span class="font-medium">{{ loadingMessage }}</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
@@ -46,6 +46,7 @@ import reportImage from '../../images/generate-report.svg'
 import TextInput from '../Components/TextInput.vue'
 
 const isLoading = ref(false)
+const loadingMessage = ref('Processing request...')
 
 const selectedDateRange = useForm({
     start_date: null,
@@ -66,6 +67,11 @@ const handleClearState = () => {
 
 const handleGenerateReport = () => {
     isLoading.value = true
+
+    setTimeout(() => {
+        loadingMessage.value = 'This may take a while depending on date range. Kindly wait...'
+    }, 5000);
+
     selectedDateRange.get(route('approver.generate.report.daterange'), {
         preserveState: true,
         preserveScroll: true,  
