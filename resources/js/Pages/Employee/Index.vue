@@ -174,18 +174,20 @@
                     <div v-if="formFilledOvertime.current_status == 'PENDING'">
                         <div class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
-                                <button type="button" class="btn btn-outline w-full mt-6"
-                                    @click="modeUpdate = true">
+                                <button v-if="!confirmingCancel" type="submit" class="btn btn-outline w-full mt-6"
+                                    :disabled="formFilledOvertime.processing" @click="modeUpdate = true">
+                                    <span v-if="formFilledOvertime.processing && modeUpdate"
+                                        class="loading loading-spinner"></span>
                                     Update
                                 </button>
                             </div>
                             <div class="col-span-1">
                                 <button v-if="!confirmingCancel" type="button" class="btn btn-outline w-full mt-6"
-                                    @click="confirmingCancel = true">
+                                    @click="confirmingCancel = true" :disabled="formFilledOvertime.processing">
                                     Cancel Request
                                 </button>
                                 <div v-else class="flex justify-end gap-6 mt-6">
-                                    <button type="submit" class="btn btn-error"
+                                    <button type="submit" class="btn btn-error" @click="modeUpdate = false"
                                         :disabled="formFilledOvertime.processing">
                                         <span v-if="formFilledOvertime.processing"
                                             class="loading loading-spinner"></span>
@@ -614,9 +616,21 @@ const submitOvertime = () => {
 }
 
 const submitCancelation = () => {
+
+    if (modeUpdate.value) {
+        formFilledOvertime.update_status = 'PENDING'
+    } else {
+        formFilledOvertime.update_status = 'CANCELED'
+    }
+
     formFilledOvertime.post(route('overtime.update.employee'), {
         onSuccess: () => {
-            toast('Cancelation Successful', 'success')
+            if (modeUpdate) {
+                toast('Updating Successful', 'success')
+            } else {
+                toast('Cancelation Successful', 'success')
+            }
+
             formFilledOvertime.reset()
             closeOvertimeRequestModal()
         },
