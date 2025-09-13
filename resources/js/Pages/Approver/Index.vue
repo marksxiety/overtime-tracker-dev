@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-6 p-4 min-h-screen max-h-auto">
+    <div class="flex flex-col gap-6 p-4 h-full">
         <!-- Stat Cards -->
         <div class="stats stats-horizontal shadow flex-wrap">
             <Card title="Total Filed" :value="card.total_filed" routename="overtime.filed"
@@ -12,8 +12,9 @@
             <Card title="Total Requests" :value="card.total_requests" />
             <Card title="ROA Hours Left" :value="((card.required_hours - card.total_hours) % 1 === 0
                 ? (card.required_hours - card.total_hours).toFixed(0)
-                : (card.required_hours - card.total_hours).toFixed(2)) + ' hr(s)'" :description="(card.required_hours - card.total_hours) <= 0
-                    ? 'No ROA hours left' : (card.required_hours - card.total_hours) <= 10 ? `Only ${(card.required_hours - card.total_hours).toFixed(0)} hr(s) left`: ''" />
+                : (card.required_hours - card.total_hours).toFixed(2)) + ' hr(s)'"
+                :description="(card.required_hours - card.total_hours) <= 0
+                    ? 'No ROA hours left' : (card.required_hours - card.total_hours) <= 10 ? `Only ${(card.required_hours - card.total_hours).toFixed(0)} hr(s) left` : ''" />
         </div>
 
         <!-- Weekly Overview -->
