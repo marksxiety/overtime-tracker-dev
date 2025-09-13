@@ -159,7 +159,8 @@
                         <!-- Reason -->
                         <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                             <legend class="text-sm font-semibold px-2">Reason</legend>
-                            <p class="mt-2">{{ formFilledOvertime.reason }}</p>
+                            <TextArea type="text" v-model="formFilledOvertime.reason"
+                                :message="formFilledOvertime.errors?.reason" />
                         </fieldset>
 
                         <!-- Remarks -->
@@ -171,16 +172,28 @@
 
                     <!-- Action Button -->
                     <div v-if="formFilledOvertime.current_status == 'PENDING'">
-                        <button v-if="!confirmingCancel" type="button" class="btn btn-outline w-full mt-6"
-                            @click="confirmingCancel = true">
-                            Cancel Request
-                        </button>
-                        <div v-else class="flex justify-end gap-6 mt-6">
-                            <button type="submit" class="btn btn-error" :disabled="formFilledOvertime.processing">
-                                <span v-if="formFilledOvertime.processing" class="loading loading-spinner"></span>
-                                <span> Yes, Cancel.</span></button>
-                            <button type="button" class="btn btn-neutral" @click="confirmingCancel = false"
-                                :disabled="formFilledOvertime.processing">No</button>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <button type="button" class="btn btn-outline w-full mt-6"
+                                    @click="modeUpdate = true">
+                                    Update
+                                </button>
+                            </div>
+                            <div class="col-span-1">
+                                <button v-if="!confirmingCancel" type="button" class="btn btn-outline w-full mt-6"
+                                    @click="confirmingCancel = true">
+                                    Cancel Request
+                                </button>
+                                <div v-else class="flex justify-end gap-6 mt-6">
+                                    <button type="submit" class="btn btn-error"
+                                        :disabled="formFilledOvertime.processing">
+                                        <span v-if="formFilledOvertime.processing"
+                                            class="loading loading-spinner"></span>
+                                        <span> Yes, Cancel.</span></button>
+                                    <button type="button" class="btn btn-neutral" @click="confirmingCancel = false"
+                                        :disabled="formFilledOvertime.processing">No</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -337,6 +350,7 @@ const months = [
 ]
 const toast = inject('toast')
 const confirmingCancel = ref(false)
+const modeUpdate = ref(false)
 const greetingMessage = ref('')
 const loadingHolidays = ref(false)
 const timeOptions = computed(() => getTimeOptions())
@@ -433,9 +447,9 @@ onMounted(async () => {
 
     if (response.success) {
         if (response.holidays.length > 0) {
-        holidays.value = response.holidays
+            holidays.value = response.holidays
         } else {
-        holidayMessage.value = 'No upcoming holidays found.'
+            holidayMessage.value = 'No upcoming holidays found.'
         }
     } else {
         holidayMessage.value = 'Failed to load Upcoming Holidays.'
@@ -591,6 +605,7 @@ const submitOvertime = () => {
             toast('Overtime Request Filing successful!', 'success')
             formFiling.reset()
             closeOvertimeFilingModal()
+            modeUpdate.value = false
         },
         onError: () => {
             toast('Overtime Request failed.', 'error')
