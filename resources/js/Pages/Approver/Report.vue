@@ -32,10 +32,10 @@
 
             <!-- Rankings + Declined Reasons -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card bg-base-100 shadow p-4 h-64">
-                    <h2 class="font-bold mb-2">Employee Rankings (Approved)</h2>
+                <div class="card bg-base-100 shadow p-4 h-full">
+                    <h2 class="font-bold mb-2">Employee Rankings</h2>
                     <div class="h-full flex items-center justify-center text-gray-400">
-                        [Ranking Chart Placeholder]
+                        <div ref="totalOvertimeViaEmployeeChart" class="min-h-[50vh] w-full"></div>
                     </div>
                 </div>
                 <div class="card bg-base-100 shadow p-4 h-64">
@@ -137,6 +137,17 @@ const totalOvertimeViaTime = ref({
     roa: [100, 250, 320, 300, 350, 310, 300, 400, 370, 320, 340]
 })
 
+const totalOvertimeViaEmployee = ref({
+    names: [
+        'user1',
+        'user2',
+        'user3',
+        'user4',
+        'user5',
+        'user6',
+    ],
+    totalHours: [60, 50, 40, 30, 20, 10]
+})
 
 const totalOvertimeViaTimeGraph = ref(null)
 let totalOvertimeViaTimeGraphInstance = null
@@ -192,6 +203,52 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
     totalOvertimeViaTimeGraphInstance.setOption(option)
 }
 
+
+
+const totalOvertimeViaEmployeeChart = ref(null)
+let totalOvertimeViaEmployeeInstance = null
+
+function rendertotalOvertimeViaEmployee(currTheme = theme.value) {
+    if (!totalOvertimeViaEmployeeChart.value) return
+
+    if (totalOvertimeViaEmployeeInstance) {
+        totalOvertimeViaEmployeeInstance.dispose()
+    }
+
+    if (currTheme === 'dark') {
+        totalOvertimeViaEmployeeInstance = echarts.init(totalOvertimeViaEmployeeChart.value, 'dark')
+    } else {
+        totalOvertimeViaEmployeeInstance = echarts.init(totalOvertimeViaEmployeeChart.value)
+    }
+
+    let bgColor = getTailwindColor('bg-base-100')
+    const option = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: [
+            { type: 'value' }
+        ],
+        yAxis: [
+
+            {
+                type: 'category',
+                data: totalOvertimeViaEmployee.value.names,
+                axisTick: { alignWithLabel: true },
+                inverse: true
+            }
+        ],
+        series: [
+            {
+                name: 'Total Hours',
+                type: 'bar',
+                barWidth: '60%',
+                data: totalOvertimeViaEmployee.value.totalHours
+            }
+        ]
+    }
+    totalOvertimeViaEmployeeInstance.setOption(option)
+}
+
 const selectedDateRange = useForm({
     start_date: null,
     end_date: null
@@ -234,5 +291,6 @@ const handleGenerateReport = () => {
 
 onMounted(() => {
     rendertotalOvertimeViaTimeGraph()
+    rendertotalOvertimeViaEmployee()
 })
 </script>
