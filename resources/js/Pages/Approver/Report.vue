@@ -14,19 +14,19 @@
 
                 <div class="join w-full sm:w-auto">
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Weekly" value="weekly"
-                        v-model="selectedReport" />
+                        v-model="selectedReportType" />
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Monthly" value="monthly"
-                        v-model="selectedReport" />
+                        v-model="selectedReportType" />
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Yearly" value="yearly"
-                        v-model="selectedReport" />
+                        v-model="selectedReportType" />
                 </div>
             </div>
 
             <!-- Bar Graph -->
-            <div class="card bg-base-100 shadow p-4 h-64">
+            <div class="card bg-base-100 shadow p-4 h-full">
                 <h2 class="font-bold mb-2">Approved Overtime Hours by Time</h2>
                 <div class="h-full flex items-center justify-center text-gray-400">
-                    [Bar Graph Placeholder]
+                    <div ref="totalOvertimeViaTimeGraph" class="min-h-[50vh] w-full"></div>
                 </div>
             </div>
 
@@ -106,17 +106,91 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import reportImage from '../../images/generate-report.svg'
 import TextInput from '../Components/TextInput.vue'
+import { theme } from '../utils/themeStore.js'
+import { getTailwindColor } from '../utils/tailwindColorIdentifier.js'
+import * as echarts from 'echarts'
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
 const reportLoaded = ref(true)
 const selectedReportType = ref('weekly')
 
-// main 
+const totalOvertimeViaTime = ref({
+    weeks: [
+        'Week 15',
+        'Week 16',
+        'Week 17',
+        'Week 18',
+        'Week 19',
+        'Week 20',
+        'Week 21',
+        'Week 22',
+        'Week 23',
+        'Week 24',
+        'Week 25'
+    ],
+    totalHours: [10, 52, 200, 400, 390, 280, 310, 420, 360, 295, 330],
+    roa: [100, 250, 320, 300, 350, 310, 300, 400, 370, 320, 340]
+})
+
+
+const totalOvertimeViaTimeGraph = ref(null)
+let totalOvertimeViaTimeGraphInstance = null
+
+function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
+    if (!totalOvertimeViaTimeGraph.value) return
+
+    if (totalOvertimeViaTimeGraphInstance) {
+        totalOvertimeViaTimeGraphInstance.dispose()
+    }
+
+    if (currTheme === 'dark') {
+        totalOvertimeViaTimeGraphInstance = echarts.init(totalOvertimeViaTimeGraph.value, 'dark')
+    } else {
+        totalOvertimeViaTimeGraphInstance = echarts.init(totalOvertimeViaTimeGraph.value)
+    }
+
+    let bgColor = getTailwindColor('bg-base-100')
+    const option = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: [
+            {
+                type: 'category',
+                data: totalOvertimeViaTime.value.weeks,
+                axisTick: { alignWithLabel: true }
+            }
+        ],
+        yAxis: [{ type: 'value' }],
+        series: [
+            {
+                name: 'Total Hours',
+                type: 'bar',
+                barWidth: '60%',
+                data: totalOvertimeViaTime.value.totalHours.map((val, idx) => {
+                    let limit = totalOvertimeViaTime.value.roa[idx]
+                    return {
+                        value: val,
+                        itemStyle: {
+                            color: val > limit ? 'red' : '#5470c6'
+                        }
+                    }
+                })
+            },
+            {
+                name: 'ROA',
+                type: 'line',
+                smooth: true,
+                data: totalOvertimeViaTime.value.roa
+            }
+        ]
+    }
+    totalOvertimeViaTimeGraphInstance.setOption(option)
+}
 
 const selectedDateRange = useForm({
     start_date: null,
@@ -157,4 +231,8 @@ const handleGenerateReport = () => {
         }
     })
 }
+
+onMounted(() => {
+    rendertotalOvertimeViaTimeGraph()
+})
 </script>
