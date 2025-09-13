@@ -1,5 +1,6 @@
 <template>
-    <Head title="Manage Schedules"  />
+
+    <Head title="Manage Schedules" />
     <Modal ref="confirmSubmitModal">
         <div class="flex flex-col gap-2 p-2">
             <div class="flex flex-row justify-start items-center gap-2">
@@ -90,7 +91,7 @@
                     <p class="mt-2 sm:mt-0 text-base-content opacity-70 font-medium">
                         {{ sched.week_start }} — {{ sched.week_end }}
                     </p>
-                    <div class="tooltip tooltip-bottom tooltip-error" data-tip="REMOVE">
+                    <div class="tooltip tooltip-right tooltip-error" data-tip="REMOVE">
                         <Icon icon="gg:remove" width="28" height="28" @click="removeSchedule(index)"
                             class="hover:bg-error hover:cursor-pointer rounded-full" />
                     </div>
