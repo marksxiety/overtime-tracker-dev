@@ -164,6 +164,7 @@ class OvertimeRequestController extends Controller
                 $rules['remarks'] = 'required|string|min:10';
             } else {
                 $rules['current_status'] = ['required', Rule::in(['PENDING', 'APPROVED'])];
+                $rules['reason'] = 'required|string|min:1';
             }
 
             $messages = [
@@ -179,7 +180,11 @@ class OvertimeRequestController extends Controller
                     ->withInput();
             }
 
-            OvertimeRequest::where('id', $request->id)->update(['status' => $request->update_status, 'remarks' => $request->remarks]);
+            OvertimeRequest::where('id', $request->id)->update([
+                'status' => $request->update_status,
+                'remarks' => $request->remarks,
+                'reason' => $request->reason,
+            ]);
             return redirect()->back();
         } catch (\Throwable $th) {
             return redirect()->back()->withErrors("Cancelation failed due to $th");
