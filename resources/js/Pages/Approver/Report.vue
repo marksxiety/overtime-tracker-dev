@@ -22,35 +22,46 @@
                 </div>
             </div>
 
-            <!-- Bar Graph -->
-            <div class="card bg-base-100 shadow p-4 h-full">
-                <h2 class="font-bold mb-2">Approved Overtime Hours by Time</h2>
-                <div class="h-full flex items-center justify-center text-gray-400">
-                    <div ref="totalOvertimeViaTimeGraph" class="min-h-[50vh] w-full"></div>
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="stat bg-base-100 text-success-content rounded-lg shadow">
+                    <div class="stat-title">Approved Overtime</div>
+                    <div class="stat-value">128h</div>
+                    <div class="stat-desc">+15% from last period</div>
+                </div>
+
+                <div class="stat bg-base-100 text-warning-content rounded-lg shadow">
+                    <div class="stat-title">Pending Requests</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-desc">Waiting for approval</div>
+                </div>
+
+                <div class="stat bg-base-100 text-error-content rounded-lg shadow">
+                    <div class="stat-title">Rejected Overtime</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-desc">This period</div>
+                </div>
+
+                <div class="stat bg-base-100 text-info-content rounded-lg shadow">
+                    <div class="stat-title">Total Requests</div>
+                    <div class="stat-value">146</div>
+                    <div class="stat-desc">Across all employees</div>
                 </div>
             </div>
 
-            <!-- Rankings + Declined Reasons -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card bg-base-100 shadow p-4 h-full">
+            <!-- Graphs -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="col-span-2 card bg-base-100 shadow p-4 h-full">
+                    <h2 class="font-bold mb-2">Consumed Overtime</h2>
+                    <div class="h-full flex items-center justify-center text-gray-400">
+                        <div ref="totalOvertimeViaTimeGraph" class="min-h-[50vh] w-full"></div>
+                    </div>
+                </div>
+                <div class="col-span-1 card bg-base-100 shadow p-4 h-full">
                     <h2 class="font-bold mb-2">Employee Rankings</h2>
                     <div class="h-full flex items-center justify-center text-gray-400">
                         <div ref="totalOvertimeViaEmployeeChart" class="min-h-[50vh] w-full"></div>
                     </div>
-                </div>
-                <div class="card bg-base-100 shadow p-4 h-64">
-                    <h2 class="font-bold mb-2">Declined/Disapproved Breakdown</h2>
-                    <div class="h-full flex items-center justify-center text-gray-400">
-                        [Declined Reasons Chart Placeholder]
-                    </div>
-                </div>
-            </div>
-
-            <!-- Raw Data Table -->
-            <div class="card bg-base-100 shadow p-4 h-80">
-                <h2 class="font-bold mb-2">Overtime Raw Data</h2>
-                <div class="h-full flex items-center justify-center text-gray-400">
-                    [Table Placeholder]
                 </div>
             </div>
 
@@ -58,13 +69,23 @@
             <div class="card bg-base-100 shadow p-4 h-40">
                 <h2 class="font-bold mb-2">AI-Generated Summary</h2>
                 <div class="h-full flex items-center justify-center text-gray-400">
-                    [Markdown Summary Placeholder]
+                    <button class="btn btn-primary">Generate
+                        <Icon icon="mingcute:ai-line" width="24" height="24" />
+                    </button>
+                </div>
+            </div>
+
+            <!-- Request Table -->
+            <div class="card bg-base-100 shadow p-4 h-80">
+                <h2 class="font-bold mb-2">Overtime Request Details</h2>
+                <div class="h-full flex items-center justify-center text-gray-400">
+                    [Table Placeholder]
                 </div>
             </div>
 
         </div>
 
-
+        <!-- Empty State -->
         <div v-else class="flex flex-col items-center justify-center min-h-[80vh] bg-base-300 px-6 py-10">
             <div class="card bg-base-100 shadow-sm rounded-md w-full max-w-5xl overflow-visible border border-base-200">
                 <div class="grid md:grid-cols-2 gap-8">
@@ -102,8 +123,10 @@
                 </div>
             </div>
         </div>
+
     </div>
 </template>
+
 
 <script setup>
 import { onMounted, ref } from 'vue'
@@ -113,6 +136,7 @@ import TextInput from '../Components/TextInput.vue'
 import { theme } from '../utils/themeStore.js'
 import { getTailwindColor } from '../utils/tailwindColorIdentifier.js'
 import * as echarts from 'echarts'
+import { Icon } from "@iconify/vue"
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
