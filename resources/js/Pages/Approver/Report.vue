@@ -230,7 +230,7 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
 const totalOvertimeViaEmployeeChart = ref(null)
 let totalOvertimeViaEmployeeInstance = null
 
-function rendertotalOvertimeViaEmployee(currTheme = theme.value) {
+function rendertotalOvertimeViaEmployeeGraph(currTheme = theme.value) {
     if (!totalOvertimeViaEmployeeChart.value) return
 
     if (totalOvertimeViaEmployeeInstance) {
@@ -244,33 +244,50 @@ function rendertotalOvertimeViaEmployee(currTheme = theme.value) {
     }
 
     let bgColor = getTailwindColor('bg-base-100')
+
+    // --- Sort employees by total hours (descending) ---
+    let employees = totalOvertimeViaEmployee.value.employees.map((id, idx) => ({
+        id,
+        name: totalOvertimeViaEmployee.value.names[idx],
+        hours: totalOvertimeViaEmployee.value.totalHours[idx]
+    }))
+
+    employees.sort((a, b) => b.hours - a.hours)
+
     const option = {
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-        xAxis: [
-            { type: 'value' }
-        ],
-        yAxis: [
-
-            {
-                type: 'category',
-                data: totalOvertimeViaEmployee.value.names,
-                axisTick: { alignWithLabel: true },
-                inverse: true
-            }
-        ],
+        xAxis: { type: 'value' },
+        yAxis: {
+            type: 'category',
+            data: employees.map(e => e.name),
+            axisTick: { alignWithLabel: true },
+            axisLabel: {
+                formatter: function (value) {
+                    return value.length > 4 ? value.slice(0, 4) + '…' : value
+                }
+            },
+            inverse: true
+        },
         series: [
             {
                 name: 'Total Hours',
                 type: 'bar',
                 barWidth: '60%',
-                data: totalOvertimeViaEmployee.value.totalHours
+                data: employees.map(e => e.hours),
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c}h'
+                }
             }
         ]
     }
+
     totalOvertimeViaEmployeeInstance.setOption(option)
 }
+
 
 const selectedDateRange = useForm({
     start_date: null,
@@ -292,41 +309,66 @@ const handleClearState = () => {
 function handleDataManipulationViaReportType(data) {
 
     // filter and compute data according to status to populate the value in cards
-    card.value.filed = data.list.filter((req) => req.status === 'FILED').reduce((sum, req) => sum + req.hours, 0)
-    card.value.pending = data.list.filter((req) => req.status === 'PENDING').length
-    card.value.tentative = data.list.filter((req) => req.status === 'PENDING' || req.status === 'APPROVED').reduce((sum, req) => sum + req.hours, 0)
-    card.value.requests = data.list.filter((req) => req.status !== 'CANCELED' || req.status !== 'DECLINED').length
-    
+    card.value.filed = data.list.filter(req => req.status === 'FILED').reduce((sum, req) => sum + req.hours, 0)
+    card.value.pending = data.list.filter(req => req.status === 'PENDING').length
+    card.value.tentative = data.list.filter(req => req.status === 'PENDING' || req.status === 'APPROVED').reduce((sum, req) => sum + req.hours, 0)
+    card.value.requests = data.list.filter(req => req.status !== 'CANCELED' && req.status !== 'DECLINED').length
+
     let type = selectedReportType.value
 
-    let computedData = {}
-    if (type === 'weekly') {
-        computedData.weeks = []
-        computedData.totalHours = []
+    let computedConsumedOvertime = {}
+    let computedEmployeeRankings = {}
 
-        // Aggregate total hours per week
+    if (type === 'weekly') {
+        // initialize structures
+        computedConsumedOvertime.weeks = []
+        computedConsumedOvertime.totalHours = []
+
+        computedEmployeeRankings.employees = []
+        computedEmployeeRankings.names = []
+        computedEmployeeRankings.totalHours = []
+
+        // Aggregate data
         data.list.forEach(element => {
-            if (!computedData.weeks.includes(element.week)) {
-                computedData.weeks.push(element.week)
+
+            // ----- Weekly Overtime -----
+            if (!computedConsumedOvertime.weeks.includes(element.week)) {
+                computedConsumedOvertime.weeks.push(element.week)
             }
 
-            let index = computedData.weeks.indexOf(element.week)
-            if (computedData.totalHours[index] === undefined) computedData.totalHours[index] = 0
-            computedData.totalHours[index] += element.hours
+            let weekIndex = computedConsumedOvertime.weeks.indexOf(element.week)
+            if (computedConsumedOvertime.totalHours[weekIndex] === undefined) {
+                computedConsumedOvertime.totalHours[weekIndex] = 0
+            }
+            computedConsumedOvertime.totalHours[weekIndex] += element.hours
+
+            // ----- Employee Rankings -----
+            let idx = computedEmployeeRankings.employees.indexOf(element.user_id)
+            if (idx === -1) {
+                computedEmployeeRankings.employees.push(element.user_id)
+                computedEmployeeRankings.names.push(element.user_name) // for display
+                computedEmployeeRankings.totalHours.push(0)
+                idx = computedEmployeeRankings.employees.length - 1
+            }
+            computedEmployeeRankings.totalHours[idx] += element.hours
         })
 
         // Populate ROA aligned with weeks
-        computedData.roa = computedData.weeks.map(week => {
+        computedConsumedOvertime.roa = computedConsumedOvertime.weeks.map(week => {
             let match = data.required_hours.find(e => e.week === week)
             return match ? match.required_hours : 0
         })
     }
 
-    totalOvertimeViaTime.value = computedData
+    totalOvertimeViaTime.value = computedConsumedOvertime
+    totalOvertimeViaEmployee.value = computedEmployeeRankings
+
     nextTick(() => {
         rendertotalOvertimeViaTimeGraph()
+        rendertotalOvertimeViaEmployeeGraph()
     })
 }
+
 
 const handleGenerateReport = () => {
     isLoading.value = true
