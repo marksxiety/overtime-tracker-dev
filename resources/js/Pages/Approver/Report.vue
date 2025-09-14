@@ -139,7 +139,7 @@ import { Icon } from "@iconify/vue"
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
-const reportLoaded = ref(true)
+const reportLoaded = ref(false)
 const selectedReportType = ref('weekly')
 const apiResponseData = ref({})
 const totalOvertimeViaTime = ref({})
