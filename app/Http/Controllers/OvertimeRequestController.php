@@ -615,12 +615,29 @@ class OvertimeRequestController extends Controller
         $current = $startDate->copy()->startOfWeek(Carbon::SUNDAY);
 
         while ($current->lessThanOrEqualTo($endDate)) {
-            $weeks[] = $current->weekOfYear; // get ISO week number
+            $weeks[] = [
+                'week' => $current->weekOfYear,
+                'date' => $current->toDateString()
+            ];
             $current->addWeek();
         }
 
-        // Query using the weeks
-        $registered_limit_hours = RequiredHours::select('week', 'required_hours')->whereIn('week', $weeks)->get();
+        // Extract week numbers for the query
+        $weekNumbers = collect($weeks)->pluck('week');
+
+        $registered_limit_hours = RequiredHours::select('week', 'required_hours')
+            ->whereIn('week', $weekNumbers)
+            ->get()
+            ->map(function ($item) use ($weeks) {
+                // Match week with date
+                $date = collect($weeks)->firstWhere('week', $item->week)['date'] ?? null;
+                return [
+                    'week' => $item->week,
+                    'date' => $date,
+                    'required_hours' => $item->required_hours,
+                ];
+            });
+
 
         $requests = OvertimeRequest::with(['schedule.user'])
             ->whereHas('schedule', function ($query) use ($request) {
