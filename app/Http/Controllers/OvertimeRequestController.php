@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\OvertimeRequest;
+use App\Models\RequiredHours;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -607,6 +608,20 @@ class OvertimeRequestController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+
+        $weeks = [];
+        $current = $startDate->copy()->startOfWeek(Carbon::SUNDAY);
+
+        while ($current->lessThanOrEqualTo($endDate)) {
+            $weeks[] = $current->weekOfYear; // get ISO week number
+            $current->addWeek();
+        }
+
+        // Query using the weeks
+        $registered_limit_hours = RequiredHours::select('week', 'required_hours')->whereIn('week', $weeks)->get();
+
         $requests = OvertimeRequest::with(['schedule.user'])
             ->whereHas('schedule', function ($query) use ($request) {
                 $query->whereBetween('date', [$request->start_date, $request->end_date])
@@ -626,7 +641,11 @@ class OvertimeRequestController extends Controller
 
 
         return inertia('Approver/Report', [
-            'requests' => $requests,
+            'requests' => [
+                'list' => $requests,
+                'required_hours' => $registered_limit_hours,
+            ],
+            'weeks' => $weeks
         ]);
     }
 }
