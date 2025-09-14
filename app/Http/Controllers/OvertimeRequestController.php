@@ -635,6 +635,7 @@ class OvertimeRequestController extends Controller
                     'date' => $req->schedule->date,
                     'week' => $req->schedule->week,
                     'user_name' => $req->schedule->user->name,
+                    'user_id' => $req->schedule->user->employeeid,
                     'user_avatar' => $req->schedule->user->avatar ? Storage::url($req->schedule->user->avatar) : null,
                 ];
             });
