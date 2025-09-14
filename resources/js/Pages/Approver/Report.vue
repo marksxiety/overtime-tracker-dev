@@ -1,9 +1,9 @@
 <template>
 
     <Head title="Report Generator" />
-    <div class="container p-4">
+    <div class="py-6 px-4">
 
-        <div v-if="reportLoaded" class="space-y-6">
+        <div v-if="reportLoaded" class="space-y-6 w-full">
 
             <!-- Filters -->
             <div class="flex flex-row gap-4 justify-end">
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
 
                 <!-- Approved Overtime Hours -->
                 <div class="stat bg-base-100 text-success-content rounded-lg shadow">
@@ -139,7 +139,7 @@ import { Icon } from "@iconify/vue"
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
-const reportLoaded = ref(false)
+const reportLoaded = ref(true)
 const selectedReportType = ref('weekly')
 const apiResponseData = ref({})
 const totalOvertimeViaTime = ref({})
