@@ -79,15 +79,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Request Table -->
-            <div class="card bg-base-100 shadow p-4 h-80">
-                <h2 class="font-bold mb-2">Overtime Request Details</h2>
-                <div class="h-full flex items-center justify-center text-gray-400">
-                    [Table Placeholder]
-                </div>
-            </div>
-
         </div>
 
         <!-- Empty State -->
@@ -490,10 +481,8 @@ watch(theme, (newTheme) => {
 
 
 watch(selectedReportType, (newVal) => {
-    console.log("Report type changed:", newVal)
-
     // re-compute your data
-    handleDataManipulationViaReportType(apiResponseData.value) // <- replace `sourceData` with your actual dataset
+    handleDataManipulationViaReportType(apiResponseData.value)
 
     // re-render the graph
     nextTick(() => {
