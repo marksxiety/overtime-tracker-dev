@@ -135,7 +135,7 @@
 
 
 <script setup>
-import { watch, ref, nextTick } from 'vue'
+import { watch, ref, nextTick, reactive } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import reportImage from '../../images/generate-report.svg'
 import TextInput from '../Components/TextInput.vue'
@@ -148,9 +148,9 @@ const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
 const reportLoaded = ref(false)
 const selectedReportType = ref('weekly')
-
+const apiResponseData = ref({})
 const totalOvertimeViaTime = ref({})
-
+const totalOvertimeViaEmployee = ref({})
 const card = ref({
     filed: 0,
     pending: 0,
@@ -158,17 +158,6 @@ const card = ref({
     requests: 0
 })
 
-const totalOvertimeViaEmployee = ref({
-    names: [
-        'user1',
-        'user2',
-        'user3',
-        'user4',
-        'user5',
-        'user6',
-    ],
-    totalHours: [60, 50, 40, 30, 20, 10]
-})
 
 const totalOvertimeViaTimeGraph = ref(null)
 let totalOvertimeViaTimeGraphInstance = null
@@ -187,16 +176,36 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
     }
 
     let bgColor = getTailwindColor('bg-base-100')
+    let type = selectedReportType.value
+    let data = []
 
-    // --- Sort weeks with corresponding values ---
-    let data = totalOvertimeViaTime.value.weeks.map((week, idx) => ({
-        week,
-        hours: totalOvertimeViaTime.value.totalHours[idx],
-        roa: totalOvertimeViaTime.value.roa[idx]
-    }))
-
-    // ascending order by week
-    data.sort((a, b) => a.week - b.week)
+    if (type === 'weekly') {
+        data = totalOvertimeViaTime.value.weeks.map((week, idx) => ({
+            label: `Week ${week}`,
+            sortKey: week,
+            hours: totalOvertimeViaTime.value.totalHours[idx],
+            roa: totalOvertimeViaTime.value.roa[idx]
+        }))
+        data.sort((a, b) => a.sortKey - b.sortKey)
+    }
+    else if (type === 'monthly') {
+        data = totalOvertimeViaTime.value.months.map((month, idx) => ({
+            label: month,
+            sortKey: new Date(month).getTime(),
+            hours: totalOvertimeViaTime.value.totalHours[idx],
+            roa: totalOvertimeViaTime.value.roa[idx]
+        }))
+        data.sort((a, b) => a.sortKey - b.sortKey)
+    }
+    else if (type === 'yearly') {
+        data = totalOvertimeViaTime.value.years.map((year, idx) => ({
+            label: String(year),
+            sortKey: year,
+            hours: totalOvertimeViaTime.value.totalHours[idx],
+            roa: totalOvertimeViaTime.value.roa[idx]
+        }))
+        data.sort((a, b) => a.sortKey - b.sortKey)
+    }
 
     const option = {
         backgroundColor: bgColor,
@@ -205,7 +214,7 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
         xAxis: [
             {
                 type: 'category',
-                data: data.map(d => `Week ${d.week}`),
+                data: data.map(d => d.label),
                 axisTick: { alignWithLabel: true }
             }
         ],
@@ -230,7 +239,6 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
             }
         ]
     }
-
     totalOvertimeViaTimeGraphInstance.setOption(option)
 }
 
@@ -316,59 +324,132 @@ const handleClearState = () => {
 }
 
 function handleDataManipulationViaReportType(data) {
-
-    // filter and compute data according to status to populate the value in cards
+    // ---- Cards computation ----
     card.value.filed = data.list.filter(req => req.status === 'FILED').reduce((sum, req) => sum + req.hours, 0)
     card.value.pending = data.list.filter(req => req.status === 'PENDING').length
-    card.value.tentative = data.list.filter(req => req.status === 'PENDING' || req.status === 'APPROVED').reduce((sum, req) => sum + req.hours, 0)
+    card.value.tentative = data.list.filter(req => ['PENDING', 'APPROVED', 'FILED'].includes(req.status)).reduce((sum, req) => sum + req.hours, 0)
     card.value.requests = data.list.filter(req => req.status !== 'CANCELED' && req.status !== 'DECLINED').length
 
     let type = selectedReportType.value
 
     let computedConsumedOvertime = {}
-    let computedEmployeeRankings = {}
+    let computedEmployeeRankings = {
+        employees: [],
+        names: [],
+        totalHours: []
+    }
 
     if (type === 'weekly') {
-        // initialize structures
+        // ---------------- Weekly ----------------
         computedConsumedOvertime.weeks = []
         computedConsumedOvertime.totalHours = []
 
-        computedEmployeeRankings.employees = []
-        computedEmployeeRankings.names = []
-        computedEmployeeRankings.totalHours = []
-
-        // Aggregate data
         data.list.forEach(element => {
-
-            // ----- Weekly Overtime -----
             if (!computedConsumedOvertime.weeks.includes(element.week)) {
                 computedConsumedOvertime.weeks.push(element.week)
             }
-
             let weekIndex = computedConsumedOvertime.weeks.indexOf(element.week)
             if (computedConsumedOvertime.totalHours[weekIndex] === undefined) {
                 computedConsumedOvertime.totalHours[weekIndex] = 0
             }
             computedConsumedOvertime.totalHours[weekIndex] += element.hours
 
-            // ----- Employee Rankings -----
+            // employee ranking
             let idx = computedEmployeeRankings.employees.indexOf(element.user_id)
             if (idx === -1) {
                 computedEmployeeRankings.employees.push(element.user_id)
-                computedEmployeeRankings.names.push(element.user_name) // for display
+                computedEmployeeRankings.names.push(element.user_name)
                 computedEmployeeRankings.totalHours.push(0)
                 idx = computedEmployeeRankings.employees.length - 1
             }
             computedEmployeeRankings.totalHours[idx] += element.hours
         })
 
-        // Populate ROA aligned with weeks
+        // ---- ROA by week ----
         computedConsumedOvertime.roa = computedConsumedOvertime.weeks.map(week => {
             let match = data.required_hours.find(e => e.week === week)
             return match ? match.required_hours : 0
         })
     }
+    else if (type === 'monthly') {
+        // ---------------- Monthly ----------------
+        computedConsumedOvertime.months = []
+        computedConsumedOvertime.totalHours = []
 
+        data.list.forEach(element => {
+            let month = new Date(element.date).toLocaleString('default', { month: 'short', year: 'numeric' })
+            if (!computedConsumedOvertime.months.includes(month)) {
+                computedConsumedOvertime.months.push(month)
+            }
+            let monthIndex = computedConsumedOvertime.months.indexOf(month)
+            if (computedConsumedOvertime.totalHours[monthIndex] === undefined) {
+                computedConsumedOvertime.totalHours[monthIndex] = 0
+            }
+            computedConsumedOvertime.totalHours[monthIndex] += element.hours
+
+            // employee ranking
+            let idx = computedEmployeeRankings.employees.indexOf(element.user_id)
+            if (idx === -1) {
+                computedEmployeeRankings.employees.push(element.user_id)
+                computedEmployeeRankings.names.push(element.user_name)
+                computedEmployeeRankings.totalHours.push(0)
+                idx = computedEmployeeRankings.employees.length - 1
+            }
+            computedEmployeeRankings.totalHours[idx] += element.hours
+        })
+
+        // ---- ROA by date (month-year) ----
+        computedConsumedOvertime.roa = computedConsumedOvertime.months.map(month => {
+            let total = data.required_hours.reduce((sum, e) => {
+                if (!e.date) return sum
+                let d = new Date(e.date)
+                if (isNaN(d)) return sum
+                let monthLabel = d.toLocaleString('default', { month: 'short', year: 'numeric' })
+                return monthLabel === month ? sum + e.required_hours : sum
+            }, 0)
+            return total
+        })
+    }
+    else if (type === 'yearly') {
+        // ---------------- Yearly ----------------
+        computedConsumedOvertime.years = []
+        computedConsumedOvertime.totalHours = []
+
+        data.list.forEach(element => {
+            let year = new Date(element.date).getFullYear()
+            if (!computedConsumedOvertime.years.includes(year)) {
+                computedConsumedOvertime.years.push(year)
+            }
+            let yearIndex = computedConsumedOvertime.years.indexOf(year)
+            if (computedConsumedOvertime.totalHours[yearIndex] === undefined) {
+                computedConsumedOvertime.totalHours[yearIndex] = 0
+            }
+            computedConsumedOvertime.totalHours[yearIndex] += element.hours
+
+            // employee ranking
+            let idx = computedEmployeeRankings.employees.indexOf(element.user_id)
+            if (idx === -1) {
+                computedEmployeeRankings.employees.push(element.user_id)
+                computedEmployeeRankings.names.push(element.user_name)
+                computedEmployeeRankings.totalHours.push(0)
+                idx = computedEmployeeRankings.employees.length - 1
+            }
+            computedEmployeeRankings.totalHours[idx] += element.hours
+        })
+
+        // ---- ROA by date (year) ----
+        computedConsumedOvertime.roa = computedConsumedOvertime.years.map(year => {
+            let total = data.required_hours.reduce((sum, e) => {
+                if (!e.date) return sum
+                let d = new Date(e.date)
+                if (isNaN(d)) return sum
+                return d.getFullYear() === year ? sum + e.required_hours : sum
+            }, 0)
+            return total
+        })
+    }
+
+    // ---- Assign final values ----
     totalOvertimeViaTime.value = computedConsumedOvertime
     totalOvertimeViaEmployee.value = computedEmployeeRankings
 
@@ -391,6 +472,7 @@ const handleGenerateReport = () => {
         preserveScroll: true,
         onSuccess: () => {
             reportLoaded.value = true
+            apiResponseData.value = props?.requests
             handleDataManipulationViaReportType(props?.requests)
         },
         onError: (errors) => {
@@ -407,4 +489,17 @@ watch(theme, (newTheme) => {
     rendertotalOvertimeViaTimeGraph(newTheme)
 }, { immediate: true })
 
+
+watch(selectedReportType, (newVal) => {
+    console.log("Report type changed:", newVal)
+
+    // re-compute your data
+    handleDataManipulationViaReportType(apiResponseData.value) // <- replace `sourceData` with your actual dataset
+
+    // re-render the graph
+    nextTick(() => {
+        rendertotalOvertimeViaTimeGraph()
+        rendertotalOvertimeViaEmployeeGraph()
+    })
+})
 </script>
