@@ -28,29 +28,29 @@
                 <!-- Approved Overtime Hours -->
                 <div class="stat bg-base-100 text-success-content rounded-lg shadow">
                     <div class="stat-title">Approved Overtime</div>
-                    <div class="stat-value text-success">128h</div>
-                    <div class="stat-desc">Confirmed hours</div>
+                    <div class="stat-value text-success">{{ card.filed }}h</div>
+                    <div class="stat-desc">Filed Requests hours</div>
                 </div>
 
                 <!-- Pending Requests -->
                 <div class="stat bg-base-100 text-warning-content rounded-lg shadow">
                     <div class="stat-title">Pending Requests</div>
-                    <div class="stat-value text-warning">12</div>
+                    <div class="stat-value text-warning">{{ card.pending }}</div>
                     <div class="stat-desc">Waiting for approval</div>
                 </div>
 
                 <!-- Tentative Overtime Hours (Approved + Pending) -->
                 <div class="stat bg-base-100 text-info-content rounded-lg shadow">
                     <div class="stat-title">Tentative Overtime</div>
-                    <div class="stat-value text-info">152h</div>
+                    <div class="stat-value text-info">{{ card.tentative }}h</div>
                     <div class="stat-desc">Approved + pending hours</div>
                 </div>
 
                 <!-- Total Filed Requests -->
                 <div class="stat bg-base-100 text-primary-content rounded-lg shadow">
-                    <div class="stat-title">Total Filed Requests</div>
-                    <div class="stat-value text-primary">147</div>
-                    <div class="stat-desc">All requests filed</div>
+                    <div class="stat-title">Total Overtime Requests</div>
+                    <div class="stat-value text-primary">{{ card.requests }}</div>
+                    <div class="stat-desc">All requests from employees</div>
                 </div>
             </div>
 
@@ -150,6 +150,13 @@ const reportLoaded = ref(false)
 const selectedReportType = ref('weekly')
 
 const totalOvertimeViaTime = ref({})
+
+const card = ref({
+    filed: 0,
+    pending: 0,
+    tentative: 0,
+    requests: 0
+})
 
 const totalOvertimeViaEmployee = ref({
     names: [
@@ -283,6 +290,13 @@ const handleClearState = () => {
 }
 
 function handleDataManipulationViaReportType(data) {
+
+    // filter and compute data according to status to populate the value in cards
+    card.value.filed = data.list.filter((req) => req.status === 'FILED').reduce((sum, req) => sum + req.hours, 0)
+    card.value.pending = data.list.filter((req) => req.status === 'PENDING').length
+    card.value.tentative = data.list.filter((req) => req.status === 'PENDING' || req.status === 'APPROVED').reduce((sum, req) => sum + req.hours, 0)
+    card.value.requests = data.list.filter((req) => req.status !== 'CANCELED' || req.status !== 'DECLINED').length
+    
     let type = selectedReportType.value
 
     let computedData = {}
