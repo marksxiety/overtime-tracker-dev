@@ -187,6 +187,17 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
     }
 
     let bgColor = getTailwindColor('bg-base-100')
+
+    // --- Sort weeks with corresponding values ---
+    let data = totalOvertimeViaTime.value.weeks.map((week, idx) => ({
+        week,
+        hours: totalOvertimeViaTime.value.totalHours[idx],
+        roa: totalOvertimeViaTime.value.roa[idx]
+    }))
+
+    // ascending order by week
+    data.sort((a, b) => a.week - b.week)
+
     const option = {
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
@@ -194,7 +205,7 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
         xAxis: [
             {
                 type: 'category',
-                data: totalOvertimeViaTime.value.weeks.map(week => `Week ${week}`),
+                data: data.map(d => `Week ${d.week}`),
                 axisTick: { alignWithLabel: true }
             }
         ],
@@ -204,27 +215,24 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
                 name: 'Total Hours',
                 type: 'bar',
                 barWidth: '60%',
-                data: totalOvertimeViaTime.value.totalHours.map((val, idx) => {
-                    let limit = totalOvertimeViaTime.value.roa[idx]
-                    return {
-                        value: val,
-                        itemStyle: {
-                            color: val > limit ? 'red' : '#5470c6'
-                        }
+                data: data.map(d => ({
+                    value: d.hours,
+                    itemStyle: {
+                        color: d.hours > d.roa ? 'red' : '#5470c6'
                     }
-                })
+                }))
             },
             {
                 name: 'ROA',
                 type: 'line',
                 smooth: true,
-                data: totalOvertimeViaTime.value.roa
+                data: data.map(d => d.roa)
             }
         ]
     }
+
     totalOvertimeViaTimeGraphInstance.setOption(option)
 }
-
 
 
 const totalOvertimeViaEmployeeChart = ref(null)
@@ -278,8 +286,9 @@ function rendertotalOvertimeViaEmployeeGraph(currTheme = theme.value) {
                 data: employees.map(e => e.hours),
                 label: {
                     show: true,
-                    position: 'right',
-                    formatter: '{c}h'
+                    position: 'inside',
+                    formatter: '{c}h',
+                    color: '#fff',
                 }
             }
         ]
