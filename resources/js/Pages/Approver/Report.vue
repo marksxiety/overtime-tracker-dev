@@ -24,30 +24,36 @@
 
             <!-- Summary Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+                <!-- Approved Overtime Hours -->
                 <div class="stat bg-base-100 text-success-content rounded-lg shadow">
                     <div class="stat-title">Approved Overtime</div>
-                    <div class="stat-value">128h</div>
-                    <div class="stat-desc">+15% from last period</div>
+                    <div class="stat-value text-success">128h</div>
+                    <div class="stat-desc">Confirmed hours</div>
                 </div>
 
+                <!-- Pending Requests -->
                 <div class="stat bg-base-100 text-warning-content rounded-lg shadow">
                     <div class="stat-title">Pending Requests</div>
-                    <div class="stat-value">12</div>
+                    <div class="stat-value text-warning">12</div>
                     <div class="stat-desc">Waiting for approval</div>
                 </div>
 
-                <div class="stat bg-base-100 text-error-content rounded-lg shadow">
-                    <div class="stat-title">Rejected Overtime</div>
-                    <div class="stat-value">6</div>
-                    <div class="stat-desc">This period</div>
+                <!-- Tentative Overtime Hours (Approved + Pending) -->
+                <div class="stat bg-base-100 text-info-content rounded-lg shadow">
+                    <div class="stat-title">Tentative Overtime</div>
+                    <div class="stat-value text-info">152h</div>
+                    <div class="stat-desc">Approved + pending hours</div>
                 </div>
 
-                <div class="stat bg-base-100 text-info-content rounded-lg shadow">
-                    <div class="stat-title">Total Requests</div>
-                    <div class="stat-value">146</div>
-                    <div class="stat-desc">Across all employees</div>
+                <!-- Total Filed Requests -->
+                <div class="stat bg-base-100 text-primary-content rounded-lg shadow">
+                    <div class="stat-title">Total Filed Requests</div>
+                    <div class="stat-value text-primary">147</div>
+                    <div class="stat-desc">All requests filed</div>
                 </div>
             </div>
+
 
             <!-- Graphs -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -129,7 +135,7 @@
 
 
 <script setup>
-import { onMounted, ref, nextTick } from 'vue'
+import { watch, ref, nextTick } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import reportImage from '../../images/generate-report.svg'
 import TextInput from '../Components/TextInput.vue'
@@ -175,12 +181,13 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
 
     let bgColor = getTailwindColor('bg-base-100')
     const option = {
+        backgroundColor: bgColor,
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
         xAxis: [
             {
                 type: 'category',
-                data: totalOvertimeViaTime.value.weeks,
+                data: totalOvertimeViaTime.value.weeks.map(week => `Week ${week}`),
                 axisTick: { alignWithLabel: true }
             }
         ],
@@ -231,6 +238,7 @@ function rendertotalOvertimeViaEmployee(currTheme = theme.value) {
 
     let bgColor = getTailwindColor('bg-base-100')
     const option = {
+        backgroundColor: bgColor,
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
         xAxis: [
@@ -328,5 +336,10 @@ const handleGenerateReport = () => {
         }
     })
 }
+
+watch(theme, (newTheme) => {
+    if (!newTheme) return
+    rendertotalOvertimeViaTimeGraph(newTheme)
+}, { immediate: true })
 
 </script>
