@@ -74,9 +74,12 @@
             <div class="card bg-base-100 shadow p-4 h-40">
                 <h2 class="font-bold mb-2">AI-Generated Summary</h2>
                 <div class="h-full flex items-center justify-center text-gray-400">
-                    <button class="btn btn-primary">Generate
+                    <button v-if="!analyzingAI && AIreponse === ''" class="btn btn-primary" @click="handleAnalyzeAI()">Generate
                         <Icon icon="mingcute:ai-line" width="24" height="24" />
                     </button>
+
+                    <span v-if="analyzingAI" class="loading loading-dots loading-xl"></span>
+                    <span v-else>{{ AIreponse }}</span>
                 </div>
             </div>
         </div>
@@ -147,6 +150,9 @@ const card = ref({
     tentative: 0,
     requests: 0
 })
+
+const analyzingAI = ref(false)
+const AIreponse = ref('')
 
 
 const totalOvertimeViaTimeGraph = ref(null)
@@ -474,9 +480,19 @@ const handleGenerateReport = () => {
     })
 }
 
+const handleAnalyzeAI = () => {
+    analyzingAI.value = true
+
+    setTimeout(() => {
+        analyzingAI.value = false
+        AIreponse.value = 'Testing response from AI'
+    }, 2500);
+}
+
 watch(theme, (newTheme) => {
     if (!newTheme) return
     rendertotalOvertimeViaTimeGraph(newTheme)
+    rendertotalOvertimeViaEmployeeGraph(newTheme)
 }, { immediate: true })
 
 
