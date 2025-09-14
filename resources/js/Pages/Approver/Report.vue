@@ -31,19 +31,11 @@
                     <div class="stat-value text-success">{{ card.filed }}h</div>
                     <div class="stat-desc">Filed Requests hours</div>
                 </div>
-
-                <!-- Pending Requests -->
-                <div class="stat bg-base-100 text-warning-content rounded-lg shadow">
-                    <div class="stat-title">Pending Requests</div>
-                    <div class="stat-value text-warning">{{ card.pending }}</div>
-                    <div class="stat-desc">Waiting for approval</div>
-                </div>
-
                 <!-- Tentative Overtime Hours (Approved + Pending) -->
                 <div class="stat bg-base-100 text-info-content rounded-lg shadow">
                     <div class="stat-title">Tentative Overtime</div>
                     <div class="stat-value text-info">{{ card.tentative }}h</div>
-                    <div class="stat-desc">Approved + pending hours</div>
+                    <div class="stat-desc">Filed + Approved + Pending hours</div>
                 </div>
 
                 <!-- Total Filed Requests -->
@@ -51,6 +43,13 @@
                     <div class="stat-title">Total Overtime Requests</div>
                     <div class="stat-value text-primary">{{ card.requests }}</div>
                     <div class="stat-desc">All requests from employees</div>
+                </div>
+
+                <!-- Pending Requests -->
+                <div class="stat bg-base-100 text-warning-content rounded-lg shadow">
+                    <div class="stat-title">Pending Requests</div>
+                    <div class="stat-value text-warning">{{ card.pending }}</div>
+                    <div class="stat-desc">Waiting for approval</div>
                 </div>
             </div>
 
