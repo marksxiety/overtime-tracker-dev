@@ -129,7 +129,7 @@
 
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import reportImage from '../../images/generate-report.svg'
 import TextInput from '../Components/TextInput.vue'
@@ -140,26 +140,10 @@ import { Icon } from "@iconify/vue"
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
-const reportLoaded = ref(true)
+const reportLoaded = ref(false)
 const selectedReportType = ref('weekly')
 
-const totalOvertimeViaTime = ref({
-    weeks: [
-        'Week 15',
-        'Week 16',
-        'Week 17',
-        'Week 18',
-        'Week 19',
-        'Week 20',
-        'Week 21',
-        'Week 22',
-        'Week 23',
-        'Week 24',
-        'Week 25'
-    ],
-    totalHours: [10, 52, 200, 400, 390, 280, 310, 420, 360, 295, 330],
-    roa: [100, 250, 320, 300, 350, 310, 300, 400, 370, 320, 340]
-})
+const totalOvertimeViaTime = ref({})
 
 const totalOvertimeViaEmployee = ref({
     names: [
@@ -290,6 +274,38 @@ const handleClearState = () => {
     selectedDateRange.end_date = ''
 }
 
+function handleDataManipulationViaReportType(data) {
+    let type = selectedReportType.value
+
+    let computedData = {}
+    if (type === 'weekly') {
+        computedData.weeks = []
+        computedData.totalHours = []
+
+        // Aggregate total hours per week
+        data.list.forEach(element => {
+            if (!computedData.weeks.includes(element.week)) {
+                computedData.weeks.push(element.week)
+            }
+
+            let index = computedData.weeks.indexOf(element.week)
+            if (computedData.totalHours[index] === undefined) computedData.totalHours[index] = 0
+            computedData.totalHours[index] += element.hours
+        })
+
+        // Populate ROA aligned with weeks
+        computedData.roa = computedData.weeks.map(week => {
+            let match = data.required_hours.find(e => e.week === week)
+            return match ? match.required_hours : 0
+        })
+    }
+
+    totalOvertimeViaTime.value = computedData
+    nextTick(() => {
+        rendertotalOvertimeViaTimeGraph()
+    })
+}
+
 const handleGenerateReport = () => {
     isLoading.value = true
 
@@ -302,19 +318,15 @@ const handleGenerateReport = () => {
         preserveScroll: true,
         onSuccess: () => {
             reportLoaded.value = true
+            handleDataManipulationViaReportType(props?.requests)
         },
         onError: (errors) => {
             console.log("Validation errors:", errors)
         },
         onFinish: () => {
-            console.log("Reactive errors:", selectedDateRange.errors)
             isLoading.value = false
         }
     })
 }
 
-onMounted(() => {
-    rendertotalOvertimeViaTimeGraph()
-    rendertotalOvertimeViaEmployee()
-})
 </script>
