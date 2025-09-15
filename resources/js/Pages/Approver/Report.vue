@@ -340,7 +340,9 @@ function handleDataManipulationViaReportType(data) {
         computedConsumedOvertime.weeks = []
         computedConsumedOvertime.totalHours = []
 
-        data.list.forEach(element => {
+        const overtimeRequestList = data.list.filter(req => req.status === 'FILED')
+
+        overtimeRequestList.forEach(element => {
             if (!computedConsumedOvertime.weeks.includes(element.week)) {
                 computedConsumedOvertime.weeks.push(element.week)
             }
@@ -372,7 +374,9 @@ function handleDataManipulationViaReportType(data) {
         computedConsumedOvertime.months = []
         computedConsumedOvertime.totalHours = []
 
-        data.list.forEach(element => {
+        const overtimeRequestList = data.list.filter(req => req.status === 'FILED')
+
+        overtimeRequestList.forEach(element => {
             let month = new Date(element.date).toLocaleString('default', { month: 'short', year: 'numeric' })
             if (!computedConsumedOvertime.months.includes(month)) {
                 computedConsumedOvertime.months.push(month)
@@ -411,7 +415,9 @@ function handleDataManipulationViaReportType(data) {
         computedConsumedOvertime.years = []
         computedConsumedOvertime.totalHours = []
 
-        data.list.forEach(element => {
+        const overtimeRequestList = data.list.filter(req => req.status === 'FILED')
+
+        overtimeRequestList.forEach(element => {
             let year = new Date(element.date).getFullYear()
             if (!computedConsumedOvertime.years.includes(year)) {
                 computedConsumedOvertime.years.push(year)
