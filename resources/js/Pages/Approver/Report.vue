@@ -8,18 +8,23 @@
             <!-- Filters -->
             <div class="flex flex-row gap-4 justify-end">
                 <TextInput type="date" v-model="selectedDateRange.start_date"
-                    :message="selectedDateRange.errors?.start_date" />
+                    :message="selectedDateRange.errors?.start_date" :disabled="isRegenerating"/>
                 <TextInput type="date" v-model="selectedDateRange.end_date"
-                    :message="selectedDateRange.errors?.end_date" />
+                    :message="selectedDateRange.errors?.end_date" :disabled="isRegenerating"/>
 
                 <div class="join w-full sm:w-auto">
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Weekly" value="weekly"
-                        v-model="selectedReportType" />
+                        v-model="selectedReportType" :disabled="isRegenerating"/>
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Monthly" value="monthly"
-                        v-model="selectedReportType" />
+                        v-model="selectedReportType" :disabled="isRegenerating"/>
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Yearly" value="yearly"
-                        v-model="selectedReportType" />
+                        v-model="selectedReportType" :disabled="isRegenerating"/>
                 </div>
+
+                <button class="btn btn-primary btn-md w-full md:w-auto shadow-md" @click="handleRegenerateReport()" :disabled="isRegenerating">
+                      <span v-if="isRegenerating" class="loading loading-spinner loading-md"></span>
+                    REGENERATE
+                </button>
             </div>
 
             <!-- Summary Cards -->
@@ -153,6 +158,8 @@ const card = ref({
 
 const analyzingAI = ref(false)
 const AIreponse = ref('')
+
+const isRegenerating = ref(false)
 
 
 const totalOvertimeViaTimeGraph = ref(null)
@@ -485,6 +492,26 @@ const handleGenerateReport = () => {
         }
     })
 }
+
+const handleRegenerateReport = () => {
+    isRegenerating.value = true
+
+    selectedDateRange.get(route('approver.generate.report.daterange'), {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            apiResponseData.value = props?.requests
+        },
+        onError: (errors) => console.log(errors),
+        onFinish: async () => {
+
+            isRegenerating.value = false
+            await nextTick()
+            handleDataManipulationViaReportType(props?.requests)
+        }
+    })
+}
+
 
 const handleAnalyzeAI = () => {
     analyzingAI.value = true
