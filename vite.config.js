@@ -10,4 +10,24 @@ export default defineConfig({
         }),
         vue(),
     ],
+    server: {
+        watch: {
+            ignored: [
+                '**/node_modules/**',
+                '**/storage/**',
+                '**/vendor/**',
+                '**/public/**'
+            ],
+        },
+        fs: {
+            strict: true
+        }
+    },
+    optimizeDeps: {
+        include: [
+            'vue',
+            '@inertiajs/inertia',
+            '@inertiajs/inertia-vue3'
+        ]
+    },
 });
