@@ -11,5 +11,10 @@ class RequiredHours extends Model
 
     protected $table = 'required_hours';
 
-    protected $fillable = ['year', 'week', 'required_hours'];
+    protected $fillable = ['year', 'week', 'required_hours', 'organization_unit_id'];
+
+    public function organizationUnit()
+    {
+        return $this->belongsTo(OrganizationUnit::class);
+    }
 }
