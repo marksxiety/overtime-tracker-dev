@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\OrganizationUnit;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
@@ -192,5 +193,13 @@ class AuthController extends Controller
 
         $user->update();
         return redirect()->back()->with('message', 'User Profile has been updated successfully!');
+    }
+
+    public function directRegisterForm() {
+        $units = OrganizationUnit::select('id', 'unit_path')->get();
+
+        return inertia('Auth/Register', [
+            'units' => $units,
+        ]);
     }
 }
