@@ -15,23 +15,26 @@
                 </div>
                 <div class="col-span-1">
                     <h2 class="text-2xl font-bold mb-6 text-primary text-center">Create Your Account</h2>
-                    <form @submit.prevent="submitForm">
+                    <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
+                        </div>
                         <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
-                        <TextInput name="Email:" type="email" :message="form.errors.email" v-model="form.email" />
-                        <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid"
-                            v-model="form.employeeid" />
-                        <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role"
-                            :options="options" />
-                        <SelectOption name="Select a unit:" :message="form.errors.role" v-model="form.role"
-                            :options="unitsList" />
-                        <TextInput name="Password:" type="password" :message="form.errors.password"
-                            v-model="form.password" />
-                        <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
-                        <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
-                            <span v-if="form.processing"><span class="loading loading-spinner loading-xs"></span>
-                                Register</span>
-                            <span v-else>Register</span>
-                        </button>
+                        <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid" v-model="form.employeeid" />
+                        <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role" :options="options" />
+                        <SelectOption name="Select a unit:" :message="form.errors.role" v-model="form.role" :options="unitsList" />
+                        <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
+                        <TextInput name="Confirm Password:" type="password" v-model="form.password_confirmation" />
+
+                        <!-- Make the submit button span full width -->
+                        <div class="col-span-2">
+                            <button type="submit" class="btn btn-primary w-full" :disabled="form.processing">
+                                <span v-if="form.processing">
+                                    <span class="loading loading-spinner loading-xs"></span> Register
+                                </span>
+                                <span v-else>Register</span>
+                            </button>
+                        </div>
                     </form>
                     <div class="mt-6 text-center">
                         Already have an account?
