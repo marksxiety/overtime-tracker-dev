@@ -22,6 +22,8 @@
                             v-model="form.employeeid" />
                         <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role"
                             :options="options" />
+                        <SelectOption name="Select a unit:" :message="form.errors.role" v-model="form.role"
+                            :options="unitsList" />
                         <TextInput name="Password:" type="password" :message="form.errors.password"
                             v-model="form.password" />
                         <TextInput name="Confirm Password" type="password" v-model="form.password_confirmation" />
@@ -47,6 +49,21 @@ import { ref } from 'vue'
 import TextInput from '../Components/TextInput.vue'
 import SelectOption from '../Components/SelectOption.vue'
 import registerImage from '../../images/Coder.svg'
+
+const props = defineProps({
+    units: Array
+})
+
+const unitsList = ref([
+  { label: 'Choose a unit', value: '' },
+])
+
+props.units.forEach(unit => {
+  unitsList.value.push({
+    label: unit.unit_path,
+    value: unit.id
+  })
+})
 
 const options = ref([
     { label: 'Choose a role', value: '' },
