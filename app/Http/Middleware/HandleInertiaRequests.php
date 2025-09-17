@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth.user' => fn() => $request->user()
-                ? collect($request->user()->only('name', 'email', 'active', 'role', 'employeeid', 'avatar'))
+                ? collect($request->user()->only('name', 'email', 'active', 'organization_unit_id', 'role', 'employeeid', 'avatar'))
                 ->mapWithKeys(fn($value, $key) => $key === 'avatar'
                     ? ['avatar_url' => $value ? Storage::url($value) : null]
                     : [$key => $value])
