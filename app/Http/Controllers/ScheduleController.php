@@ -188,7 +188,10 @@ class ScheduleController extends Controller
                 ->addWeeks($week - 1);
 
             // Fetch all registered employees (base dataset for generating schedules)
-            $employees = User::where('role', 'employee')->get();
+            $employees = User::where([
+                ['role', 'employee'],
+                ['organization_unit_id', Auth::user()->organization_unit_id],
+            ])->get();
 
             // Prepare an array for all 7 days of the selected week
             for ($i = 0; $i < 7; $i++) {
