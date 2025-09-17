@@ -145,7 +145,9 @@ class AuthController extends Controller
     public function RegisteredUsers()
     {
         try {
-            $users = User::query()->orderBy('id', 'asc')->get()
+            $currentOrgUnitId = Auth::user()->organization_unit_id;
+
+            $users = User::query()->where('organization_unit_id', $currentOrgUnitId)->orderBy('id', 'asc')->get()
                 ->map(function ($user) {
                     $user->avatar_url = $user->avatar
                         ? Storage::url($user->avatar)
@@ -153,12 +155,16 @@ class AuthController extends Controller
                     return $user;
                 });
 
+            $units = OrganizationUnit::select('id', 'unit_path')->get();
+
             return inertia('Approver/ManageUser', [
-                'users' => $users
+                'users' => $users,
+                'units' => $units
             ]);
         } catch (\Throwable $th) {
             return inertia('Approver/ManageUser', [
                 'users' => [],
+                'units' => [],
                 'errors' => 'Failed to load registered users'
             ]);
         }
@@ -187,6 +193,7 @@ class AuthController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->active = $request->active;
+        $user->organization_unit_id = $request->organization_unit_id;
         $user->role = $request->role;
 
         // Only update password if a new one is provided
