@@ -5,12 +5,21 @@
             <h3 class="text-lg font-bold mb-4">Update User Profile</h3>
             <form @submit.prevent="updateUserProfile()">
                 <!-- Name -->
-                <TextInput name="Name:" type="text" :message="selectedUser.errors.name" v-model="selectedUser.name"
-                    placeholder="" />
+
 
                 <!-- Email -->
                 <TextInput name="Email:" type="email" :message="selectedUser.errors.email" v-model="selectedUser.email"
                     placeholder="" />
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-1">
+                <TextInput name="Name:" type="text" :message="selectedUser.errors.name" v-model="selectedUser.name"
+                    placeholder="" />
+                    </div>
+                    <div class="col-span-1">
+                        <SelectOption name="Unit: " :options="unitsList" v-model="selectedUser.organization_unit_id" margin="" minwidth="" />
+                    </div>
+                </div>
 
                 <!-- Active -->
                 <div class="grid grid-cols-2 gap-4">
@@ -214,12 +223,23 @@ const props = defineProps({
     flash: Object,
     auth: Object,
     users: Object,
+    units: Array,
+})
+
+const unitsList = ref([])
+
+props.units.forEach(unit => {
+  unitsList.value.push({
+    label: unit.unit_path,
+    value: unit.id
+  })
 })
 
 const selectedUser = useForm({
     id: null,
     active: null,
     email: null,
+    organization_unit_id: null,
     role: null,
     name: null,
     employeeid: null,
@@ -232,6 +252,7 @@ const handleSelectedUser = (data) => {
     selectedUser.id = data.id
     selectedUser.active = data.active
     selectedUser.email = data.email
+    selectedUser.organization_unit_id = data.organization_unit_id
     selectedUser.role = data.role
     selectedUser.name = data.name
     selectedUser.employeeid = data.employeeid
