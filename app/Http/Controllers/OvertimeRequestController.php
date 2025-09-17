@@ -642,7 +642,7 @@ class OvertimeRequestController extends Controller
         $requests = OvertimeRequest::with(['schedule.user'])
             ->whereHas('schedule', function ($query) use ($request) {
                 $query->whereBetween('date', [$request->start_date, $request->end_date])
-                    ->whereHas('user', fn($q) => $q->where('role', 'employee'));
+                    ->whereHas('user', fn($q) => $q->where('role', 'employee')->where('organization_unit_id', $request->unit));
             })
             ->get()
             ->map(function ($req) {
