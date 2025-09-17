@@ -22,7 +22,7 @@
                         <TextInput name="Name:" :message="form.errors.name" v-model="form.name" />
                         <TextInput name="Employee ID:" type="text" :message="form.errors.employeeid" v-model="form.employeeid" />
                         <SelectOption name="Choose a role:" :message="form.errors.role" v-model="form.role" :options="options" />
-                        <SelectOption name="Select a unit:" :message="form.errors.role" v-model="form.role" :options="unitsList" />
+                        <SelectOption name="Select a unit:" :message="form.errors.organization_unit_id" v-model="form.organization_unit_id" :options="unitsList" />
                         <TextInput name="Password:" type="password" :message="form.errors.password" v-model="form.password" />
                         <TextInput name="Confirm Password:" type="password" v-model="form.password_confirmation" />
 
@@ -79,6 +79,7 @@ const form = useForm({
     email: '',
     employeeid: '',
     role: '',
+    organization_unit_id: '',
     password: '',
     password_confirmation: '',
 })
