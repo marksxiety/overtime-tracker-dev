@@ -627,6 +627,7 @@ class OvertimeRequestController extends Controller
 
         $registered_limit_hours = RequiredHours::select('week', 'required_hours')
             ->whereIn('week', $weekNumbers)
+            ->where('organization_unit_id', Auth::user()->organization_unit_id)
             ->get()
             ->map(function ($item) use ($weeks) {
                 // Match week with date
