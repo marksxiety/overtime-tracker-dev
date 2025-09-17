@@ -308,17 +308,17 @@ function rendertotalOvertimeViaEmployeeGraph(currTheme = theme.value) {
     totalOvertimeViaEmployeeInstance.setOption(option)
 }
 
-
-const selectedDateRange = useForm({
-    start_date: null,
-    end_date: null
-})
-
 const props = defineProps({
     requests: Object,
     errors: Object,
     flash: Object,
     auth: Object,
+})
+
+const selectedDateRange = useForm({
+    start_date: null,
+    end_date: null,
+    unit: props.auth?.user?.organization_unit_id ?? 0
 })
 
 const handleClearState = () => {
