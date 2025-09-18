@@ -590,14 +590,15 @@ class OvertimeRequestController extends Controller
     public function computeRemainingHours($year, $week, $required_hours)
     {
         $total_hours = OvertimeRequest::where('status', 'APPROVED')
-            ->whereHas('schedule.user', function ($query) use ($year, $week) {
-                $query->where('organization_unit_id', Auth::user()->organization_unit_id)
-                    ->whereHas('schedule', function ($q) use ($year, $week) {
-                        $q->whereYear('date', $year)
-                            ->where('week', $week);
+            ->whereHas('schedule', function ($scheduleQuery) use ($year, $week) {
+                $scheduleQuery->whereYear('date', $year)
+                    ->where('week', $week)
+                    ->whereHas('user', function ($userQuery) {
+                        $userQuery->where('organization_unit_id', Auth::user()->organization_unit_id);
                     });
             })
             ->sum('hours');
+
         return ($required_hours ?? 0) - (float) $total_hours;
     }
 
