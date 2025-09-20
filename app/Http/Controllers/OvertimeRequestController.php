@@ -165,7 +165,12 @@ class OvertimeRequestController extends Controller
                 $rules['remarks'] = 'required|string|min:10';
             } else {
                 $rules['current_status'] = ['required', Rule::in(['PENDING', 'APPROVED'])];
-                $rules['reason'] = 'required|string|min:1';
+
+                // require only the reason if the status is PENDING, this means that 
+                // the user is updating only the reason and comes from the approver event
+                if ($request->update_status === 'PENDING') {
+                    $rules['reason'] = 'required|string|min:1';
+                }
             }
 
             $messages = [
