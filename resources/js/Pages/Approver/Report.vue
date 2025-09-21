@@ -546,10 +546,14 @@ const handleAnalyzeAI = async () => {
 
 watch(AIresponse, async () => {
     await nextTick()
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth"
-    })
+
+    if (AIresponse.value) {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: "smooth"
+        })
+    }
+
 })
 
 watch(theme, (newTheme) => {
