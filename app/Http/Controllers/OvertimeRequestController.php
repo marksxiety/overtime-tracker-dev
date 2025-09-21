@@ -659,6 +659,7 @@ class OvertimeRequestController extends Controller
             ->map(function ($req) {
                 return [
                     'hours' => $req->hours,
+                    'reason' => $req->reason,
                     'status' => $req->status,
                     'date' => $req->schedule->date,
                     'week' => $req->schedule->week,
