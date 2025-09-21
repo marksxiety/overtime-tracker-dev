@@ -8,21 +8,22 @@
             <!-- Filters -->
             <div class="flex flex-row gap-4 justify-end">
                 <TextInput type="date" v-model="selectedDateRange.start_date"
-                    :message="selectedDateRange.errors?.start_date" :disabled="isRegenerating"/>
+                    :message="selectedDateRange.errors?.start_date" :disabled="isRegenerating" />
                 <TextInput type="date" v-model="selectedDateRange.end_date"
-                    :message="selectedDateRange.errors?.end_date" :disabled="isRegenerating"/>
+                    :message="selectedDateRange.errors?.end_date" :disabled="isRegenerating" />
 
                 <div class="join w-full sm:w-auto">
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Weekly" value="weekly"
-                        v-model="selectedReportType" :disabled="isRegenerating"/>
+                        v-model="selectedReportType" :disabled="isRegenerating" />
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Monthly" value="monthly"
-                        v-model="selectedReportType" :disabled="isRegenerating"/>
+                        v-model="selectedReportType" :disabled="isRegenerating" />
                     <input class="join-item btn flex-1" type="radio" name="options" aria-label="Yearly" value="yearly"
-                        v-model="selectedReportType" :disabled="isRegenerating"/>
+                        v-model="selectedReportType" :disabled="isRegenerating" />
                 </div>
 
-                <button class="btn btn-primary btn-md w-full md:w-auto shadow-md" @click="handleRegenerateReport()" :disabled="isRegenerating">
-                      <span v-if="isRegenerating" class="loading loading-spinner loading-md"></span>
+                <button class="btn btn-primary btn-md w-full md:w-auto shadow-md" @click="handleRegenerateReport()"
+                    :disabled="isRegenerating">
+                    <span v-if="isRegenerating" class="loading loading-spinner loading-md"></span>
                     REGENERATE
                 </button>
             </div>
@@ -76,15 +77,19 @@
             </div>
 
             <!-- AI Summary -->
-            <div class="card bg-base-100 shadow p-4 h-40">
+            <div class="card bg-base-100 shadow p-4 min-h-40 max-h-full">
                 <h2 class="font-bold mb-2">AI-Generated Summary</h2>
-                <div class="h-full flex items-center justify-center text-gray-400">
-                    <button v-if="!analyzingAI && AIreponse === ''" class="btn btn-primary" @click="handleAnalyzeAI()">Generate
-                        <Icon icon="mingcute:ai-line" width="24" height="24" />
-                    </button>
 
-                    <span v-if="analyzingAI" class="loading loading-dots loading-xl"></span>
-                    <span v-else>{{ AIreponse }}</span>
+                <div ref="aiContainer" class="h-full overflow-y-auto">
+                    <div v-if="AIresponse === ''" class="flex items-center justify-center h-full text-gray-400">
+                        <button class="btn btn-primary" @click="handleAnalyzeAI" :disabled="analyzingAI">
+                            Generate
+                            <span v-if="analyzingAI" class="loading loading-dots loading-xl"></span>
+                            <Icon v-else icon="mingcute:ai-line" width="24" height="24" />
+                        </button>
+                    </div>
+
+                    <div v-else v-html="renderedResponse" class="prose max-w-none text-sm"></div>
                 </div>
             </div>
         </div>
@@ -133,7 +138,7 @@
 
 
 <script setup>
-import { watch, ref, nextTick, reactive } from 'vue'
+import { watch, ref, nextTick, reactive, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import reportImage from '../../images/generate-report.svg'
 import TextInput from '../Components/TextInput.vue'
@@ -141,6 +146,8 @@ import { theme } from '../utils/themeStore.js'
 import { getTailwindColor } from '../utils/tailwindColorIdentifier.js'
 import * as echarts from 'echarts'
 import { Icon } from "@iconify/vue"
+import { analyzeWithAI } from "../services/openai.js"
+import MarkdownIt from "markdown-it"
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
@@ -157,9 +164,11 @@ const card = ref({
 })
 
 const analyzingAI = ref(false)
-const AIreponse = ref('')
-
+const AIresponse = ref('')
+const md = new MarkdownIt()
+const aiContainer = ref(null)
 const isRegenerating = ref(false)
+const renderedResponse = computed(() => md.render(AIresponse.value))
 
 
 const totalOvertimeViaTimeGraph = ref(null)
@@ -513,14 +522,35 @@ const handleRegenerateReport = () => {
 }
 
 
-const handleAnalyzeAI = () => {
-    analyzingAI.value = true
 
-    setTimeout(() => {
+const handleAnalyzeAI = async () => {
+    analyzingAI.value = true
+    AIresponse.value = ""
+
+    let firstChunk = true
+
+    const result = await analyzeWithAI(apiResponseData.value.list, (chunk) => {
+        AIresponse.value += chunk
+        if (firstChunk) {
+            analyzingAI.value = false
+            firstChunk = false
+        }
+    })
+
+    if (!result.success) {
+        AIresponse.value = "Error: " + result.data
         analyzingAI.value = false
-        AIreponse.value = 'Testing response from AI'
-    }, 2500);
+    }
 }
+
+
+watch(AIresponse, async () => {
+    await nextTick()
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+    })
+})
 
 watch(theme, (newTheme) => {
     if (!newTheme) return
@@ -540,3 +570,14 @@ watch(selectedReportType, (newVal) => {
     })
 })
 </script>
+
+<style scoped>
+.prose::-webkit-scrollbar {
+    width: 6px;
+}
+
+.prose::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+</style>
