@@ -14,13 +14,23 @@ export async function analyzeWithAI(jsonData, onChunk) {
 
         const result = await openai.chat.completions.create({
             model: "gpt-4o-mini",
+            stream: true,
             messages: [
                 {
+                    role: "system",
+                    content: `You are a **professional overtime request analyzer**.  
+                        Analyze overtime request JSON and produce a **Markdown report** for management:  
+                        - Show employee details (name, date, requested hours).  
+                        - Quote the overtime reason.  
+                        - Break down which parts of the reason justify the overtime.  
+                        - Provide a professional justification section.  
+                        - End with a recommendation (approve/reject with rationale).`,
+                },
+                {
                     role: "user",
-                    content: `Analyze the following JSON from overtime requests from employees:\n\n${content}`,
+                    content: `Analyze this JSON overtime request:\n\n${content}`,
                 },
             ],
-            stream: true,
         });
 
         for await (const chunk of result) {
@@ -32,6 +42,7 @@ export async function analyzeWithAI(jsonData, onChunk) {
 
         return { success: true };
     } catch (error) {
+        console.error("AI Analysis Error:", error);
         return {
             success: false,
             data: error || "Unidentified Error Occurred",
