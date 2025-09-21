@@ -186,11 +186,18 @@ class OvertimeRequestController extends Controller
                     ->withInput();
             }
 
-            OvertimeRequest::where('id', $request->id)->update([
-                'status' => $request->update_status,
+            // build the update payload
+            $updateData = [
+                'status'  => $request->update_status,
                 'remarks' => $request->remarks,
-                'reason' => $request->reason,
-            ]);
+            ];
+
+            // only update reason if status is PENDING
+            if ($request->update_status === 'PENDING') {
+                $updateData['reason'] = $request->reason;
+            }
+
+            OvertimeRequest::where('id', $request->id)->update($updateData);
             return redirect()->back();
         } catch (\Throwable $th) {
             return redirect()->back()->withErrors("Cancelation failed due to $th");
