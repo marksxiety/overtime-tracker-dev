@@ -5,6 +5,7 @@ use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\ShiftContoller;
 use App\Http\Controllers\RequiredHoursController;
 use App\Http\Controllers\ScheduleController;
+use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,8 @@ Route::middleware('employee')->group(function () {
     Route::get('/employee/profile', [AuthController::class, 'loadUserProfile'])->name('profile.employee');
 
     Route::post('/profile/update/employee', [AuthController::class, 'updateProfileInformation'])->name('profile.update.employee');
+
+    Route::get('/overtime/requests/list', [OvertimeRequestController::class, 'fetchOvertimeRequestOfEmployee'])->name('overtime.requests.employee');
 });
 
 Route::middleware('approver')->group(function () {
