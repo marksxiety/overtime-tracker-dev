@@ -685,4 +685,46 @@ class OvertimeRequestController extends Controller
             'weeks' => $weeks
         ]);
     }
+    public function fetchOvertimeRequestOfEmployee()
+    {
+
+        $overtimelist = [];
+        $overtime = null;
+        $message = '';
+        try {
+
+            $requests = OvertimeRequest::with(['schedule.user', 'schedule.shift'])
+                ->whereHas('schedule.user', fn($q) => $q->where('id', Auth::id()))
+                ->get()
+                ->sortBy([
+                    fn($r) => $r->schedule->date
+                ]);
+
+
+            foreach ($requests as $req) {
+                $overtimelist[] = [
+                    'date' => $req->schedule->date,
+                    'week' => $req->schedule->week,
+                    'status' => $req->status,
+                    'hours' => $req->hours,
+                    'reason' => $req->reason,
+                    'remarks' => $req->remarks,
+                ];
+            }
+
+
+            $success = true;
+        } catch (\Throwable $th) {
+            $success = false;
+            $message = "Fetching Failed due to $th";
+        }
+
+        return inertia('Employee/Request', [
+            'info' => [
+                'requests' => $overtimelist
+            ],
+            'success' => $success,
+            'message' => $message
+        ]);
+    }
 }
