@@ -226,7 +226,7 @@ class OvertimeRequestController extends Controller
                     $query->where('user_id', Auth::id())->whereYear('date', $year)->whereMonth('date', $month);
                 })
                 ->select('id', 'employee_schedule_id', 'start_time', 'end_time', 'hours', 'reason', 'remarks', 'status', 'created_at')
-                ->orderBy('updated_at', 'desc')
+                ->orderBy('updated_at', 'desc')->latest()->take(5)
                 ->get();
 
             foreach ($overtimes as $overtime) {
