@@ -18,9 +18,10 @@
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.0.14",
+        "@tailwindcss/typography": "^0.5.18",
         "echarts": "^6.0.0",
-        "markdown-it": "^14.1.0",
         "openai": "^5.22.0",
-        "vue": "^3.5.17"
+        "vue": "^3.5.17",
+        "vue-markdown-render": "^2.3.0"
     }
 }
