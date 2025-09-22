@@ -294,7 +294,14 @@
 
                 <!-- My Requests -->
                 <div class="rounded-md p-4 shadow flex flex-col bg-base-100 h-96">
-                    <h2 class="text-lg font-bold mb-4">My Requests</h2>
+                    <div class="flex justify-between items-center mb-4 p-2">
+                        <h2 class="text-lg font-bold">My Recent Requests</h2>
+                        <Link :href="route('overtime.requests.employee')"
+                            class="btn btn-sm btn-primary flex items-center gap-1">
+                        See More
+                        <Icon icon="ic:round-navigate-next" width="18" height="18" />
+                        </Link>
+                    </div>
                     <ul class="flex-1 space-y-2 overflow-y-auto pb-2 text-sm">
                         <li v-if="recentRequests.length === 0">
                             <p class="font-light italic text-center mt-5">No Recent Request...</p>
