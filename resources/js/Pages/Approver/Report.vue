@@ -83,13 +83,18 @@
                 <div ref="aiContainer" class="h-full overflow-y-auto">
                     <div v-if="AIresponse === ''" class="flex items-center justify-center h-full text-gray-400">
                         <button class="btn btn-primary" @click="handleAnalyzeAI" :disabled="analyzingAI">
-                            Generate
-                            <span v-if="analyzingAI" class="loading loading-dots loading-xl"></span>
-                            <Icon v-else icon="mingcute:ai-line" width="24" height="24" />
+                            <template v-if="analyzingAI">
+                                Generating
+                                <span class="loading loading-dots loading-xl ml-2"></span>
+                            </template>
+                            <template v-else>
+                                Generate
+                                <Icon icon="mingcute:ai-line" width="24" height="24" />
+                            </template>
                         </button>
-                    </div>
 
-                    <div v-else v-html="renderedResponse" class="prose max-w-none text-sm"></div>
+                    </div>
+                    <VueMarkdown v-else :source="AIresponse" class="prose prose-slate max-w-none text-sm" />
                 </div>
             </div>
         </div>
@@ -147,7 +152,7 @@ import { getTailwindColor } from '../utils/tailwindColorIdentifier.js'
 import * as echarts from 'echarts'
 import { Icon } from "@iconify/vue"
 import { analyzeWithAI } from "../services/openai.js"
-import MarkdownIt from "markdown-it"
+import VueMarkdown from 'vue-markdown-render'
 
 const isLoading = ref(false)
 const loadingMessage = ref('Processing request...')
@@ -164,11 +169,8 @@ const card = ref({
 })
 
 const analyzingAI = ref(false)
-const AIresponse = ref('')
-const md = new MarkdownIt()
-const aiContainer = ref(null)
+const AIresponse = ref("")
 const isRegenerating = ref(false)
-const renderedResponse = computed(() => md.render(AIresponse.value))
 
 
 const totalOvertimeViaTimeGraph = ref(null)
@@ -576,12 +578,33 @@ watch(selectedReportType, (newVal) => {
 </script>
 
 <style scoped>
-.prose::-webkit-scrollbar {
-    width: 6px;
+.prose {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    line-height: 1;
 }
 
-.prose::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
+.prose h1,
+.prose h2,
+.prose h3 {
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.3em;
+}
+
+.prose ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.prose ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+}
+
+.prose blockquote {
+    border-left: 4px solid #d1d5db;
+    padding-left: 1rem;
+    color: #6b7280;
+    font-style: italic;
 }
 </style>
