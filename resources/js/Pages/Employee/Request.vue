@@ -53,25 +53,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th>1</th>
-                                    <td>Cy Ganderton</td>
-                                    <td>Quality Control Specialist</td>
-                                    <td>Pending</td>
-                                    <td>Week 1</td>
-                                </tr>
-                                <tr>
-                                    <th>2</th>
-                                    <td>Hart Hagerty</td>
-                                    <td>Desktop Support Technician</td>
-                                    <td>Approved</td>
-                                    <td>Week 2</td>
-                                </tr>
-                                <tr>
-                                    <th>3</th>
-                                    <td>Brice Swyre</td>
-                                    <td>Tax Accountant</td>
-                                    <td>Rejected</td>
-                                    <td>Week 3</td>
+                                    <th colspan="5" class="text-center italic opacity-50">Under Development</th>
                                 </tr>
                             </tbody>
                         </table>
