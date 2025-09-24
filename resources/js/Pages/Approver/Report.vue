@@ -80,7 +80,7 @@
             <div class="card bg-base-100 shadow p-4 min-h-40 max-h-full">
                 <h2 class="font-bold mb-2">AI-Generated Summary</h2>
 
-                <div ref="aiContainer" class="h-full overflow-y-auto">
+                <div ref="aiContainer" class="h-full overflow-y-visible">
                     <div v-if="AIresponse === ''" class="flex items-center justify-center h-full text-gray-400">
                         <button class="btn btn-primary" @click="handleAnalyzeAI" :disabled="analyzingAI">
                             <template v-if="analyzingAI">
