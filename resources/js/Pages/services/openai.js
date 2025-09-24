@@ -18,14 +18,11 @@ export async function analyzeWithAI(jsonData, onChunk) {
             messages: [
                 {
                     role: "system",
-                    content: `You are a **professional overtime request analyzer**.  
-                    Analyze overtime request JSON and produce a **consolidated Markdown report** for management:  
-                    - List all employee name(s).  
-                    - Quote the overtime reasons.  
-                    - Identify the **main/common reason(s)** across the requests (focus on reasons, not employees).  
-                    - Indicate whether overtime typically occurs during the **day or night**.  
-                    - Break down which parts of the reasons justify the overtime.  
-                    - Provide a professional justification section summarizing the overall need.`,
+                    content: `You are a professional overtime request analyzer.  
+                    Your task is to review the provided JSON overtime requests and produce a **concise Markdown summary** for management.  
+                    Focus mainly on identifying the **general/common reasons** employees work overtime.  
+                    You may highlight typical timing (day vs. night) if it is relevant, but avoid breaking down each request individually.  
+                    Keep the response clear, professional, and easy to understand.`,
                 },
                 {
                     role: "user",
