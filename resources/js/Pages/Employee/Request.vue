@@ -12,8 +12,8 @@
             </ul>
         </div>
 
-        <div class="flex justify-center items-center min-h-[50vh]">
-            <div class="card bg-base-100 w-full shadow-sm h-[50vh] flex flex-col">
+        <div class="flex justify-center items-center min-h-[70vh]">
+            <div class="card bg-base-100 w-full shadow-sm h-full flex flex-col">
                 <div class="card-body flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4">
                         <h1 class="text-2xl font-bold">Overtime Requests</h1>
@@ -33,7 +33,7 @@
 
 
                     <hr>
-                    <div class="overflow-x-auto rounded-box bg-base-100 flex-1">
+                    <div class="overflow-x-auto rounded-box bg-base-100 flex-1 h-full">
                         <table class="table w-full">
                             <thead>
                                 <tr>
@@ -42,7 +42,7 @@
                                     <th>Hours</th>
                                     <th>Reason</th>
                                     <th>Remarks</th>
-                                    <th>Status</th>
+                                    <th class="text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,9 +54,23 @@
                                     <th>{{ req.date }}</th>
                                     <th>{{ req.week }}</th>
                                     <th>{{ req.hours }}</th>
-                                    <th>{{ req.reason }}</th>
+                                    <th class="whitespace-normal break-words max-w-xs">
+                                        {{ req.reason }}
+                                    </th>
+
                                     <th>{{ req.remarks ?? 'N/A' }}</th>
-                                    <th>{{ req.status }}</th>
+                                    <th class="flex justify-center">
+                                        <span class="badge" :class="{
+                                            'badge-primary': req.status === 'FILED',
+                                            'badge-warning': req.status === 'CANCELED',
+                                            'badge-info': req.status === 'PENDING',
+                                            'badge-success': req.status === 'APPROVED',
+                                            'badge-error': req.status === 'DECLINED'
+                                        }">
+                                            {{ req.status }}
+                                        </span>
+                                    </th>
+
                                 </tr>
                             </tbody>
                         </table>
