@@ -665,6 +665,7 @@ class OvertimeRequestController extends Controller
             ->get()
             ->map(function ($req) {
                 return [
+                    'id' => $req->id,
                     'hours' => $req->hours,
                     'reason' => $req->reason,
                     'status' => $req->status,
