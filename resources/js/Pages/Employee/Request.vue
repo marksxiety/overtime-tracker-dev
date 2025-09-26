@@ -33,7 +33,7 @@
 
 
                     <hr>
-                    <div class="overflow-x-auto rounded-box bg-base-100 flex-1 h-full">
+                    <div class="overflow-x-auto rounded-box bg-base-100 flex-1 min-h-[50vh] h-full">
                         <table class="table w-full">
                             <thead>
                                 <tr>
@@ -75,18 +75,7 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="flex justify-between items-center mt-4">
-                        <div class="text-sm">
-                            Showing 3 out of 10 entries
-                        </div>
-                        <div class="join">
-                            <button class="join-item btn">1</button>
-                            <button class="join-item btn btn-active">2</button>
-                            <button class="join-item btn">3</button>
-                            <button class="join-item btn">4</button>
-                        </div>
-                    </div>
+                    <PaginationLinks :paginator="paginator" />
                 </div>
             </div>
         </div>
@@ -99,6 +88,7 @@ import { ref } from 'vue'
 import { weeks, statuses } from '../utils/dropdownOptions.js'
 import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
+import PaginationLinks from '../Components/PaginationLinks.vue'
 import { Icon } from "@iconify/vue"
 
 const props = defineProps({
@@ -114,6 +104,10 @@ const props = defineProps({
 const selectedWeek = ref('')
 const selectedStatus = ref('')
 const searchValue = ref('')
-const requests = ref([...props.info?.requests] ?? [])
+
+console.log(props.info?.requests)
+
+const paginator = ref(props.info?.requests ?? { data: [], links: [] })
+const requests = ref(paginator.value.data ?? [])
 
 </script>
