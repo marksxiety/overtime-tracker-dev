@@ -19,41 +19,44 @@
                         <h1 class="text-2xl font-bold">Overtime Requests</h1>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-4 mb-4">
-                        <input type="text" placeholder="Search by name or job"
-                            class="input input-bordered flex-1 min-w-[200px]" />
+                    <div class="flex flex-row items-center gap-4 mb-4">
+                        <TextInput name="" type="text" v-model="searchValue" :placeholder="'Search date or week'"
+                            margin="" class="w-3/4" />
+                        <SelectOption :options="weeks" v-model="selectedWeek" margin="" />
+                        <SelectOption :options="statuses" v-model="selectedStatus" margin="" />
 
-                        <select class="select select-bordered w-52">
-                            <option value="">ALL</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
-                        </select>
-
-                        <select class="select select-bordered w-52">
-                            <option value="">ALL</option>
-                            <option value="Week 1">Week 1</option>
-                            <option value="Week 2">Week 2</option>
-                            <option value="Week 3">Week 3</option>
-                            <option value="Week 4">Week 4</option>
-                        </select>
+                        <button class="btn btn-primary flex flex-row items-center gap-2" @click="applyFilter">
+                            <span>Apply Filter</span>
+                            <Icon icon="proicons:filter" width="24" height="24" />
+                        </button>
                     </div>
+
 
                     <hr>
                     <div class="overflow-x-auto rounded-box bg-base-100 flex-1">
                         <table class="table w-full">
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th>Name</th>
-                                    <th>Job</th>
-                                    <th>Status</th>
+                                    <th>Date</th>
                                     <th>Week</th>
+                                    <th>Hours</th>
+                                    <th>Reason</th>
+                                    <th>Remarks</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th colspan="5" class="text-center italic opacity-50">Under Development</th>
+                                <tr v-if="requests.length === 0">
+                                    <th colspan="6" class="text-center italic opacity-50">Under Development</th>
+                                </tr>
+
+                                <tr v-else v-for="req in requests" :key="req.id">
+                                    <th>{{ req.date }}</th>
+                                    <th>{{ req.week }}</th>
+                                    <th>{{ req.hours }}</th>
+                                    <th>{{ req.reason }}</th>
+                                    <th>{{ req.remarks ?? 'N/A' }}</th>
+                                    <th>{{ req.status }}</th>
                                 </tr>
                             </tbody>
                         </table>
@@ -78,6 +81,11 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { weeks, statuses } from '../utils/dropdownOptions.js'
+import SelectOption from '../Components/SelectOption.vue'
+import TextInput from '../Components/TextInput.vue'
+import { Icon } from "@iconify/vue"
 
 const props = defineProps({
     info: Object,
@@ -88,4 +96,10 @@ const props = defineProps({
     message: String,
     auth: Object,
 })
+
+const selectedWeek = ref('')
+const selectedStatus = ref('')
+const searchValue = ref('')
+const requests = ref([...props.info?.requests] ?? [])
+
 </script>
