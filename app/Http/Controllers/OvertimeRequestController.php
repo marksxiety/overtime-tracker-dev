@@ -696,22 +696,19 @@ class OvertimeRequestController extends Controller
 
             $requests = OvertimeRequest::with(['schedule.user', 'schedule.shift'])
                 ->whereHas('schedule.user', fn($q) => $q->where('id', Auth::id()))
-                ->get()
-                ->sortBy([
-                    fn($r) => $r->schedule->date
-                ]);
+                ->paginate(2);
 
-
-            foreach ($requests as $req) {
-                $overtimelist[] = [
-                    'date' => $req->schedule->date,
-                    'week' => $req->schedule->week,
-                    'status' => $req->status,
-                    'hours' => $req->hours,
-                    'reason' => $req->reason,
+            // Transform each item while keeping pagination
+            $requests->getCollection()->transform(function ($req) {
+                return [
+                    'date'    => $req->schedule->date,
+                    'week'    => $req->schedule->week,
+                    'status'  => $req->status,
+                    'hours'   => $req->hours,
+                    'reason'  => $req->reason,
                     'remarks' => $req->remarks,
                 ];
-            }
+            });
 
 
             $success = true;
@@ -722,7 +719,7 @@ class OvertimeRequestController extends Controller
 
         return inertia('Employee/Request', [
             'info' => [
-                'requests' => $overtimelist
+                'requests' => $requests
             ],
             'success' => $success,
             'message' => $message
