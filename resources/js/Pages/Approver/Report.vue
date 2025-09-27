@@ -253,6 +253,15 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
                 type: 'line',
                 smooth: true,
                 data: data.map(d => d.roa)
+            },
+            {
+                name: 'Planned ROA',
+                type: 'line',
+                smooth: true,
+                lineStyle: {
+                    type: 'dashed'
+                },
+                data: data.map(d => d.planned_roa)
             }
         ]
     }
