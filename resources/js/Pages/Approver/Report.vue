@@ -198,7 +198,8 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
             label: `Week ${week}`,
             sortKey: week,
             hours: totalOvertimeViaTime.value.totalHours[idx],
-            roa: totalOvertimeViaTime.value.roa[idx]
+            roa: totalOvertimeViaTime.value.roa[idx],
+            planned_roa: 108
         }))
         data.sort((a, b) => a.sortKey - b.sortKey)
     }
@@ -207,7 +208,8 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
             label: month,
             sortKey: new Date(month).getTime(),
             hours: totalOvertimeViaTime.value.totalHours[idx],
-            roa: totalOvertimeViaTime.value.roa[idx]
+            roa: totalOvertimeViaTime.value.roa[idx],
+            planned_roa: 467.64
         }))
         data.sort((a, b) => a.sortKey - b.sortKey)
     }
@@ -216,7 +218,8 @@ function rendertotalOvertimeViaTimeGraph(currTheme = theme.value) {
             label: String(year),
             sortKey: year,
             hours: totalOvertimeViaTime.value.totalHours[idx],
-            roa: totalOvertimeViaTime.value.roa[idx]
+            roa: totalOvertimeViaTime.value.roa[idx],
+            planned_roa: 5600
         }))
         data.sort((a, b) => a.sortKey - b.sortKey)
     }
