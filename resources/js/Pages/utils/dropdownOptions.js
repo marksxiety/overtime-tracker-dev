@@ -8,8 +8,8 @@ for (let i = 0; i < 7; i++) {
     });
 }
 
-export const weeks = [];
-for (let w = 1; w < 52; w++) {
+export const weeks = [{ label: "All Weeks", value: "" }];
+for (let w = 1; w <= 52; w++) {
     weeks.push({
         label: `Week ${w}`,
         value: w,
@@ -52,12 +52,12 @@ export function getTimeOptions() {
     return times;
 }
 
-export const statuses = [];
-const statusList = ["Pending", "In Progress", "Completed", "Cancelled"];
-
-for (const status of statusList) {
-    statuses.push({
-        label: status,
-        value: status.toUpperCase().replace(/ /g, "_"),
-    });
-}
+export const statuses = [
+    { label: "All", value: "ALL" },
+    { label: "Filed", value: "FILED" },
+    { label: "Pending", value: "PENDING" },
+    { label: "Approved", value: "APPROVED" },
+    { label: "Declined", value: "DECLINED" },
+    { label: "Canceled", value: "CANCELED" },
+    { label: "Disapproved", value: "DISAPPROVED" },
+];
