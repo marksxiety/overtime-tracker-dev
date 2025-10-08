@@ -686,21 +686,40 @@ class OvertimeRequestController extends Controller
             'weeks' => $weeks
         ]);
     }
-    public function fetchOvertimeRequestOfEmployee()
+    public function fetchOvertimeRequestOfEmployee(Request $request)
     {
-
-        $overtimelist = [];
-        $overtime = null;
+        $week = $request->input('week', '');
+        $status = $request->input('status', 'ALL');
+        $search = $request->input('search', '');
         $message = '';
         try {
 
             $requests = OvertimeRequest::with(['schedule.user', 'schedule.shift'])
                 ->whereHas('schedule.user', fn($q) => $q->where('id', Auth::id()))
-                ->paginate(2);
+                ->when($week, function ($query) use ($week) {
+                    return $query->whereHas('schedule', fn($q) => $q->where('week', $week));
+                })
+                ->when($status !== 'ALL', function ($query) use ($status) {
+                    return $query->where('status', $status);
+                })
+                ->when($search, function ($query) use ($search) {
+                    return $query->where(function ($q) use ($search) {
+                        $q->where('reason', 'like', '%' . $search . '%')
+                            ->orWhere('remarks', 'like', '%' . $search . '%')
+                            ->orWhereHas('schedule', function ($scheduleQuery) use ($search) {
+                                $scheduleQuery->where('date', 'like', '%' . $search . '%')
+                                    ->orWhere('week', 'like', '%' . $search . '%');
+                            });
+                    });
+                })
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10)
+                ->appends($request->query());
 
             // Transform each item while keeping pagination
             $requests->getCollection()->transform(function ($req) {
                 return [
+                    'id'      => $req->id,
                     'date'    => $req->schedule->date,
                     'week'    => $req->schedule->week,
                     'status'  => $req->status,
@@ -720,6 +739,11 @@ class OvertimeRequestController extends Controller
         return inertia('Employee/Request', [
             'info' => [
                 'requests' => $requests
+            ],
+            'payload' => [
+                'week' => $week,
+                'status' => $status,
+                'search' => $search
             ],
             'success' => $success,
             'message' => $message
