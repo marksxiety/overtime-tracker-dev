@@ -29,7 +29,7 @@ Route::get('/', function (Request $request) {
 })->middleware('auth')->name('main');
 
 Route::middleware('employee')->group(function () {
-    Route::inertia('/request', 'Employee/Request')->name('request');
+    Route::get('/request', [OvertimeRequestController::class, 'fetchOvertimeRequestOfEmployee'])->name('request');
 
     // shift code list for registering schedule requests (axios)
     Route::get('/employee/shift/list', [ShiftContoller::class, 'shiftCodeList']);
