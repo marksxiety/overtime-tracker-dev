@@ -13,6 +13,10 @@ class OvertimeRequest extends Model
 
     protected $fillable = ['employee_schedule_id', 'start_time', 'end_time', 'hours', 'reason', 'status', 'remarks'];
 
+    protected $attributes = [
+        'status' => 'FILED'
+    ];
+
     public function schedule()
     {
         return $this->belongsTo(Schedule::class, 'employee_schedule_id');
