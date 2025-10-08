@@ -47,7 +47,8 @@
                             </thead>
                             <tbody>
                                 <tr v-if="requests.length === 0">
-                                    <th colspan="6" class="text-center italic opacity-50">Under Development</th>
+                                    <th colspan="6" class="text-center italic opacity-50">No overtime requests found
+                                    </th>
                                 </tr>
 
                                 <tr v-else v-for="req in requests" :key="req.id">
@@ -65,7 +66,7 @@
                                             'badge-warning': req.status === 'CANCELED',
                                             'badge-info': req.status === 'PENDING',
                                             'badge-success': req.status === 'APPROVED',
-                                            'badge-error': req.status === 'DECLINED'
+                                            'badge-error': req.status === 'DECLINED' || req.status === 'DISAPPROVED'
                                         }">
                                             {{ req.status }}
                                         </span>
@@ -83,8 +84,8 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
-import { ref } from 'vue'
+import { Link, useForm, router } from '@inertiajs/vue3'
+import { ref, computed, watch } from 'vue'
 import { weeks, statuses } from '../utils/dropdownOptions.js'
 import SelectOption from '../Components/SelectOption.vue'
 import TextInput from '../Components/TextInput.vue'
@@ -101,13 +102,51 @@ const props = defineProps({
     auth: Object,
 })
 
-const selectedWeek = ref('')
-const selectedStatus = ref('')
-const searchValue = ref('')
+const selectedWeek = ref(props.payload?.week ?? '')
+const selectedStatus = ref(props.payload?.status ?? '')
+const searchValue = ref(props.payload?.search ?? '')
 
 console.log(props.info?.requests)
 
 const paginator = ref(props.info?.requests ?? { data: [], links: [] })
 const requests = ref(paginator.value.data ?? [])
+
+// Watch for props changes and update local data
+watch(() => props.info?.requests, (newRequests) => {
+    if (newRequests) {
+        paginator.value = newRequests
+        requests.value = newRequests.data || []
+    }
+}, { immediate: true })
+
+const handleFilter = () => {
+    paginator.value = {
+        ...paginator.value,
+        filters: {
+            week: selectedWeek.value,
+            status: selectedStatus.value,
+            search: searchValue.value
+        }
+    }
+}
+
+const fetchRequests = () => {
+    router.get(route('overtime.requests.employee'), {
+        week: selectedWeek.value,
+        status: selectedStatus.value,
+        search: searchValue.value
+    }, {
+        preserveState: true,
+        onSuccess: (page) => {
+            paginator.value = page.props.info.requests
+            requests.value = paginator.value.data
+        }
+    })
+}
+
+const applyFilter = () => {
+    handleFilter()
+    fetchRequests()
+}
 
 </script>
