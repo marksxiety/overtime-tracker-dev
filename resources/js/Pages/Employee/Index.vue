@@ -160,7 +160,7 @@
                         <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                             <legend class="text-sm font-semibold px-2">Reason</legend>
                             <TextArea type="text" v-model="formFilledOvertime.reason"
-                                :message="formFilledOvertime.errors?.reason" />
+                                :message="formFilledOvertime.errors?.reason" :disabled="formFilledOvertime.status !== 'PENDING'"/>
                         </fieldset>
 
                         <!-- Remarks -->
