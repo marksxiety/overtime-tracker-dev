@@ -140,12 +140,11 @@
                                     </label>
                                     <span class="font-medium">{{ formFilledOvertime.date }}</span>
                                 </div>
-                                <div class="flex flex-row gap-2">
-                                    <label class="label">
-                                        <span class="label-text">Time: </span>
-                                    </label>
-                                    <span class="font-medium">{{ formFilledOvertime.start_time }} → {{
-                                        formFilledOvertime.end_time }}</span>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <TextInput name="Start:" type="text" v-model="formFilledOvertime.start_time"
+                                        :placeholder="''" :disabled="formFilledOvertime.status !== 'PENDING'" />
+                                    <TextInput name="End:" type="text" v-model="formFilledOvertime.end_time"
+                                        :placeholder="''" :disabled="formFilledOvertime.status !== 'PENDING'" />
                                 </div>
                                 <div class="flex flex-row gap-2">
                                     <label class="label">
@@ -160,7 +159,8 @@
                         <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                             <legend class="text-sm font-semibold px-2">Reason</legend>
                             <TextArea type="text" v-model="formFilledOvertime.reason"
-                                :message="formFilledOvertime.errors?.reason" :disabled="formFilledOvertime.status !== 'PENDING'"/>
+                                :message="formFilledOvertime.errors?.reason"
+                                :disabled="formFilledOvertime.status !== 'PENDING'" />
                         </fieldset>
 
                         <!-- Remarks -->
