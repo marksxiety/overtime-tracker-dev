@@ -140,12 +140,6 @@
                                     </label>
                                     <span class="font-medium">{{ formFilledOvertime.date }}</span>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <TextInput name="Start:" type="text" v-model="formFilledOvertime.start_time"
-                                        :placeholder="''" :disabled="formFilledOvertime.status !== 'PENDING'" />
-                                    <TextInput name="End:" type="text" v-model="formFilledOvertime.end_time"
-                                        :placeholder="''" :disabled="formFilledOvertime.status !== 'PENDING'" />
-                                </div>
                                 <div class="flex flex-row gap-2">
                                     <label class="label">
                                         <span class="label-text">Total Hour(s): </span>
@@ -158,9 +152,22 @@
                         <!-- Reason -->
                         <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
                             <legend class="text-sm font-semibold px-2">Reason</legend>
-                            <TextArea type="text" v-model="formFilledOvertime.reason"
-                                :message="formFilledOvertime.errors?.reason"
-                                :disabled="formFilledOvertime.status !== 'PENDING'" />
+                            <div class="flex flex-col gap-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-1">
+                                        <SelectOption name="Start Time:"
+                                            :message="formFilledOvertime.errors?.start_time"
+                                            v-model="formFilledOvertime.start_time" :options="timeOptions" />
+                                    </div>
+                                    <div class="col-span-1">
+                                        <SelectOption name="End Time:" :message="formFilledOvertime.errors?.end_time"
+                                            v-model="formFilledOvertime.end_time" :options="timeOptions" />
+                                    </div>
+                                </div>
+                                <TextArea type="text" v-model="formFilledOvertime.reason"
+                                    :message="formFilledOvertime.errors?.reason"
+                                    :disabled="formFilledOvertime.current_status !== 'PENDING'" />
+                            </div>
                         </fieldset>
 
                         <!-- Remarks -->
@@ -529,6 +536,8 @@ const showOvertimeRequestModal = (data) => {
     formFilledOvertime.current_status = data.status
     formFilledOvertime.reason = data.reason
     formFilledOvertime.remarks = data.remarks
+
+    console.log(formFilledOvertime)
     overtimeRequestModal.value?.open()
 }
 
