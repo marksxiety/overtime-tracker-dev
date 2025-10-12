@@ -370,6 +370,7 @@ import { getEmployeeOvertimeStats } from '../utils/overtimeMapper.js'
 import fetchUpcomingHolidays from '../api/upcomingHolidays.js'
 import { getTimeOptions } from '../utils/dropdownOptions.js'
 import Stepper from '../Components/Stepper.vue'
+import { enhanceReasonWithAI } from "../services/openai.js"
 import { Icon } from "@iconify/vue"
 
 
@@ -673,24 +674,33 @@ const submitCancelation = () => {
     })
 }
 
-const enhanceReason = () => {
-    if (formFiling.reason.trim().length === 0) {
-        formFiling.errors.reason = 'Please enter a reason to enhance.'
-        return
+const enhanceReason = async () => {
+
+    if (formFiling.reason) {
+        if (formFiling.reason.trim().length === 0) {
+            formFiling.errors.reason = 'Please enter a reason to enhance.'
+            return
+        }
+
+        let splitted_reason = formFiling.reason?.trim().split(' ')
+        if (splitted_reason.length < 3) {
+            formFiling.errors.reason = 'Please provide a more detailed reason (at least 3 words).'
+            return
+        }
+        delete formFiling.errors.reason
+        isEnhancing.value = true
+
+
+        const enhanced = await enhanceReasonWithAI(formFiling.reason)
+
+        if (enhanced.success) {
+            formFiling.reason = enhanced.data
+            isEnhancing.value = false
+        } else {
+            formFiling.errors.reason = 'Failed to enhance reason. Please try again.'
+            isEnhancing.value = false
+        }
     }
-
-    let splitted_reason = formFiling.reason.trim().split(' ')
-    if (splitted_reason.length < 3) {
-        formFiling.errors.reason = 'Please provide a more detailed reason (at least 3 words).'
-        return
-    }
-    delete formFiling.errors.reason
-    isEnhancing.value = true
-    setTimeout(() => {
-        isEnhancing.value = false
-    }, 10000);
-
-
 }
 
 
