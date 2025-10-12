@@ -71,20 +71,45 @@ export async function enhanceReasonWithAI(reason) {
             model: "gpt-4o-mini",
             messages: [
                 {
+                    role: "system",
+                    content: `You are an expert at refining overtime request reasons. Take the user's short reason and expand it into 2-3 natural, professional sentences that explain WHY they need overtime.
+                        Keep it practical and work-focused. Do not turn it into a formal proposal or mission statement. Just make it sound like a professional explanation.
+                        Return only the enhanced text without quotes, explanations, or labels.
+                        CRITICAL: Your response must not exceed 16,777,215 characters (MySQL MEDIUMTEXT limit).`,
+                },
+                {
                     role: "user",
-                    content: `
-                            You are a reason enhancer expert for overtime requests.
-                            The input text will be stored in a MySQL MEDIUMTEXT column, which supports up to 16,777,215 characters.
-                            Ensure your enhanced response remains concise, natural, and well-structured for this context.
-
-                            Please enhance the following reason for an overtime request:
-
-                            ${reason}`.trim(),
+                    content: reason,
                 },
             ],
+            temperature: 0.5,
+            max_tokens: 300,
+            response_format: {
+                type: "json_schema",
+                json_schema: {
+                    name: "enhanced_reason",
+                    strict: true,
+                    schema: {
+                        type: "object",
+                        properties: {
+                            enhanced_text: {
+                                type: "string",
+                                maxLength: 16777215,
+                                description:
+                                    "The enhanced overtime reason text",
+                            },
+                        },
+                        required: ["enhanced_text"],
+                        additionalProperties: false,
+                    },
+                },
+            },
         });
 
-        return { success: true, data: result.choices?.[0]?.message?.content };
+        const parsedResponse = JSON.parse(
+            result.choices?.[0]?.message?.content
+        );
+        return { success: true, data: parsedResponse.enhanced_text };
     } catch (error) {
         console.error("AI Enhancement Error:", error);
         return {
