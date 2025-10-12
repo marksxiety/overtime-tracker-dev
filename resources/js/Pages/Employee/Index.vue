@@ -54,13 +54,22 @@
                                             v-model="formFiling.end_time" :options="timeOptions" />
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 w-full">
-                                    <Icon icon="mingcute:ai-line" width="24" height="24" class="text-primary" />
-                                    <TextArea name="Reason:" type="text" v-model="formFiling.reason"
-                                        :message="formFiling.errors?.reason" placeholder="Enter your reason..."
-                                        class="flex-1" />
+                                <div class="relative w-full">
+                                    <textarea
+                                        :class="['textarea w-full', { 'textarea-error': formFiling.errors?.reason }]"
+                                        v-model="formFiling.reason" placeholder="Enter your reason..."
+                                        :disabled="isEnhancing"></textarea>
                                     <button type="button"
-                                        class="btn btn-sm btn-outline btn-primary whitespace-nowrap">Enhance</button>
+                                        class="absolute top-2 right-2 btn btn-sm btn-primary btn-outline gap-1 text-xs"
+                                        @click="enhanceReason" :disabled="isEnhancing">
+                                        <span v-if="isEnhancing" class="loading loading-dots loading-xs"></span>
+                                        <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="16" height="16" />
+                                        <span>{{ isEnhancing ? 'Enhancing...' : 'Enhance' }}</span>
+                                    </button>
+                                    <p v-if="formFiling.errors?.reason"
+                                        class="mt-1 text-sm text-red-600 px-2 py-1 text-center">
+                                        {{ formFiling.errors?.reason }}
+                                    </p>
                                 </div>
                             </fieldset>
                             <div v-if="withShedule">
@@ -377,6 +386,7 @@ const greetingMessage = ref('')
 const loadingHolidays = ref(false)
 const timeOptions = computed(() => getTimeOptions())
 const holidayMessage = ref('')
+const isEnhancing = ref(false)
 
 // ========= Props =============
 const props = defineProps({
@@ -663,6 +673,26 @@ const submitCancelation = () => {
     })
 }
 
+const enhanceReason = () => {
+    if (formFiling.reason.trim().length === 0) {
+        formFiling.errors.reason = 'Please enter a reason to enhance.'
+        return
+    }
+
+    let splitted_reason = formFiling.reason.trim().split(' ')
+    if (splitted_reason.length < 3) {
+        formFiling.errors.reason = 'Please provide a more detailed reason (at least 3 words).'
+        return
+    }
+    delete formFiling.errors.reason
+    isEnhancing.value = true
+    setTimeout(() => {
+        isEnhancing.value = false
+    }, 10000);
+
+
+}
+
 
 // ======== Watchers ===========
 
@@ -681,4 +711,5 @@ watch(() => props.info?.payload, (updatedPayload) => {
     currentYear.value = updatedPayload.year
     currentMonth.value = updatedPayload.month
 })
+
 </script>
