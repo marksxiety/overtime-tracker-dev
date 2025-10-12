@@ -153,13 +153,6 @@
                                     ]">
                                         {{ formFilledOvertime.current_status }}</span>
                                 </div>
-                            </div>
-                        </fieldset>
-
-                        <!-- Overtime Schedule -->
-                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                            <legend class="text-sm font-semibold px-2">Overtime Schedule</legend>
-                            <div class="grid gap-2 mt-4">
                                 <div class="flex flex-row gap-2">
                                     <label class="label">
                                         <span class="label-text">Date: </span>
@@ -174,20 +167,39 @@
                                 </div>
                             </div>
                         </fieldset>
+                        <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
+                            <legend class="fieldset-legend">Your Scheduled Shift</legend>
+                            <div class="grid grid-cols-5 gap-4">
+                                <div class="col-span-1">
+                                    <TextInput name="Shift Code:" type="text" v-model="formFilledOvertime.shift_code"
+                                        :readonly="true" :placeholder="''" />
+                                </div>
+                                <div class="col-span-2">
+                                    <TextInput name="Start:" type="text" v-model="formFilledOvertime.shift_start_time"
+                                        :readonly="true" :placeholder="''" />
+                                </div>
+                                <div class="col-span-2">
+                                    <TextInput name="End:" type="text" v-model="formFilledOvertime.shift_end_time"
+                                        :readonly="true" :placeholder="''" />
+                                </div>
+                            </div>
+                        </fieldset>
 
                         <!-- Reason -->
                         <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                            <legend class="text-sm font-semibold px-2">Reason</legend>
+                            <legend class="text-sm font-semibold px-2">Filed Request</legend>
                             <div class="flex flex-col gap-4">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-1">
                                         <SelectOption name="Start Time:"
                                             :message="formFilledOvertime.errors?.start_time"
-                                            v-model="formFilledOvertime.start_time" :options="timeOptions" />
+                                            v-model="formFilledOvertime.start_time" :options="timeOptions"
+                                            :disabled="formFilledOvertime.current_status !== 'PENDING'" />
                                     </div>
                                     <div class="col-span-1">
                                         <SelectOption name="End Time:" :message="formFilledOvertime.errors?.end_time"
-                                            v-model="formFilledOvertime.end_time" :options="timeOptions" />
+                                            v-model="formFilledOvertime.end_time" :options="timeOptions"
+                                            :disabled="formFilledOvertime.current_status !== 'PENDING'" />
                                     </div>
                                 </div>
                                 <TextArea type="text" v-model="formFilledOvertime.reason"
@@ -585,6 +597,9 @@ const showOvertimeRequestModal = (data) => {
     formFilledOvertime.current_status = data.status
     formFilledOvertime.reason = data.reason
     formFilledOvertime.remarks = data.remarks
+    formFilledOvertime.shift_code = data.shift_code
+    formFilledOvertime.shift_start_time = data.shift_start_time
+    formFilledOvertime.shift_end_time = data.shift_end_time
     overtimeRequestModal.value?.open()
 }
 
