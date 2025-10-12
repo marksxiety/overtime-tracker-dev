@@ -220,7 +220,9 @@ class OvertimeRequestController extends Controller
         $message = '';
         try {
             $overtimes = OvertimeRequest::with(['schedule' => function ($query) {
-                $query->select('id', 'week', 'date', 'user_id');
+                $query->select('id', 'week', 'date', 'user_id', 'shift_id');
+            }, 'schedule.shift' => function ($query) {
+                $query->select('id', 'code', 'start_time', 'end_time');
             }])
                 ->whereHas('schedule', function ($query) use ($year, $month) {
                     $query->where('user_id', Auth::id())->whereYear('date', $year)->whereMonth('date', $month);
@@ -231,8 +233,15 @@ class OvertimeRequestController extends Controller
 
             foreach ($overtimes as $overtime) {
                 $overtimelist[] = [
-                    'week' => $overtime->schedule->week,
-                    'date' => $overtime->schedule->date,
+                    'week' => $overtime->schedule->week ?? 'N/A',
+                    'date' => $overtime->schedule->date ?? 'N/A',
+                    'shift_code' => $overtime->schedule->shift->code ?? 'No Shift',
+                    'shift_start_time' => $overtime->schedule->shift && $overtime->schedule->shift->start_time
+                        ? Carbon::createFromFormat('H:i:s', $overtime->schedule->shift->start_time)->format('h:i A')
+                        : '--',
+                    'shift_end_time' => $overtime->schedule->shift && $overtime->schedule->shift->end_time
+                        ? Carbon::createFromFormat('H:i:s', $overtime->schedule->shift->end_time)->format('h:i A')
+                        : '--',
                     'id' => $overtime->id,
                     'start_time' => $overtime->start_time ? Carbon::createFromFormat('H:i:s', $overtime->start_time)->format('h:i A') : 'N/A',
                     'end_time' => $overtime->end_time ? Carbon::createFromFormat('H:i:s', $overtime->end_time)->format('h:i A') : 'N/A',
