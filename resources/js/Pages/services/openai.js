@@ -64,3 +64,32 @@ export async function analyzeWithAI(jsonData, onChunk) {
         };
     }
 }
+
+export async function enhanceReasonWithAI(reason) {
+    try {
+        const result = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "user",
+                    content: `
+                            You are a reason enhancer expert for overtime requests.
+                            The input text will be stored in a MySQL MEDIUMTEXT column, which supports up to 16,777,215 characters.
+                            Ensure your enhanced response remains concise, natural, and well-structured for this context.
+
+                            Please enhance the following reason for an overtime request:
+
+                            ${reason}`.trim(),
+                },
+            ],
+        });
+
+        return { success: true, data: result.choices?.[0]?.message?.content };
+    } catch (error) {
+        console.error("AI Enhancement Error:", error);
+        return {
+            success: false,
+            data: error?.message || "Unidentified Error Occurred",
+        };
+    }
+}
