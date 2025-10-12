@@ -54,8 +54,11 @@
                                             v-model="formFiling.end_time" :options="timeOptions" />
                                     </div>
                                 </div>
-                                <TextArea name="Reason:" type="text" v-model="formFiling.reason"
-                                    :message="formFiling.errors?.reason" />
+                                <div class="flex items-center gap-2 w-full">
+                                    <Icon icon="mingcute:ai-line" width="24" height="24" class="text-primary"/>
+                                    <TextArea name="Reason:" type="text" v-model="formFiling.reason" :message="formFiling.errors?.reason" placeholder="Enter your reason..." class="flex-1"/>
+                                    <button type="button" class="btn btn-sm btn-outline btn-primary whitespace-nowrap">Enhance</button>
+                                </div>
                             </fieldset>
                             <div v-if="withShedule">
                                 <div class="flex justify-end gap-4">
