@@ -552,6 +552,27 @@ const handleMonthSelection = (year, month) => {
     })
 }
 
+const formatTimeStamp = (timestamp) => {
+    if (!timestamp) return ''
+
+    // Match time like "08:00 PM" or "12:30 AM"
+    const match = timestamp.match(/(\d{1,2}):(\d{2})\s?(AM|PM)/i)
+    if (!match) return ''
+
+    let [, hour, minute, period] = match
+    hour = parseInt(hour, 10)
+    minute = parseInt(minute, 10)
+
+    // Convert to 24-hour format
+    if (period.toUpperCase() === 'PM' && hour !== 12) hour += 12
+    if (period.toUpperCase() === 'AM' && hour === 12) hour = 0
+
+    const formatted = `${hour.toString().padStart(2, '0')}:${minute
+        .toString()
+        .padStart(2, '0')}`
+    return formatted
+}
+
 
 const showOvertimeRequestModal = (data) => {
     formFilledOvertime.id = data.id
@@ -559,13 +580,11 @@ const showOvertimeRequestModal = (data) => {
     formFilledOvertime.created_at = data.created_at
     formFilledOvertime.week = data.week
     formFilledOvertime.hours = data.hours
-    formFilledOvertime.start_time = data.start_time
-    formFilledOvertime.end_time = data.end_time
+    formFilledOvertime.start_time = formatTimeStamp(data.start_time)
+    formFilledOvertime.end_time = formatTimeStamp(data.end_time)
     formFilledOvertime.current_status = data.status
     formFilledOvertime.reason = data.reason
     formFilledOvertime.remarks = data.remarks
-
-    console.log(formFilledOvertime)
     overtimeRequestModal.value?.open()
 }
 
