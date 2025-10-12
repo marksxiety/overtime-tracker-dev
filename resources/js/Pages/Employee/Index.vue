@@ -54,18 +54,29 @@
                                             v-model="formFiling.end_time" :options="timeOptions" />
                                     </div>
                                 </div>
-                                <div class="relative w-full">
-                                    <textarea
-                                        :class="['textarea w-full', { 'textarea-error': formFiling.errors?.reason }]"
-                                        v-model="formFiling.reason" placeholder="Enter your reason..."
-                                        :disabled="isEnhancing"></textarea>
-                                    <button type="button"
-                                        class="absolute top-2 right-2 btn btn-sm btn-primary btn-outline gap-1 text-xs"
-                                        @click="enhanceReason" :disabled="isEnhancing">
-                                        <span v-if="isEnhancing" class="loading loading-dots loading-xs"></span>
-                                        <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="16" height="16" />
-                                        <span>{{ isEnhancing ? 'Enhancing...' : 'Enhance' }}</span>
-                                    </button>
+                                <div class="w-full">
+                                    <!-- Label + Button row -->
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="font-medium text-sm text-gray-700">Reason:</label>
+                                        <div v-if="withShedule">
+                                            <button type="button"
+                                                class="btn btn-sm btn-primary btn-outline gap-1 text-xs"
+                                                @click="enhanceReason" :disabled="isEnhancing">
+                                                <span v-if="isEnhancing" class="loading loading-dots loading-xs"></span>
+                                                <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="16"
+                                                    height="16" />
+                                                <span>{{ isEnhancing ? 'Enhancing...' : 'Enhance' }}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Auto-expanding textarea -->
+                                    <textarea ref="reasonTextarea" v-model="formFiling.reason"
+                                        placeholder="Enter your reason..." :disabled="isEnhancing"
+                                        :class="['textarea break-words whitespace-normal w-full', { 'textarea-error': formFiling.errors?.reason }]"
+                                        @input="autoResize"></textarea>
+
+                                    <!-- Error message -->
                                     <p v-if="formFiling.errors?.reason"
                                         class="mt-1 text-sm text-red-600 px-2 py-1 text-center">
                                         {{ formFiling.errors?.reason }}
