@@ -57,7 +57,7 @@
                                 <div class="w-full">
                                     <!-- Label + Button row -->
                                     <div class="flex items-center justify-between mb-2">
-                                        <label class="font-medium text-sm text-gray-700">Reason:</label>
+                                        <label class="font-medium text-sm">Reason:</label>
                                         <div v-if="withShedule">
                                             <button type="button"
                                                 class="btn btn-sm btn-primary btn-outline gap-1 text-xs"
