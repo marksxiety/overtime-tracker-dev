@@ -1,7 +1,8 @@
 <template>
-    <Head title="Manage Schedule"  />
+
+    <Head title="Manage Schedule" />
     <div class="flex flex-col gap-6 h-full">
-        <div class="breadcrumbs text-sm">
+        <div class="breadcrumbs text-sm mt-4">
             <ul>
                 <li>
                     <Link :href="route('main')">Home</Link>
