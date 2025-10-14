@@ -31,6 +31,10 @@ class OvertimeRequestController extends Controller
         $validator = Validator::make($request->all(), $rules);
         $errors = $validator->errors();
 
+        if ($errors->any()) {
+            return redirect()->back()->withErrors($errors)->withInput();
+        }
+
         // parse the submitted start and end hour of the user
         $submitted_start_time = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . trim($request->start_time));
         $submitted_end_time = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . trim($request->end_time));

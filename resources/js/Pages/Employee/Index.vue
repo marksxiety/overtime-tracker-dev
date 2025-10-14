@@ -720,7 +720,6 @@ const submitCancelation = () => {
 }
 
 const enhanceReason = async () => {
-
     if (formFiling.reason) {
         if (formFiling.reason.trim().length === 0) {
             formFiling.errors.reason = 'Please enter a reason to enhance.'
@@ -745,6 +744,8 @@ const enhanceReason = async () => {
             formFiling.errors.reason = 'Failed to enhance reason. Please try again.'
             isEnhancing.value = false
         }
+    } else {
+        formFiling.errors.reason = 'Please enter a reason to enhance.'
     }
 }
 
