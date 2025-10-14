@@ -144,11 +144,11 @@
                             </div>
 
                             <!-- No Schedule Warning -->
-                            <div v-else class="alert alert-error shadow-lg border border-error/20">
+                            <div v-else class="alert alert-warning shadow-lg border border-error/20">
                                 <Icon icon="material-symbols:warning-outline" width="28" height="28" />
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-lg">No Registered Schedule</h3>
-                                    <div class="text-sm opacity-90 mt-1">
+                                <div class="flex-1 text-center">
+                                    <h3 class="font-bold text-sm">No Registered Schedule</h3>
+                                    <div class="text-xs opacity-90 mt-1">
                                         You need to have a registered schedule before filing an overtime request.
                                     </div>
                                 </div>
@@ -156,7 +156,7 @@
 
                             <!-- No Schedule Action Buttons -->
                             <div v-if="!withShedule" class="flex gap-3 pt-2">
-                                <button type="button" class="btn btn-ghost flex-1 gap-2"
+                                <button type="button" class="btn btn-outline flex-1 gap-2"
                                     @click="closeOvertimeFilingModal()">
                                     <Icon icon="material-symbols:close-rounded" width="20" height="20" />
                                     <span class="font-medium">Close</span>
