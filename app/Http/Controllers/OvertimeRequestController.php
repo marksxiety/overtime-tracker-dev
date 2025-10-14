@@ -35,9 +35,6 @@ class OvertimeRequestController extends Controller
         $submitted_start_time = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . trim($request->start_time));
         $submitted_end_time = Carbon::createFromFormat('Y-m-d H:i', $request->date . ' ' . trim($request->end_time));
 
-        $isShiftStartTime = Carbon::hasFormat($request->shift_start_time, 'H:i A');
-        $isShiftEndTime = Carbon::hasFormat($request->shift_end_time, 'H:i A');
-
         // if there's a time format, implement the time checking
         // if the schedule is not have a time format, it has a format in request like '--'
         $withTimeChecking = $request->shift_start_time !== '--' || $request->shift_end_time !== '--';
