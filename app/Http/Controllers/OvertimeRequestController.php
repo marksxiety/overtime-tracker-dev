@@ -349,6 +349,7 @@ class OvertimeRequestController extends Controller
                 $overtimelist[] = [
                     'week' => $overtime->schedule->week ?? 'N/A',
                     'date' => $overtime->schedule->date ?? 'N/A',
+                    'employee_schedule_id' => $overtime->employee_schedule_id,
                     'shift_code' => $overtime->schedule->shift->code ?? 'No Shift',
                     'shift_start_time' => $overtime->schedule->shift && $overtime->schedule->shift->start_time
                         ? Carbon::createFromFormat('H:i:s', $overtime->schedule->shift->start_time)->format('h:i A')

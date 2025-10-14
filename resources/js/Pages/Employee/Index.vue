@@ -470,6 +470,7 @@ const formFiling = useForm({
 
 const formFilledOvertime = useForm({
     id: '',
+    employee_schedule_id: '',
     date: '',
     created_at: '',
     week: '',
@@ -477,6 +478,9 @@ const formFilledOvertime = useForm({
     start_time: '',
     end_time: '',
     current_status: '',
+    shift_start_time: '',
+    shift_end_time: '',
+    shift_code: '',
     update_status: 'CANCELED',
     reason: '',
     remarks: ''
@@ -588,6 +592,7 @@ const formatTimeStamp = (timestamp) => {
 
 const showOvertimeRequestModal = (data) => {
     formFilledOvertime.id = data.id
+    formFilledOvertime.employee_schedule_id = data.employee_schedule_id
     formFilledOvertime.date = data.date
     formFilledOvertime.created_at = data.created_at
     formFilledOvertime.week = data.week
