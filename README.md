@@ -1,86 +1,183 @@
-# 🕒 Overtime Tracker
+# 🕒 TimeTrack Pro
 
-A web-based system to help organizations **track, analyze, and manage employee overtime hours**.  
-It provides a **digital filing workflow** for employees and approvers, as well as **analytics on overtime reasons**.
+TimeTrack Pro is a modern overtime tracker system that helps organizations track, analyze, and manage employee overtime hours.
+It provides a digital filing workflow for employees and approvers, plus analytics and reporting on overtime usage and reasons.
 
----
+## 📘 Overview
 
-## Overview
+The system allows:
 
-This system allows:
+- Employees to file overtime requests with reasons and actual hours.
+- Approvers to approve, disapprove, or mark as filed.
+- Weekly schedule management (employee and approver views).
+- Shift codes with optional time windows.
+- Required weekly hours per organization unit with remaining-hours computation.
+- Analytics dashboard and date-range reporting.
 
--   Employees to **file overtime requests** with reasons and actual hours
--   Approvers to **approve**, **disapprove** (with remarks), or **mark as filed**
+## 🧩 Entity Relationship Diagram (ERD)
 
----
-
-## Entity Relationship Diagram (ERD)
+The ERD includes employees, shifts, schedules, overtime requests, and weekly hour rules.
 
 ![ERD Diagram](overtime-tracker-erd.drawio.png)
 
-> _The ERD includes employees, shifts, schedules, overtime requests, and weekly hour rules._
-
----
-
 ## ⚙️ Tech Stack
 
--   **Backend:** [Laravel 11](https://laravel.com/) (API-based)
--   **Frontend:** [Vue 3](https://vuejs.org/) + [Inertia.js](https://inertiajs.com/) + TypeScript
--   **Database:** [MySQL](https://www.mysql.com/)
--   **Auth:** Laravel Auth (Sanctum/JWT-ready)
--   **Styling:** TailwindCSS + DaisyUI
+- Backend: Laravel 11 (API-based)
+- Frontend: Vue 3 + Inertia.js + TypeScript
+- Database: MySQL
+- Auth: Laravel Sanctum (JWT-ready)
+- Styling: TailwindCSS + DaisyUI
+- Optional AI: OpenAI API (for future insights and summaries)
 
----
+## 🧰 Prerequisites
 
-## Getting Started
+- PHP 8.2+
+- Composer 2.5+
+- Node.js 18+ (recommended: 20 LTS)
+- npm 9+
+- MySQL 8+ (or compatible MariaDB)
+- Git (optional, for cloning)
+- Optional: OpenAI API key for AI-assisted features
 
-### 1. Clone the Repository
+## 🚀 Getting Started
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/your-username/overtime-tracker.git
 cd overtime-tracker
 ```
 
-### 2. Install Dependencies
+### Install Dependencies
 
 ```bash
-# Backend
 composer install
-
-# Frontend
 npm install
 ```
 
-### 3. Setup Environment
+### Setup Environment
 
-1. Copy the example environment file:
-    ```bash
-    cp .env.example .env
-    ```
+- Copy .env.example to .env
+- Update database credentials and APP_URL
+- Run php artisan key:generate
+- (Optional) Add OPENAI_API_KEY and model
 
-2. Update .env with your database credentials and app URL.
-
-3. Generate the Laravel App Key:
-
-    ```bash
-    php artisan key:generate
-    ```
-
-### 4. Run the Application
+### Run Application
 
 ```bash
-# Start Laravel backend
+php artisan migrate
+php artisan storage:link
 php artisan serve
-
-# Start frontend (Vite)
 npm run dev
-
 ```
 
-### 5. Open in Browser
+Then visit:
+
+- Laravel + Vue (Inertia): <http://127.0.0.1:8000>
+- Vue only: <http://localhost:5173>
+
+## 🔐 Authentication & Roles
+
+- Roles: employee, approver, admin
+- Guards/Middleware: auth, employee, approver
+- Guest: register/login only
+- Authenticated: dashboard, requests, schedules, reports
+
+## 🛣️ API & Web Routes (by Role)
+
+### Guest
+
+- GET /register – Register form
+- POST /register – Register
+- GET /login – Login form
+- POST /login – Login
+
+### Authenticated
+
+- GET / – Role-based landing
+- POST /logout – Logout
+
+### Employee Routes
+
+- /schedule/list – Fetch weekly schedule
+- /schedule/user – Get specific user schedule
+- /schedule/submit – Submit or update schedule
+- /overtime/request – File overtime request
+- /overtime/update/employee – Update pending overtime
+- /employee/profile – View profile
+- /profile/update/employee – Update profile or avatar
+- /overtime/requests/list – View overtime list by week/status
+
+### Approver Routes
+
+- /shift – Manage shift codes
+- /shift/register – Add shift code
+- /shift/{shift} – Update/Delete shift code
+- /hours – Manage required hours
+- /overtime/update/approver – Approve/decline requests
+- /overtime/pending, /filed, /filing – Get overtime requests
+- /schedule/manage – Manage employee schedules
+- /schedule/employee/list – Get merged employee-week structure
+- /users/registered – Manage users
+- /generate/report – Generate overtime reports
+- /404 – Unauthorized page
+
+## 🧮 Data Model (High Level)
+
+| Table               | Description                               |
+| ------------------- | ----------------------------------------- |
+| users               | Employee/Approver/Admin data              |
+| shift_codes         | Time window templates                      |
+| schedules           | Weekly assignments                         |
+| overtime_requests   | Overtime filing details                    |
+| required_hours      | Weekly cap per org unit                    |
+| organization_units  | Organizational grouping                    |
+
+Relationships:
+
+- User → hasMany → Schedule
+- Schedule → belongsTo → User, Shift
+- Schedule → hasMany → OvertimeRequest
+- OvertimeRequest → belongsTo → Schedule
+- RequiredHours → belongsTo → OrganizationUnit
+
+## 🔁 Workflow Summary
+
+- Setup by Approver – Register shift codes and required hours.
+- Employee Schedule – Employee sets or confirms schedule.
+- Filing Overtime – Submit requests (validated for overlaps).
+- Approval – Approver reviews, approves, or disapproves.
+- Analytics – Dashboard shows status and remaining hours.
+- Reporting – Generate overtime reports by date range and org unit.
+
+**Status Lifecycle:**
+
+PENDING → APPROVED/FILED → DECLINED/DISAPPROVED/CANCELED
+
+## 🧪 Time & Validation Rules
+
+- Format: 24-hour (H:i)
+- Minimum overtime: 1 hour
+- If shift has time window:
+  - Must start ≥60 mins before or after shift
+  - Cannot overlap scheduled shift
+  - Night shifts roll end time to next day
+
+## 🤖 OpenAI Integration (Optional)
+
+Add to .env:
 
 ```bash
-http://localhost:5173   # Vue only  
-http://127.0.0.1:8000   # Laravel + Vue
-
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
 ```
+
+(No active integration yet, reserved for AI insights and summaries.)
+
+## 🧭 Troubleshooting
+
+| Issue                 | Fix                         |
+| --------------------- | --------------------------- |
+| 404 or unauthorized   | Check role/middleware       |
+| Avatars not showing   | Run php artisan storage:link|
+| Time parsing errors   | Use correct 24h format      |
