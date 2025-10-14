@@ -2,111 +2,162 @@
     <Modal ref="overtimeFilingModal">
         <div class="py-4 mt-2">
             <div class="flex flex-col gap-2 w-full">
-                <h2 class="text-lg font-bold mb-4">File Overtime Request</h2>
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <Icon icon="material-symbols:schedule-outline" width="28" height="28" />
+                    File Overtime Request
+                </h2>
                 <div class="flex flex-col gap-4">
                     <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1 min-h-96">
+                        <!-- Loading State -->
                         <div class="flex items-center justify-center h-64 gap-4 text-center" v-if="fetchingSchedule">
-                            <span class="loading loading-spinner"></span> Loading Schedule...
+                            <span class="loading loading-spinner loading-lg"></span>
+                            <span class="text-lg opacity-70">Loading Schedule...</span>
                         </div>
-                        <div v-else>
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
-                                <legend class="fieldset-legend">Requested Overtime Date</legend>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="col-span-1">
-                                        <TextInput name="Date:" type="text" v-model="formFiling.date" :readonly="true"
-                                            :placeholder="''" />
-                                    </div>
-                                    <div class="col-span-1">
-                                        <TextInput name="Week:" type="text" v-model="formFiling.week" :readonly="true"
-                                            :placeholder="''" />
-                                    </div>
-                                </div>
-                            </fieldset>
 
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
-                                <legend class="fieldset-legend">Your Scheduled Shift</legend>
-                                <div class="grid grid-cols-5 gap-4">
-                                    <div class="col-span-1">
-                                        <TextInput name="Shift Code:" type="text" v-model="formFiling.shift_code"
-                                            :readonly="true" :placeholder="''" />
-                                    </div>
-                                    <div class="col-span-2">
-                                        <TextInput name="Start:" type="text" v-model="formFiling.shift_start_time"
-                                            :readonly="true" :placeholder="''" />
-                                    </div>
-                                    <div class="col-span-2">
-                                        <TextInput name="End:" type="text" v-model="formFiling.shift_end_time"
-                                            :readonly="true" :placeholder="''" />
-                                    </div>
-                                </div>
-                            </fieldset>
-
-
-                            <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
-                                <legend class="fieldset-legend">Overtime Duration and Reason</legend>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="col-span-1">
-                                        <SelectOption name="Start Time:" :message="formFiling.errors?.start_time"
-                                            v-model="formFiling.start_time" :options="timeOptions" />
-                                    </div>
-                                    <div class="col-span-1">
-                                        <SelectOption name="End Time:" :message="formFiling.errors?.end_time"
-                                            v-model="formFiling.end_time" :options="timeOptions" />
-                                    </div>
-                                </div>
-                                <div class="w-full">
-                                    <!-- Label + Button row -->
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="font-medium text-sm">Reason:</label>
-                                        <div v-if="withShedule">
-                                            <button type="button"
-                                                class="btn btn-sm btn-primary btn-outline gap-1 text-xs"
-                                                @click="enhanceReason" :disabled="isEnhancing">
-                                                <span v-if="isEnhancing" class="loading loading-dots loading-xs"></span>
-                                                <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="16"
-                                                    height="16" />
-                                                <span>{{ isEnhancing ? 'Enhancing...' : 'Enhance' }}</span>
-                                            </button>
+                        <div v-else class="space-y-6">
+                            <!-- Requested Overtime Date -->
+                            <div class="card border border-base-300 shadow-sm">
+                                <div class="card-body p-6">
+                                    <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                                        <Icon icon="material-symbols:calendar-month-outline" width="20" height="20" />
+                                        Requested Overtime Date
+                                    </h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="col-span-1">
+                                            <TextInput name="Date:" type="text" v-model="formFiling.date"
+                                                :readonly="true" :placeholder="''" />
+                                        </div>
+                                        <div class="col-span-1">
+                                            <TextInput name="Week:" type="text" v-model="formFiling.week"
+                                                :readonly="true" :placeholder="''" />
                                         </div>
                                     </div>
-
-                                    <!-- Auto-expanding textarea -->
-                                    <textarea ref="reasonTextarea" v-model="formFiling.reason"
-                                        placeholder="Enter your reason..." :disabled="isEnhancing"
-                                        :class="['textarea break-words whitespace-normal w-full', { 'textarea-error': formFiling.errors?.reason }]"
-                                        @input="autoResize"></textarea>
-
-                                    <!-- Error message -->
-                                    <p v-if="formFiling.errors?.reason"
-                                        class="mt-1 text-sm text-red-600 px-2 py-1 text-center">
-                                        {{ formFiling.errors?.reason }}
-                                    </p>
-                                </div>
-                            </fieldset>
-                            <div v-if="withShedule">
-                                <div class="flex justify-end gap-4">
-                                    <button type="button" class="btn btn-neutral mt-4" :disabled="formFiling.processing"
-                                        @click="closeOvertimeFilingModal()">Cancel</button>
-                                    <button type="submit" class="btn btn-primary mt-4"
-                                        :disabled="formFiling.processing">
-                                        <span v-if="formFiling.processing" class="loading loading-spinner"></span>
-                                        <span>Submit</span>
-                                    </button>
                                 </div>
                             </div>
-                            <div v-else
-                                class="flex flex-col items-center justify-center mt-4 text-error font-semibold text-center">
-                                <div class="flex flex-row gap-2 justify-center">
-                                    <Icon icon="ph:warning" width="24" height="24" />
-                                    <p>No registered Schedule</p>
+
+                            <!-- Your Scheduled Shift -->
+                            <div class="card border border-base-300 shadow-sm">
+                                <div class="card-body p-6">
+                                    <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                                        <Icon icon="material-symbols:work-outline" width="20" height="20" />
+                                        Your Scheduled Shift
+                                    </h3>
+                                    <div class="grid grid-cols-5 gap-4">
+                                        <div class="col-span-1">
+                                            <TextInput name="Shift Code:" type="text" v-model="formFiling.shift_code"
+                                                :readonly="true" :placeholder="''" />
+                                        </div>
+                                        <div class="col-span-2">
+                                            <TextInput name="Start:" type="text" v-model="formFiling.shift_start_time"
+                                                :readonly="true" :placeholder="''" />
+                                        </div>
+                                        <div class="col-span-2">
+                                            <TextInput name="End:" type="text" v-model="formFiling.shift_end_time"
+                                                :readonly="true" :placeholder="''" />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex justify-center gap-6">
-                                    <button type="button" class="btn btn-neutral mt-4 w-full"
-                                        @click="closeOvertimeFilingModal()">Close</button>
-                                    <Link :href="route('schedule')" type="button" class="btn btn-primary mt-4 w-full">
-                                    Add
-                                    Schedule</Link>
+                            </div>
+
+                            <!-- Overtime Duration and Reason -->
+                            <div class="card border border-base-300 shadow-sm">
+                                <div class="card-body p-6">
+                                    <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                                        <Icon icon="material-symbols:timer-outline" width="20" height="20" />
+                                        Overtime Duration and Reason
+                                    </h3>
+                                    <div class="space-y-6">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="col-span-1">
+                                                <SelectOption name="Start Time:"
+                                                    :message="formFiling.errors?.start_time"
+                                                    v-model="formFiling.start_time" :options="timeOptions" />
+                                            </div>
+                                            <div class="col-span-1">
+                                                <SelectOption name="End Time:" :message="formFiling.errors?.end_time"
+                                                    v-model="formFiling.end_time" :options="timeOptions" />
+                                            </div>
+                                        </div>
+
+                                        <div class="divider my-0"></div>
+
+                                        <div class="w-full space-y-3">
+                                            <!-- Label + Button row -->
+                                            <div class="flex items-center justify-between">
+                                                <label class="font-semibold text-sm flex items-center gap-2">
+                                                    <Icon icon="material-symbols:edit-note-outline" width="18"
+                                                        height="18" />
+                                                    Reason
+                                                </label>
+                                                <div v-if="withShedule">
+                                                    <button type="button" class="btn btn-sm gap-2 btn-primary"
+                                                        @click="enhanceReason" :disabled="isEnhancing">
+                                                        <span v-if="isEnhancing"
+                                                            class="loading loading-spinner loading-xs"></span>
+                                                        <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="18"
+                                                            height="18" />
+                                                        <span class="font-medium">{{ isEnhancing ? 'Enhancing...' :
+                                                            'Enhance with AI' }}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Auto-expanding textarea -->
+                                            <textarea ref="reasonTextarea" v-model="formFiling.reason"
+                                                placeholder="Enter your reason for overtime request..."
+                                                :disabled="isEnhancing"
+                                                :class="['textarea break-words whitespace-normal w-full min-h-24', { 'textarea-error': formFiling.errors?.reason }]"
+                                                @input="autoResize"></textarea>
+
+                                            <!-- Error message -->
+                                            <p v-if="formFiling.errors?.reason"
+                                                class="text-sm text-error flex items-center gap-2">
+                                                <Icon icon="material-symbols:error-outline" width="16" height="16" />
+                                                {{ formFiling.errors?.reason }}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <!-- Action Buttons - With Schedule -->
+                            <div v-if="withShedule" class="flex justify-end gap-3 pt-2">
+                                <button type="button" class="btn btn-outline gap-2" :disabled="formFiling.processing"
+                                    @click="closeOvertimeFilingModal()">
+                                    <Icon icon="material-symbols:close-rounded" width="20" height="20" />
+                                    <span class="font-medium">Cancel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary gap-2" :disabled="formFiling.processing">
+                                    <span v-if="formFiling.processing"
+                                        class="loading loading-spinner loading-sm"></span>
+                                    <Icon v-if="!formFiling.processing" icon="material-symbols:check-circle-outline"
+                                        width="20" height="20" />
+                                    <span class="font-medium">Submit Request</span>
+                                </button>
+                            </div>
+
+                            <!-- No Schedule Warning -->
+                            <div v-else class="alert alert-error shadow-lg border border-error/20">
+                                <Icon icon="material-symbols:warning-outline" width="28" height="28" />
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg">No Registered Schedule</h3>
+                                    <div class="text-sm opacity-90 mt-1">
+                                        You need to have a registered schedule before filing an overtime request.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- No Schedule Action Buttons -->
+                            <div v-if="!withShedule" class="flex gap-3 pt-2">
+                                <button type="button" class="btn btn-ghost flex-1 gap-2"
+                                    @click="closeOvertimeFilingModal()">
+                                    <Icon icon="material-symbols:close-rounded" width="20" height="20" />
+                                    <span class="font-medium">Close</span>
+                                </button>
+                                <Link :href="route('schedule')" class="btn btn-primary flex-1 gap-2">
+                                <Icon icon="material-symbols:add-circle-outline" width="20" height="20" />
+                                <span class="font-medium">Add Schedule</span>
+                                </Link>
                             </div>
                         </div>
                     </form>
@@ -117,129 +168,197 @@
     <Modal ref="overtimeRequestModal">
         <div class="flex flex-col gap-2 w-full">
             <div class="flex justify-end">
-                <span class="hover:bg-base-300 rounded-full p-2 cursor-pointer" @click="closeOvertimeRequestModal()">
-                    <Icon icon="material-symbols:close-rounded" width="18" height="18" />
+                <span class="hover:opacity-70 rounded-full p-2 cursor-pointer transition-opacity"
+                    @click="closeOvertimeRequestModal()">
+                    <Icon icon="material-symbols:close-rounded" width="20" height="20" />
                 </span>
             </div>
-            <div class="max-w-lg mx-auto p-3 bg-base-100 space-y-6 w-full">
+            <div class="max-w-2xl mx-auto p-6 w-full">
                 <form @submit.prevent="submitCancelation()">
                     <!-- Stepper -->
-                    <Stepper :status="formFilledOvertime.current_status" />
-                    <!-- Filing Information -->
-                    <div class="space-y-6 text-sm">
-
-                        <!-- Meta Info -->
-                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                            <legend class="text-sm font-semibold px-2">Meta Information</legend>
-                            <div class="grid gap-2 mt-4">
-                                <div class="flex flex-row gap-2">
-                                    <label class="label">
-                                        <span class="label-text">Date Filed:</span>
-                                    </label>
-                                    <span class="font-medium">{{ formFilledOvertime.created_at }}</span>
-                                </div>
-                                <div class="flex flex-row gap-2">
-                                    <label class="label">
-                                        <span class="label-text">Week:</span>
-                                    </label>
-                                    <span class="font-medium">{{ formFilledOvertime.week }}</span>
-                                </div>
-                                <div class="flex flex-row gap-2">
-                                    <label class="label">
-                                        <span class="label-text">Status: </span>
-                                    </label>
-                                    <span :class="['font-medium',
-                                        formFilledOvertime.status === 'PENDING' ? 'text-warning' : (formFilledOvertime.status === 'APPROVED' ? 'text-success' : (['DISAPPROVED', 'CANCELED'].includes(formFilledOvertime.status) ? 'text-error' : (formFilledOvertime.status === 'FILED' ? 'text-primary' : '')))
-                                    ]">
-                                        {{ formFilledOvertime.current_status }}</span>
-                                </div>
-                                <div class="flex flex-row gap-2">
-                                    <label class="label">
-                                        <span class="label-text">Date: </span>
-                                    </label>
-                                    <span class="font-medium">{{ formFilledOvertime.date }}</span>
-                                </div>
-                                <div class="flex flex-row gap-2">
-                                    <label class="label">
-                                        <span class="label-text">Total Hour(s): </span>
-                                    </label>
-                                    <span class="font-medium">{{ formFilledOvertime.hours }}</span>
-                                </div>
-                            </div>
-                        </fieldset>
-                        <fieldset class="fieldset bg-base-200 border-base-300 rounded-md w-xs border p-4">
-                            <legend class="fieldset-legend">Your Scheduled Shift</legend>
-                            <div class="grid grid-cols-5 gap-4">
-                                <div class="col-span-1">
-                                    <TextInput name="Shift Code:" type="text" v-model="formFilledOvertime.shift_code"
-                                        :readonly="true" :placeholder="''" />
-                                </div>
-                                <div class="col-span-2">
-                                    <TextInput name="Start:" type="text" v-model="formFilledOvertime.shift_start_time"
-                                        :readonly="true" :placeholder="''" />
-                                </div>
-                                <div class="col-span-2">
-                                    <TextInput name="End:" type="text" v-model="formFilledOvertime.shift_end_time"
-                                        :readonly="true" :placeholder="''" />
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <!-- Reason -->
-                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                            <legend class="text-sm font-semibold px-2">Filed Request</legend>
-                            <div class="flex flex-col gap-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="col-span-1">
-                                        <SelectOption name="Start Time:"
-                                            :message="formFilledOvertime.errors?.start_time"
-                                            v-model="formFilledOvertime.start_time" :options="timeOptions"
-                                            :disabled="formFilledOvertime.current_status !== 'PENDING'" />
-                                    </div>
-                                    <div class="col-span-1">
-                                        <SelectOption name="End Time:" :message="formFilledOvertime.errors?.end_time"
-                                            v-model="formFilledOvertime.end_time" :options="timeOptions"
-                                            :disabled="formFilledOvertime.current_status !== 'PENDING'" />
-                                    </div>
-                                </div>
-                                <TextArea type="text" v-model="formFilledOvertime.reason"
-                                    :message="formFilledOvertime.errors?.reason"
-                                    :disabled="formFilledOvertime.current_status !== 'PENDING'" />
-                            </div>
-                        </fieldset>
-
-                        <!-- Remarks -->
-                        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-                            <legend class="text-sm font-semibold px-2">Remarks</legend>
-                            <p class="mt-2">{{ formFilledOvertime.remarks }}</p>
-                        </fieldset>
+                    <div class="mb-8">
+                        <Stepper :status="formFilledOvertime.current_status" />
                     </div>
 
-                    <!-- Action Button -->
-                    <div v-if="formFilledOvertime.current_status == 'PENDING'">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-1">
-                                <button v-if="!confirmingCancel" type="submit" class="btn btn-outline w-full mt-6"
-                                    :disabled="formFilledOvertime.processing" @click="modeUpdate = true">
-                                    <span v-if="formFilledOvertime.processing && modeUpdate"
-                                        class="loading loading-spinner"></span>
-                                    Update
-                                </button>
-                            </div>
-                            <div class="col-span-1">
-                                <button v-if="!confirmingCancel" type="button" class="btn btn-outline w-full mt-6"
-                                    @click="confirmingCancel = true" :disabled="formFilledOvertime.processing">
-                                    Cancel Request
-                                </button>
-                                <div v-else class="flex justify-end gap-6 mt-6">
-                                    <button type="submit" class="btn btn-error" @click="modeUpdate = false"
-                                        :disabled="formFilledOvertime.processing">
-                                        <span v-if="formFilledOvertime.processing"
-                                            class="loading loading-spinner"></span>
-                                        <span> Yes, Cancel.</span></button>
-                                    <button type="button" class="btn btn-neutral" @click="confirmingCancel = false"
-                                        :disabled="formFilledOvertime.processing">No</button>
+                    <!-- Filing Information -->
+                    <div class="space-y-8 text-sm">
+
+                        <!-- Meta Info - Card Style -->
+                        <div class="card border border-base-300 shadow-sm">
+                            <div class="card-body p-6">
+                                <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                                    <Icon icon="material-symbols:info-outline" width="20" height="20" />
+                                    Meta Information
+                                </h3>
+                                <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs opacity-60 mb-1">Date Filed</span>
+                                        <span class="font-semibold">{{ formFilledOvertime.created_at }}</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs opacity-60 mb-1">Week</span>
+                                        <span class="font-semibold">{{ formFilledOvertime.week }}</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs opacity-60 mb-1">Status</span>
+                                        <div class="badge badge-sm gap-2" :class="[
+                                            formFilledOvertime.status === 'PENDING' ? 'badge-warning' :
+                                                (formFilledOvertime.current_status === 'APPROVED' ? 'badge-success' :
+                                                    (['DISAPPROVED', 'CANCELED'].includes(formFilledOvertime.current_status) ? 'badge-error' :
+                                                        (formFilledOvertime.current_status === 'FILED' ? 'badge-primary' : 'badge-ghost')))
+                                        ]">
+                                            {{ formFilledOvertime.current_status }}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs opacity-60 mb-1">Date</span>
+                                        <span class="font-semibold">{{ formFilledOvertime.date }}</span>
+                                    </div>
+                                    <div class="flex flex-col col-span-2">
+                                        <span class="text-xs opacity-60 mb-1">Total Hours</span>
+                                        <span class="font-semibold text-lg">{{ formFilledOvertime.hours }}</span>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Scheduled Shift -->
+                        <div class="card border border-base-300 shadow-sm">
+                            <div class="card-body p-6">
+                                <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                                    <Icon icon="material-symbols:schedule-outline" width="20" height="20" />
+                                    Your Scheduled Shift
+                                </h3>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="col-span-1">
+                                        <TextInput name="Shift Code:" type="text"
+                                            v-model="formFilledOvertime.shift_code" :readonly="true"
+                                            :placeholder="''" />
+                                    </div>
+                                    <div class="col-span-1">
+                                        <TextInput name="Start:" type="text"
+                                            v-model="formFilledOvertime.shift_start_time" :readonly="true"
+                                            :placeholder="''" />
+                                    </div>
+                                    <div class="col-span-1">
+                                        <TextInput name="End:" type="text" v-model="formFilledOvertime.shift_end_time"
+                                            :readonly="true" :placeholder="''" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filed Request -->
+                        <div class="card border border-base-300 shadow-sm">
+                            <div class="card-body p-6">
+                                <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                                    <Icon icon="material-symbols:description-outline" width="20" height="20" />
+                                    Filed Request
+                                </h3>
+                                <div class="flex flex-col gap-6">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <template v-if="formFilledOvertime.current_status === 'PENDING'">
+                                            <div class="col-span-1">
+                                                <SelectOption name="Start Time:"
+                                                    :message="formFilledOvertime.errors?.start_time"
+                                                    v-model="formFilledOvertime.start_time" :options="timeOptions" />
+                                            </div>
+                                            <div class="col-span-1">
+                                                <SelectOption name="End Time:"
+                                                    :message="formFilledOvertime.errors?.end_time"
+                                                    v-model="formFilledOvertime.end_time" :options="timeOptions" />
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="flex flex-col">
+                                                <span class="text-xs opacity-60 mb-1">Start Time</span>
+                                                <span class="font-semibold">{{ formatTime(formFilledOvertime.start_time)
+                                                    }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-xs opacity-60 mb-1">End Time</span>
+                                                <span class="font-semibold">{{ formatTime(formFilledOvertime.end_time)
+                                                    }}</span>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <div class="divider my-0"></div>
+
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <label class="font-semibold text-sm flex items-center gap-2">
+                                                <Icon icon="material-symbols:edit-note-outline" width="18"
+                                                    height="18" />
+                                                Reason
+                                            </label>
+                                            <div v-if="withShedule && formFilledOvertime.current_status === 'PENDING'">
+                                                <button type="button" class="btn btn-sm gap-2 btn-primary"
+                                                    @click="enhanceReason" :disabled="isEnhancing">
+                                                    <span v-if="isEnhancing"
+                                                        class="loading loading-spinner loading-xs"></span>
+                                                    <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="18"
+                                                        height="18" />
+                                                    <span class="font-medium">{{ isEnhancing ? 'Enhancing...' :
+                                                        'Enhancewith AI' }}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <TextArea type="text" v-model="formFilledOvertime.reason"
+                                            :message="formFilledOvertime.errors?.reason"
+                                            :readonly="formFilledOvertime.current_status !== 'PENDING'" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remarks -->
+                        <div class="card border border-base-300 shadow-sm" v-if="formFilledOvertime.remarks">
+                            <div class="card-body p-6">
+                                <h3 class="card-title text-base mb-3 flex items-center gap-2">
+                                    <Icon icon="material-symbols:comment-outline" width="20" height="20" />
+                                    Remarks
+                                </h3>
+                                <p class="opacity-80 leading-relaxed">{{ formFilledOvertime.remarks }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div v-if="formFilledOvertime.current_status == 'PENDING'" class="mt-8">
+                        <div v-if="!confirmingCancel" class="flex gap-3">
+                            <button type="submit" class="btn btn-primary flex-1 gap-2"
+                                :disabled="formFilledOvertime.processing" @click="modeUpdate = true">
+                                <span v-if="formFilledOvertime.processing && modeUpdate"
+                                    class="loading loading-spinner loading-sm"></span>
+                                <Icon v-if="!formFilledOvertime.processing || !modeUpdate"
+                                    icon="material-symbols:check-circle-outline" width="20" height="20" />
+                                <span class="font-medium">Update Request</span>
+                            </button>
+                            <button type="button" class="btn btn-ghost flex-1 gap-2" @click="confirmingCancel = true"
+                                :disabled="formFilledOvertime.processing">
+                                <Icon icon="material-symbols:cancel-outline" width="20" height="20" />
+                                <span class="font-medium">Cancel Request</span>
+                            </button>
+                        </div>
+                        <div v-else class="alert shadow-lg border border-base-300">
+                            <Icon icon="material-symbols:warning-outline" width="24" height="24" class="text-warning" />
+                            <div class="flex-1">
+                                <h3 class="font-bold">Confirm Cancellation</h3>
+                                <div class="text-xs opacity-70">Are you sure you want to cancel this overtime request?
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="btn btn-sm btn-error gap-2" @click="modeUpdate = false"
+                                    :disabled="formFilledOvertime.processing">
+                                    <span v-if="formFilledOvertime.processing"
+                                        class="loading loading-spinner loading-xs"></span>
+                                    <span>Yes, Cancel</span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-ghost" @click="confirmingCancel = false"
+                                    :disabled="formFilledOvertime.processing">
+                                    No, Keep It
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -681,7 +800,15 @@ function updateCurrentMonthYear(year, month) {
     }
 }
 
+const formatTime = (time) => {
 
+    if (!time) return ''
+
+    const [hours, minutes] = time.split(':').map(Number)
+    const period = hours >= 12 ? 'PM' : 'AM'
+    const formattedHours = hours % 12 || 12
+    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`
+}
 
 // ========== useForm Request(s) Handler ==========
 const submitOvertime = () => {
