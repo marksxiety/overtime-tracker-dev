@@ -47,8 +47,7 @@
                             <td>{{ schedule.week }}</td>
                             <td>{{ schedule.day }}</td>
                             <td class="flex justify-center items-center">
-                                <span class="loading loading-spinner" v-if="updateSelectedSchedule"></span>
-                                <span v-else class="w-full">
+                                <span class="w-full">
                                     <SelectOption :options="shifts" v-model="schedule.shift_code" margin="" />
                                 </span>
                             </td>
@@ -57,7 +56,7 @@
 
                     <tr v-else>
                         <td colspan="4" class="text-center italic text-gray-400 py-4">
-                            {{ tableText.value }}
+                            {{ tableText }}
                         </td>
                     </tr>
                 </tbody>
@@ -129,7 +128,7 @@ onMounted(() => {
 })
 
 async function loadScheduleData() {
-    updateSelectedSchedule.value = true
+    isLoading.value = true
     // Fetch schedule for the logged-in user and selected week/year
     const scheduleResponse = await fetchSchedule(selectedYear.value, selectedWeek.value)
 
@@ -153,7 +152,6 @@ async function loadScheduleData() {
     }
 
     isLoading.value = false
-    updateSelectedSchedule.value = false
 }
 
 
