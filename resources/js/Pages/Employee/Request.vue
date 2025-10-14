@@ -29,7 +29,7 @@
                         <div class="flex flex-col lg:flex-row gap-3">
                             <div class="flex-1">
                                 <TextInput name="Search" type="text" v-model="searchValue"
-                                    :placeholder="'Search by date or week...'" margin=""
+                                    :placeholder="'Search by reason, remarks, date, week...'" margin=""
                                     class="w-full input-bordered" />
                             </div>
                             <div class="flex-none w-full lg:w-48">
@@ -53,7 +53,7 @@
 
                     <!-- Table Section -->
                     <div class="overflow-x-auto rounded-lg border border-base-300 bg-base-100">
-                        <table class="table table-zebra w-full">
+                        <table class="table w-full min-h-96">
                             <thead class="bg-base-200">
                                 <tr>
                                     <th class="font-bold text-sm">Date</th>
@@ -78,7 +78,7 @@
                                     </td>
                                 </tr>
 
-                                <tr v-else v-for="req in requests" :key="req.id" class="hover transition-colors">
+                                <tr v-else v-for="req in requests" :key="req.id" class="hover:bg-base-200">
                                     <td class="font-medium">{{ req.date }}</td>
                                     <td class="font-medium text-center">{{ req.shift }}</td>
                                     <td class="font-medium text-center">{{ req.shift_start_time }} - {{

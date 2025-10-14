@@ -2,7 +2,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center mt-4 gap-2 p-4 w-full">
         <!-- Pagination summary -->
         <div>
-            <p class="text-slate-600 text-sm">
+            <p class="text-sm">
                 Showing {{ paginator.data.length }} of {{ paginator.total }} entries
             </p>
 
@@ -16,7 +16,7 @@
 
                 <!-- Active + Inactive buttons -->
                 <Link v-else :href="link.url" preserve-state preserve-scroll class="join-item btn"
-                    :class="{ 'btn-active': link.active }" v-html="formatLabel(link.label)" />
+                    :class="{ 'btn-primary': link.active }" v-html="formatLabel(link.label)" />
             </template>
         </div>
     </div>
