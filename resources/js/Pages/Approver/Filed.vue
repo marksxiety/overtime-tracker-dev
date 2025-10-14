@@ -1,120 +1,176 @@
 <template>
-  <Head title="Filed List"  />
-  <Modal ref="manageRequestModal" width="w-5xl">
+
+  <Head title="Filed List" />
+  <Modal ref="manageRequestModal" width="w-md">
     <div class="py-4 mt-2">
       <div class="flex flex-col gap-2 w-full">
-        <Stepper :status="overtime.status" />
-        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-          <legend class="text-sm font-semibold px-2">Employee Information</legend>
-          <div class="grid gap-2 mt-4">
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Name:</span>
-              </label>
-              <span class="font-medium">{{ user.name }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Email:</span>
-              </label>
-              <span class="font-medium">{{ user.email }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Employee ID: </span>
-              </label>
-              <span class="font-medium'">
-                {{ user.employee_id }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Role: </span>
-              </label>
-              <span class="font-medium capitalize">
-                {{ user.role }}</span>
+        <!-- Stepper -->
+        <div class="mb-6">
+          <Stepper :status="overtime.status" />
+        </div>
+
+        <div class="space-y-6">
+          <!-- Employee Information -->
+          <div class="card border border-base-300 shadow-sm">
+            <div class="card-body p-6">
+              <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                <Icon icon="material-symbols:person-outline" width="20" height="20" />
+                Employee Information
+              </h3>
+              <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:badge-outline" width="14" height="14" />
+                    Name
+                  </span>
+                  <span class="font-semibold">{{ user.name }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:mail-outline" width="14" height="14" />
+                    Email
+                  </span>
+                  <span class="font-semibold">{{ user.email }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:user-attributes-rounded" width="14" height="14" />
+                    Employee ID
+                  </span>
+                  <span class="font-semibold">{{ user.employee_id }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:work-outline" width="14" height="14" />
+                    Role
+                  </span>
+                  <span class="font-semibold capitalize">{{ user.role }}</span>
+                </div>
+              </div>
             </div>
           </div>
-        </fieldset>
 
-
-        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-          <legend class="text-sm font-semibold px-2">Registered Schedule</legend>
-          <div class="grid gap-2 mt-4">
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Date: </span>
-              </label>
-              <span class="font-medium">{{ schedule.date }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Week: </span>
-              </label>
-              <span class="font-medium">{{ schedule.week }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Shift Code: </span>
-              </label>
-              <span class="font-medium">{{ schedule.shift_code }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Schedule: </span>
-              </label>
-            <span class="font-medium">
-              {{ schedule.shift_start === '--' || schedule.shift_end === '--' 
-                  ? 'N/A' 
-                  : schedule.shift_start + ' → ' + schedule.shift_end }}
-            </span>
-            </div>
-
-          </div>
-        </fieldset>
-        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-          <legend class="text-sm font-semibold px-2">Overtime Request</legend>
-          <div class="grid gap-2 mt-4">
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Filing Date: </span>
-              </label>
-              <span class="font-medium">{{ overtime.created_at }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Time: </span>
-              </label>
-              <span class="font-medium">{{ overtime.start_time }} → {{
-                overtime.end_time }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Hour(s): </span>
-              </label>
-              <span class="font-medium">{{ overtime.hours }}</span>
-            </div>
-            <div class="flex flex-row gap-2">
-              <label class="label">
-                <span class="label-text">Status: </span>
-              </label>
-              <span :class="['font-medium', `text-${identifyColorStatus(overtime.status)}`]">{{
-                overtime.status }}</span>
+          <!-- Registered Schedule -->
+          <div class="card border border-base-300 shadow-sm">
+            <div class="card-body p-6">
+              <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                <Icon icon="material-symbols:schedule-outline" width="20" height="20" />
+                Registered Schedule
+              </h3>
+              <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:calendar-today-outline" width="14" height="14" />
+                    Date
+                  </span>
+                  <span class="font-semibold">{{ schedule.date }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:date-range-outline" width="14" height="14" />
+                    Week
+                  </span>
+                  <span class="font-semibold">{{ schedule.week }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:code" width="14" height="14" />
+                    Shift Code
+                  </span>
+                  <span class="font-semibold">{{ schedule.shift_code }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="clarity:employee-line" width="14" height="14" />
+                    Schedule
+                  </span>
+                  <span class="font-semibold">
+                    {{ schedule.shift_start === '--' || schedule.shift_end === '--'
+                      ? 'N/A'
+                      : schedule.shift_start + ' → ' + schedule.shift_end }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </fieldset>
-        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-          <legend class="text-sm font-semibold px-2">Reason</legend>
-          <p class="mt-2">{{ overtime.reason }}</p>
-        </fieldset>
-        <fieldset class="bg-base-200 border border-base-300 p-4 rounded-md">
-          <legend class="text-sm font-semibold px-2">Remarks</legend>
-          <TextArea type="text" v-model="overtimeRequestForm.remarks" :message="overtimeRequestForm.errors?.remarks"
-            :disabled="['FILED', 'DECLINED', 'CANCELED'].includes(overtime.status)"
-            :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding to request...'" />
-        </fieldset>
-        <button type="submit" class="btn btn-outline w-full mt-6" @click="closeManageRequestModal()">
-          <span> Close</span>
-        </button>
+
+          <!-- Overtime Request -->
+          <div class="card border border-base-300 shadow-sm">
+            <div class="card-body p-6">
+              <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                <Icon icon="material-symbols:timer-outline" width="20" height="20" />
+                Overtime Request
+              </h3>
+              <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:event-available-outline" width="14" height="14" />
+                    Filing Date
+                  </span>
+                  <span class="font-semibold">{{ overtime.created_at }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:schedule" width="14" height="14" />
+                    Time
+                  </span>
+                  <span class="font-semibold">{{ overtime.start_time }} → {{ overtime.end_time }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:hourglass-empty" width="14" height="14" />
+                    Hours
+                  </span>
+                  <span class="font-semibold text-lg">{{ overtime.hours }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs opacity-60 mb-1 flex items-center gap-1">
+                    <Icon icon="material-symbols:info-outline" width="14" height="14" />
+                    Status
+                  </span>
+                  <div class="badge badge-lg gap-2" :class="[
+                    overtime.status === 'PENDING' ? 'badge-warning' :
+                      (overtime.status === 'APPROVED' ? 'badge-success' :
+                        (['DISAPPROVED', 'CANCELED', 'DECLINED'].includes(overtime.status) ? 'badge-error' :
+                          (overtime.status === 'FILED' ? 'badge-primary' : 'badge-ghost')))
+                  ]">
+                    {{ overtime.status }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <div class="card border border-base-300 shadow-sm">
+            <div class="card-body p-6">
+              <h3 class="card-title text-base mb-3 flex items-center gap-2">
+                <Icon icon="material-symbols:description-outline" width="20" height="20" />
+                Reason
+              </h3>
+              <p class="opacity-80 leading-relaxed">{{ overtime.reason }}</p>
+            </div>
+          </div>
+
+          <!-- Remarks -->
+          <div class="card border border-base-300 shadow-sm">
+            <div class="card-body p-6">
+              <h3 class="card-title text-base mb-4 flex items-center gap-2">
+                <Icon icon="material-symbols:comment-outline" width="20" height="20" />
+                Remarks
+              </h3>
+              <TextArea type="text" v-model="overtimeRequestForm.remarks" :message="overtimeRequestForm.errors?.remarks"
+                :disabled="['FILED', 'DECLINED', 'CANCELED'].includes(overtime.status)"
+                :placeholder="['FILED', 'DECLINED', 'APPROVED'].includes(overtime.status) ? '' : 'Enter any remarks regarding this request...'" />
+            </div>
+          </div>
+
+          <!-- Close Button -->
+          <button type="submit" class="btn btn-neutral w-full gap-2" @click="closeManageRequestModal()">
+            <Icon icon="material-symbols:close-rounded" width="20" height="20" />
+            <span class="font-medium">Close</span>
+          </button>
+        </div>
       </div>
     </div>
   </Modal>
@@ -126,17 +182,20 @@
           <Link :href="route('main', { week: selectedWeek, year: selectedYear })">Dashboard</Link>
         </li>
         <li>
-          <Link :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending', week: selectedWeek, year: selectedYear })">
+          <Link
+            :href="route('overtime.pending', { status: 'PENDING', page: 'Approver/Pending', week: selectedWeek, year: selectedYear })">
           Pending
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing', week: selectedWeek, year: selectedYear })">
+          <Link
+            :href="route('overtime.filing', { status: 'APPROVED', page: 'Approver/Filing', week: selectedWeek, year: selectedYear })">
           Filing
           </Link>
         </li>
         <li>
-          <Link :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed', week: selectedWeek, year: selectedYear })"
+          <Link
+            :href="route('overtime.filing', { status: 'FILED', page: 'Approver/Filed', week: selectedWeek, year: selectedYear })"
             class="text-primary font-semibold underline">
           Filed
           </Link>
@@ -210,8 +269,8 @@ import TextArea from '../Components/TextArea.vue'
 import Stepper from '../Components/Stepper.vue'
 import { weeks, years, currentWeek } from '../utils/dropdownOptions.js'
 import Modal from '../Components/Modal.vue'
-import { identifyColorStatus } from '../utils/colorIdentifier.js'
 import { useForm, router, Link } from '@inertiajs/vue3'
+import { Icon } from '@iconify/vue'
 
 const props = defineProps({
   info: Object,
