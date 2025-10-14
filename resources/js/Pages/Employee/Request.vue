@@ -22,12 +22,6 @@
                             <h1 class="text-3xl font-bold text-base-content">Overtime Requests</h1>
                             <p class="text-base-content/60 text-sm mt-1">Track and manage your overtime submissions</p>
                         </div>
-                        <div class="stats shadow border border-base-300">
-                            <div class="stat p-4 w-40">
-                                <div class="stat-title text-xs">Total Requests</div>
-                                <div class="stat-value text-2xl text-primary">{{ paginator.total || 0 }}</div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Filters Section -->
@@ -63,6 +57,8 @@
                             <thead class="bg-base-200">
                                 <tr>
                                     <th class="font-bold text-sm">Date</th>
+                                    <th class="font-bold text-sm text-center">Shift Code</th>
+                                    <th class="font-bold text-sm text-center">Shift Time Range</th>
                                     <th class="font-bold text-sm">Week</th>
                                     <th class="font-bold text-sm">Hours</th>
                                     <th class="font-bold text-sm">Reason</th>
@@ -84,6 +80,9 @@
 
                                 <tr v-else v-for="req in requests" :key="req.id" class="hover transition-colors">
                                     <td class="font-medium">{{ req.date }}</td>
+                                    <td class="font-medium text-center">{{ req.shift }}</td>
+                                    <td class="font-medium text-center">{{ req.shift_start_time }} - {{
+                                        req.shift_end_time }}</td>
                                     <td>
                                         <div class="badge badge-ghost badge-sm">{{ req.week }}</div>
                                     </td>
@@ -95,10 +94,14 @@
                                         </div>
                                     </td>
                                     <td class="max-w-xs">
-                                        <p class="line-clamp-2 text-sm text-base-content/80">
-                                            {{ req.reason }}
-                                        </p>
+                                        <div class="tooltip tooltip-left tooltip-break"
+                                            :data-tip="req.reason.length > 80 ? req.reason : ''">
+                                            <p class="line-clamp-2 text-sm text-base-content/80 break-words">
+                                                {{ req.reason }}
+                                            </p>
+                                        </div>
                                     </td>
+
                                     <td>
                                         <span class="text-sm"
                                             :class="req.remarks ? 'text-base-content/80' : 'text-base-content/40 italic'">
@@ -107,11 +110,10 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="badge badge-sm font-semibold gap-1" :class="{
-                                            'badge-neutral': req.status === 'FILED',
-                                            'badge-warning': req.status === 'CANCELED',
-                                            'badge-info': req.status === 'PENDING',
+                                            'badge-primary': req.status === 'FILED',
+                                            'badge-warning': req.status === 'PENDING',
                                             'badge-success': req.status === 'APPROVED',
-                                            'badge-error': req.status === 'DECLINED' || req.status === 'DISAPPROVED'
+                                            'badge-error': req.status === 'DECLINED' || req.status === 'DISAPPROVED' || req.status === 'CANCELED',
                                         }">
                                             <Icon :icon="getStatusIcon(req.status)" width="14" height="14" />
                                             {{ req.status }}
@@ -123,7 +125,7 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div class="mt-6">
+                    <div class="mt-2">
                         <PaginationLinks :paginator="paginator" />
                     </div>
                 </div>
@@ -211,3 +213,12 @@ const applyFilter = () => {
 }
 
 </script>
+
+<style scoped>
+.tooltip-break::before {
+    white-space: normal !important;
+    word-break: break-word;
+    width: 16rem;
+    text-align: center;
+}
+</style>
