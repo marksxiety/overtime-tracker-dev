@@ -9,7 +9,8 @@
                 <div class="flex flex-col gap-4">
                     <form @submit.prevent="submitOvertime()" class="flex flex-col gap-1 min-h-96">
                         <!-- Loading State -->
-                        <div class="flex items-center justify-center h-64 gap-4 text-center" v-if="fetchingSchedule">
+                        <div class="flex items-center justify-center w-96 h-64 gap-4 text-center"
+                            v-if="fetchingSchedule">
                             <span class="loading loading-spinner loading-lg"></span>
                             <span class="text-lg opacity-70">Loading Schedule...</span>
                         </div>
@@ -273,12 +274,12 @@
                                             <div class="flex flex-col">
                                                 <span class="text-xs opacity-60 mb-1">Start Time</span>
                                                 <span class="font-semibold">{{ formatTime(formFilledOvertime.start_time)
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                             <div class="flex flex-col">
                                                 <span class="text-xs opacity-60 mb-1">End Time</span>
                                                 <span class="font-semibold">{{ formatTime(formFilledOvertime.end_time)
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                         </template>
                                     </div>
