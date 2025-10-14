@@ -91,15 +91,21 @@
                                                     Reason
                                                 </label>
                                                 <div v-if="withShedule">
-                                                    <button type="button" class="btn btn-sm gap-2 btn-primary"
-                                                        @click="enhanceReason" :disabled="isEnhancing">
-                                                        <span v-if="isEnhancing"
-                                                            class="loading loading-spinner loading-xs"></span>
-                                                        <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="18"
-                                                            height="18" />
-                                                        <span class="font-medium">{{ isEnhancing ? 'Enhancing...' :
-                                                            'Enhance with AI' }}</span>
-                                                    </button>
+                                                    <div class="tooltip tooltip-top tooltip-break"
+                                                        data-tip="The better you describe, the better AI can enhance it!">
+                                                        <span tabindex="0" class="inline-block">
+                                                            <button type="button" class="btn btn-sm gap-2 btn-primary"
+                                                                @click="enhanceReason" :disabled="isEnhancing">
+                                                                <span v-if="isEnhancing"
+                                                                    class="loading loading-spinner loading-xs"></span>
+                                                                <Icon v-if="!isEnhancing" icon="mingcute:ai-line"
+                                                                    width="18" height="18" />
+                                                                <span class="font-medium">{{ isEnhancing ?
+                                                                    'Enhancing...' :
+                                                                    'Enhance with AI' }}</span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -294,15 +300,20 @@
                                                 Reason
                                             </label>
                                             <div v-if="withShedule && formFilledOvertime.current_status === 'PENDING'">
-                                                <button type="button" class="btn btn-sm gap-2 btn-primary"
-                                                    @click="enhanceReason" :disabled="isEnhancing">
-                                                    <span v-if="isEnhancing"
-                                                        class="loading loading-spinner loading-xs"></span>
-                                                    <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="18"
-                                                        height="18" />
-                                                    <span class="font-medium">{{ isEnhancing ? 'Enhancing...' :
-                                                        'Enhancewith AI' }}</span>
-                                                </button>
+                                                <div class="tooltip tooltip-top tooltip-break"
+                                                    data-tip="The better you describe, the better AI can enhance it!">
+                                                    <span tabindex="0" class="inline-block">
+                                                        <button type="button" class="btn btn-sm gap-2 btn-primary"
+                                                            @click="enhanceReason" :disabled="isEnhancing">
+                                                            <span v-if="isEnhancing"
+                                                                class="loading loading-spinner loading-xs"></span>
+                                                            <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="18"
+                                                                height="18" />
+                                                            <span class="font-medium">{{ isEnhancing ? 'Enhancing...' :
+                                                                'Enhance with AI' }}</span>
+                                                        </button>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <TextArea type="text" v-model="formFilledOvertime.reason"
@@ -346,7 +357,8 @@
                             <Icon icon="material-symbols:warning-outline" width="24" height="24" class="text-warning" />
                             <div class="flex-1">
                                 <h3 class="font-bold">Confirm Cancellation</h3>
-                                <div class="text-xs opacity-70">Are you sure you want to cancel this overtime request?
+                                <div class="text-xs opacity-70">Are you sure you want to cancel this overtime
+                                    request?
                                 </div>
                             </div>
                             <div class="flex gap-2">
@@ -902,3 +914,12 @@ watch(() => props.info?.payload, (updatedPayload) => {
 })
 
 </script>
+
+<style scoped>
+.tooltip-break::before {
+    white-space: normal !important;
+    word-break: break-word;
+    width: 16rem;
+    text-align: center;
+}
+</style>
