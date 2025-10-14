@@ -1,7 +1,13 @@
 # 🕒 TimeTrack Pro
 
 TimeTrack Pro is a modern overtime tracker system that helps organizations track, analyze, and manage employee overtime hours.
+
 It provides a digital filing workflow for employees and approvers, plus analytics and reporting on overtime usage and reasons.
+
+Now enhanced with **AI integration** for:
+
+- **Report Analysis:** Automatically summarizes overtime trends, identifies recurring issues, and highlights insights from weekly or monthly data.
+- **Reason Enhancer:** Refines and standardizes employee-submitted overtime reasons for clarity, tone, and completeness — ensuring more consistent reporting quality.
 
 ## 📘 Overview
 
@@ -36,16 +42,15 @@ The ERD includes employees, shifts, schedules, overtime requests, and weekly hou
 - Node.js 18+ (recommended: 20 LTS)
 - npm 9+
 - MySQL 8+ (or compatible MariaDB)
-- Git (optional, for cloning)
-- Optional: OpenAI API key for AI-assisted features
+- OpenAI API key for AI-assisted features
 
 ## 🚀 Getting Started
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/overtime-tracker.git
-cd overtime-tracker
+git clone https://github.com/marksxiety/timetrack-pro.git
+cd timetrack-pro
 ```
 
 ### Install Dependencies
@@ -57,10 +62,9 @@ npm install
 
 ### Setup Environment
 
-- Copy .env.example to .env
-- Update database credentials and APP_URL
-- Run php artisan key:generate
-- (Optional) Add OPENAI_API_KEY and model
+- Copy `.env.example` to `.env`
+- Update database credentials and `APP_URL`
+- Example MySQL setup:
 
 ### Run Application
 
@@ -162,22 +166,3 @@ PENDING → APPROVED/FILED → DECLINED/DISAPPROVED/CANCELED
   - Must start ≥60 mins before or after shift
   - Cannot overlap scheduled shift
   - Night shifts roll end time to next day
-
-## 🤖 OpenAI Integration (Optional)
-
-Add to .env:
-
-```bash
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4o-mini
-```
-
-(No active integration yet, reserved for AI insights and summaries.)
-
-## 🧭 Troubleshooting
-
-| Issue                 | Fix                         |
-| --------------------- | --------------------------- |
-| 404 or unauthorized   | Check role/middleware       |
-| Avatars not showing   | Run php artisan storage:link|
-| Time parsing errors   | Use correct 24h format      |
