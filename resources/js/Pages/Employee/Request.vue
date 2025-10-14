@@ -1,82 +1,131 @@
 <template>
-    <div class="flex flex-col gap-6 p-4 min-h-screen">
-        <!-- Breadcrumbs -->
-        <div class="breadcrumbs text-sm">
-            <ul>
-                <li>
-                    <Link :href="route('main')">Home</Link>
-                </li>
-                <li>
-                    <Link :href="route('request')">Overtime Request</Link>
-                </li>
-            </ul>
-        </div>
+    <div class="min-h-screen">
+        <div class="container mx-auto px-4 py-6 max-w-7xl">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs text-sm mb-2">
+                <ul>
+                    <li>
+                        <Link :href="route('main')" class="hover:text-primary transition-colors">
+                        Home
+                        </Link>
+                    </li>
+                    <li class="font-semibold">Overtime Request</li>
+                </ul>
+            </div>
 
-        <div class="flex justify-center items-center min-h-[70vh]">
-            <div class="card bg-base-100 w-full shadow-sm h-full flex flex-col">
-                <div class="card-body flex flex-col h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h1 class="text-2xl font-bold">Overtime Requests</h1>
+            <!-- Main Card -->
+            <div class="card bg-base-100 shadow-sm border border-base-300">
+                <div class="card-body p-6 lg:p-8">
+                    <!-- Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <h1 class="text-3xl font-bold text-base-content">Overtime Requests</h1>
+                            <p class="text-base-content/60 text-sm mt-1">Track and manage your overtime submissions</p>
+                        </div>
+                        <div class="stats shadow border border-base-300">
+                            <div class="stat p-4 w-40">
+                                <div class="stat-title text-xs">Total Requests</div>
+                                <div class="stat-value text-2xl text-primary">{{ paginator.total || 0 }}</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex flex-row items-center gap-4 mb-4">
-                        <TextInput name="" type="text" v-model="searchValue" :placeholder="'Search date or week'"
-                            margin="" class="w-3/4" />
-                        <SelectOption :options="weeks" v-model="selectedWeek" margin="" />
-                        <SelectOption :options="statuses" v-model="selectedStatus" margin="" />
-
-                        <button class="btn btn-primary flex flex-row items-center gap-2" @click="applyFilter">
-                            <span>Apply Filter</span>
-                            <Icon icon="proicons:filter" width="24" height="24" />
-                        </button>
+                    <!-- Filters Section -->
+                    <div class="bg-base-200 rounded-xl p-4 mb-6">
+                        <div class="flex flex-col lg:flex-row gap-3">
+                            <div class="flex-1">
+                                <TextInput name="Search" type="text" v-model="searchValue"
+                                    :placeholder="'Search by date or week...'" margin=""
+                                    class="w-full input-bordered" />
+                            </div>
+                            <div class="flex-none w-full lg:w-48">
+                                <SelectOption name="Week" :options="weeks" v-model="selectedWeek" margin=""
+                                    class="select-bordered w-full" />
+                            </div>
+                            <div class="flex-none w-full lg:w-48">
+                                <SelectOption name="Status" :options="statuses" v-model="selectedStatus" margin=""
+                                    class="select-bordered w-full" />
+                            </div>
+                            <div class="flex-none self-end">
+                                <button
+                                    class="btn btn-primary gap-2 w-full lg:w-auto shadow-md hover:shadow-lg transition-shadow"
+                                    @click="applyFilter">
+                                    <Icon icon="proicons:filter" width="20" height="20" />
+                                    <span>Apply</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-
-                    <hr>
-                    <div class="overflow-x-auto rounded-box bg-base-100 flex-1 min-h-[50vh] h-full">
-                        <table class="table w-full">
-                            <thead>
+                    <!-- Table Section -->
+                    <div class="overflow-x-auto rounded-lg border border-base-300 bg-base-100">
+                        <table class="table table-zebra w-full">
+                            <thead class="bg-base-200">
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Week</th>
-                                    <th>Hours</th>
-                                    <th>Reason</th>
-                                    <th>Remarks</th>
-                                    <th class="text-center">Status</th>
+                                    <th class="font-bold text-sm">Date</th>
+                                    <th class="font-bold text-sm">Week</th>
+                                    <th class="font-bold text-sm">Hours</th>
+                                    <th class="font-bold text-sm">Reason</th>
+                                    <th class="font-bold text-sm">Remarks</th>
+                                    <th class="text-center font-bold text-sm">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-if="requests.length === 0">
-                                    <th colspan="6" class="text-center italic opacity-50">No overtime requests found
-                                    </th>
+                                    <td colspan="6" class="text-center py-12">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <Icon icon="tabler:inbox-off" width="48" height="48"
+                                                class="text-base-content/30" />
+                                            <p class="text-base-content/50 font-medium">No overtime requests found</p>
+                                            <p class="text-base-content/40 text-sm">Try adjusting your filters</p>
+                                        </div>
+                                    </td>
                                 </tr>
 
-                                <tr v-else v-for="req in requests" :key="req.id">
-                                    <th>{{ req.date }}</th>
-                                    <th>{{ req.week }}</th>
-                                    <th>{{ req.hours }}</th>
-                                    <th class="whitespace-normal break-words max-w-xs">
-                                        {{ req.reason }}
-                                    </th>
-
-                                    <th>{{ req.remarks ?? 'N/A' }}</th>
-                                    <th class="flex justify-center">
-                                        <span class="badge" :class="{
-                                            'badge-primary': req.status === 'FILED',
+                                <tr v-else v-for="req in requests" :key="req.id" class="hover transition-colors">
+                                    <td class="font-medium">{{ req.date }}</td>
+                                    <td>
+                                        <div class="badge badge-ghost badge-sm">{{ req.week }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-1">
+                                            <Icon icon="tabler:clock" width="16" height="16"
+                                                class="text-base-content/60" />
+                                            <span class="font-semibold">{{ req.hours }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="max-w-xs">
+                                        <p class="line-clamp-2 text-sm text-base-content/80">
+                                            {{ req.reason }}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <span class="text-sm"
+                                            :class="req.remarks ? 'text-base-content/80' : 'text-base-content/40 italic'">
+                                            {{ req.remarks ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="badge badge-sm font-semibold gap-1" :class="{
+                                            'badge-neutral': req.status === 'FILED',
                                             'badge-warning': req.status === 'CANCELED',
                                             'badge-info': req.status === 'PENDING',
                                             'badge-success': req.status === 'APPROVED',
                                             'badge-error': req.status === 'DECLINED' || req.status === 'DISAPPROVED'
                                         }">
+                                            <Icon :icon="getStatusIcon(req.status)" width="14" height="14" />
                                             {{ req.status }}
-                                        </span>
-                                    </th>
-
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <PaginationLinks :paginator="paginator" />
+
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        <PaginationLinks :paginator="paginator" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,6 +192,18 @@ const fetchRequests = () => {
         }
     })
 }
+
+const getStatusIcon = (status) => {
+    const icons = {
+        'FILED': 'tabler:file-text',
+        'CANCELED': 'tabler:x',
+        'PENDING': 'tabler:clock',
+        'APPROVED': 'tabler:check',
+        'DECLINED': 'tabler:x',
+        'DISAPPROVED': 'tabler:x'
+    };
+    return icons[status] || 'tabler:circle';
+};
 
 const applyFilter = () => {
     handleFilter()
