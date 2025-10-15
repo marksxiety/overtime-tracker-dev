@@ -5,15 +5,8 @@ const openai = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-const openAImodel = import.meta.env.VITE_OPENAI_API_MODEL ?? "";
 
 export async function analyzeWithAI(jsonData, onChunk) {
-    if (!openAImodel) {
-        return {
-            success: false,
-            data: "OpenAI model is not defined in environment variables.",
-        };
-    }
     try {
         const content =
             typeof jsonData === "string"
@@ -21,7 +14,7 @@ export async function analyzeWithAI(jsonData, onChunk) {
                 : JSON.stringify(jsonData, null, 2);
 
         const result = await openai.chat.completions.create({
-            model: openAImodel,
+            model: 'gpt-4o-mini',
             stream: true,
             messages: [
                 {
@@ -74,16 +67,9 @@ export async function analyzeWithAI(jsonData, onChunk) {
 }
 
 export async function enhanceReasonWithAI(reason) {
-    if (!openAImodel) {
-        return {
-            success: false,
-            data: "OpenAI model is not defined in environment variables.",
-        };
-    }
-
     try {
         const result = await openai.chat.completions.create({
-            model: openAImodel,
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: "system",
