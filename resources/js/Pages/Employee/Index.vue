@@ -95,7 +95,7 @@
                                                         data-tip="The better you describe, the better AI can enhance it!">
                                                         <span tabindex="0" class="inline-block">
                                                             <button type="button" class="btn btn-sm gap-2 btn-primary"
-                                                                @click="enhanceReason" :disabled="isEnhancing">
+                                                                @click="enhanceReason('register')" :disabled="isEnhancing">
                                                                 <span v-if="isEnhancing"
                                                                     class="loading loading-spinner loading-xs"></span>
                                                                 <Icon v-if="!isEnhancing" icon="mingcute:ai-line"
@@ -304,7 +304,7 @@
                                                     data-tip="The better you describe, the better AI can enhance it!">
                                                     <span tabindex="0" class="inline-block">
                                                         <button type="button" class="btn btn-sm gap-2 btn-primary"
-                                                            @click="enhanceReason" :disabled="isEnhancing">
+                                                            @click="enhanceReason('update')" :disabled="isEnhancing">
                                                             <span v-if="isEnhancing"
                                                                 class="loading loading-spinner loading-xs"></span>
                                                             <Icon v-if="!isEnhancing" icon="mingcute:ai-line" width="18"
@@ -864,33 +864,35 @@ const submitCancelation = () => {
     })
 }
 
-const enhanceReason = async () => {
-    if (formFiling.reason) {
-        if (formFiling.reason.trim().length === 0) {
-            formFiling.errors.reason = 'Please enter a reason to enhance.'
+const enhanceReason = async (context) => {
+
+    let form = context === 'update' ? formFilledOvertime : formFiling
+
+    if (form.reason) {
+        if (form.reason.trim().length === 0) {
+            form.errors.reason = 'Please enter a reason to enhance.'
             return
         }
 
-        let splitted_reason = formFiling.reason?.trim().split(' ')
+        let splitted_reason = form.reason?.trim().split(' ')
         if (splitted_reason.length < 3) {
-            formFiling.errors.reason = 'Please provide a more detailed reason (at least 3 words).'
+            form.errors.reason = 'Please provide a more detailed reason (at least 3 words).'
             return
         }
-        delete formFiling.errors.reason
+        delete form.errors.reason
         isEnhancing.value = true
 
-
-        const enhanced = await enhanceReasonWithAI(formFiling.reason)
+        const enhanced = await enhanceReasonWithAI(form.reason)
 
         if (enhanced.success) {
-            formFiling.reason = enhanced.data
+            form.reason = enhanced.data
             isEnhancing.value = false
         } else {
-            formFiling.errors.reason = 'Failed to enhance reason. Please try again.'
+            form.errors.reason = 'Failed to enhance reason. Please try again.'
             isEnhancing.value = false
         }
     } else {
-        formFiling.errors.reason = 'Please enter a reason to enhance.'
+        form.errors.reason = 'Please enter a reason to enhance.'
     }
 }
 
