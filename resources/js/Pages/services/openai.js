@@ -21,7 +21,7 @@ export async function analyzeWithAI(jsonData, onChunk) {
                 : JSON.stringify(jsonData, null, 2);
 
         const result = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: openAImodel,
             stream: true,
             messages: [
                 {
@@ -83,7 +83,7 @@ export async function enhanceReasonWithAI(reason) {
 
     try {
         const result = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: openAImodel,
             messages: [
                 {
                     role: "system",
