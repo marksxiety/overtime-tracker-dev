@@ -21,6 +21,9 @@ export default defineConfig({
         },
         fs: {
             strict: true
+        },
+        hmr: {
+            host: 'localhost'
         }
     },
     optimizeDeps: {
