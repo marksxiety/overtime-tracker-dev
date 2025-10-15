@@ -29,8 +29,6 @@ Route::get('/', function (Request $request) {
 })->middleware('auth')->name('main');
 
 Route::middleware('employee')->group(function () {
-    Route::get('/request', [OvertimeRequestController::class, 'fetchOvertimeRequestOfEmployee'])->name('request');
-
     // shift code list for registering schedule requests (axios)
     Route::get('/employee/shift/list', [ShiftContoller::class, 'shiftCodeList']);
 
@@ -48,7 +46,7 @@ Route::middleware('employee')->group(function () {
 
     Route::post('/profile/update/employee', [AuthController::class, 'updateProfileInformation'])->name('profile.update.employee');
 
-    Route::get('/overtime/requests/list', [OvertimeRequestController::class, 'fetchOvertimeRequestOfEmployee'])->name('overtime.requests.employee');
+    Route::get('/overtime/requests', [OvertimeRequestController::class, 'fetchOvertimeRequestOfEmployee'])->name('overtime.requests.employee');
 });
 
 Route::middleware('approver')->group(function () {

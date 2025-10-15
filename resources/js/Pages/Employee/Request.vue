@@ -67,7 +67,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-if="requests.length === 0">
+                                <tr v-if="!requests || requests.length === 0">
                                     <td colspan="6" class="text-center py-12">
                                         <div class="flex flex-col items-center gap-3">
                                             <Icon icon="tabler:inbox-off" width="48" height="48"
@@ -95,7 +95,7 @@
                                     </td>
                                     <td class="max-w-xs">
                                         <div class="tooltip tooltip-left tooltip-break"
-                                            :data-tip="req.reason.length > 80 ? req.reason : ''">
+                                            :data-tip="req.reason?.length > 80 ? req.reason : ''">
                                             <p class="line-clamp-2 text-sm text-base-content/80 break-words">
                                                 {{ req.reason }}
                                             </p>
@@ -157,7 +157,6 @@ const selectedWeek = ref(props.payload?.week ?? '')
 const selectedStatus = ref(props.payload?.status ?? '')
 const searchValue = ref(props.payload?.search ?? '')
 
-console.log(props.info?.requests)
 
 const paginator = ref(props.info?.requests ?? { data: [], links: [] })
 const requests = ref(paginator.value.data ?? [])
