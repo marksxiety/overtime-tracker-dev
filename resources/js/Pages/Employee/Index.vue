@@ -209,7 +209,7 @@
                                     <div class="flex flex-col">
                                         <span class="text-xs opacity-60 mb-1">Status</span>
                                         <div class="badge badge-sm gap-2" :class="[
-                                            formFilledOvertime.status === 'PENDING' ? 'badge-warning' :
+                                            formFilledOvertime.current_status === 'PENDING' ? 'badge-warning' :
                                                 (formFilledOvertime.current_status === 'APPROVED' ? 'badge-success' :
                                                     (['DISAPPROVED', 'CANCELED'].includes(formFilledOvertime.current_status) ? 'badge-error' :
                                                         (formFilledOvertime.current_status === 'FILED' ? 'badge-primary' : 'badge-ghost')))
@@ -347,7 +347,7 @@
                                     icon="material-symbols:check-circle-outline" width="20" height="20" />
                                 <span class="font-medium">Update Request</span>
                             </button>
-                            <button type="button" class="btn btn-ghost flex-1 gap-2" @click="confirmingCancel = true"
+                            <button type="button" class="btn btn-outline flex-1 gap-2" @click="confirmingCancel = true"
                                 :disabled="formFilledOvertime.processing">
                                 <Icon icon="material-symbols:cancel-outline" width="20" height="20" />
                                 <span class="font-medium">Cancel Request</span>
@@ -368,7 +368,7 @@
                                         class="loading loading-spinner loading-xs"></span>
                                     <span>Yes, Cancel</span>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-ghost" @click="confirmingCancel = false"
+                                <button type="button" class="btn btn-sm btn-outline" @click="confirmingCancel = false"
                                     :disabled="formFilledOvertime.processing">
                                     No, Keep It
                                 </button>
