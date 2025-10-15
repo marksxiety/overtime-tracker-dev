@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\OpenAIController;
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/register', [AuthController::class, 'directRegisterForm'])->name('register');
@@ -80,5 +81,10 @@ Route::middleware('approver')->group(function () {
 });
 
 Route::get('/404', fn() => Inertia::render('Unauthorized'))->name('404');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/openai/analyze', [OpenAIController::class, 'analyze'])->name('openai.analyze');
+    Route::post('/openai/enhance', [OpenAIController::class, 'enhance'])->name('openai.enhance');
+});
 
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('logout');
