@@ -122,6 +122,13 @@
                                                 <Icon icon="material-symbols:error-outline" width="16" height="16" />
                                                 {{ formFiling.errors?.reason }}
                                             </p>
+
+                                            <!-- enhancing message -->
+                                            <p v-if="isEnhancing"
+                                                class="text-sm text-primary flex items-center gap-2">
+                                                <Icon icon="hugeicons:chat-gpt" width="16" height="16" />
+                                                Currently Enhancing.. The longer the reason, the more time it will take
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -319,6 +326,13 @@
                                         <TextArea type="text" v-model="formFilledOvertime.reason"
                                             :message="formFilledOvertime.errors?.reason"
                                             :readonly="formFilledOvertime.current_status !== 'PENDING'" />
+                                            
+                                        <!-- enhancing message -->
+                                        <p v-if="isEnhancing"
+                                            class="text-sm text-primary flex items-center gap-2">
+                                            <Icon icon="hugeicons:chat-gpt" width="16" height="16" />
+                                            Currently Enhancing.. The longer the reason, the more time it will take
+                                        </p>
                                     </div>
                                 </div>
                             </div>
